@@ -47,6 +47,21 @@ class Llama213bLlm(BedrockLlm):
             logger.info(f"Set model max_gen_len={max_gen_len}")
             self.max_gen_len = max_gen_len
 
+    def set_parameters_from_config(self, config):
+        try:
+            llm_section = config["LLM"]
+            temperature = float(llm_section["Temperature"])
+            top_p = float(llm_section["NucleusSampling"])
+            max_gen_len = int(llm_section["MaxGenerationLength"])
+        except KeyError as e:
+            logger.error("Section or value is missing in configuration! Make sure you didn't delete anything important!")
+            raise e
+        except ValueError as e:
+            logger.error("Invalid value in configuration!")
+            raise e
+        
+        self.set_parameters(temperature, top_p, max_gen_len)
+
     def get_invoke_body(self, prompt):
         return json.dumps(
             {
