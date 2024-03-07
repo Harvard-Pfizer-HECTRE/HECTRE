@@ -5,7 +5,7 @@ import sys
 import boto3
 from botocore.exceptions import ClientError
 
-from models.llm import Llm
+from .llm import Llm
 
 logger = logging.getLogger(__name__)
 

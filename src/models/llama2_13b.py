@@ -2,7 +2,7 @@
 import logging
 import json
 
-from models.bedrock import BedrockLlm
+from .bedrock import BedrockLlm
 
 logger = logging.getLogger(__name__)
 
