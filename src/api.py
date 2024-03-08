@@ -1,37 +1,41 @@
 import logging
 
-from .lib.extractor import Extractor
-from .lib.parse_config import Config
+from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
+
+# Global HECTRE singleton
+hectre = None
 
 def invoke_model(prompt):
     '''
     Invoke the model, following the configuration file.
     This is mostly just used for testing.
+
+    Parameters:
+        prompt (str): The prompt for the model.
+
+    Returns:
+        str: The output from the model.
     '''
-    try:
-        config = Config().get_config()
-    except Exception as e:
-        logger.error("Unable to read config file!")
-        raise e
-    
-    extractor = Extractor()
-    extractor.set_config(config)
-    return extractor.invoke_model(prompt)
+    global hectre
+    if hectre is None:
+        hectre = Hectre()
+
+    return hectre.invoke_model(prompt)
 
 
 def extract_data(pdfObject, picosObject):
-    try:
-        config = Config().get_config()
-    except Exception as e:
-        logger.error("Unable to read config file!")
-        raise e
-    
-    extractor = Extractor()
-    extractor.set_config(config)
-    extractor.set_pdf(pdfObject)
-    extractor.set_picos(picosObject)
-    # TODO the rest
-    extractor.extract()
+    '''
+    Main entry function that is called by the front end to initiate the extraction
+    process.
+    TODO: Finish this function up
+
+    Parameters:
+        pdfObject TODO
+        picosObject TODO
+
+    Returns:
+        No output. This function will take a while, so we will store the output elsewhere.
+    '''
     

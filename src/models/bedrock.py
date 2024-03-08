@@ -36,6 +36,15 @@ class BedrockLlm(Llm):
         return response
 
     def invoke(self, prompt):
+        '''
+        Invokes the model, and returns a response.
+
+        Parameters:
+            prompt (str): The prompt for the model.
+
+        Returns:
+            str: The model response.
+        '''
         try:
             # The different model providers have individual request and response formats.
 
