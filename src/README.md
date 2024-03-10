@@ -11,9 +11,7 @@ Currently you can just try to invoke the Llama 2 model and see the results.
 
 ## Dev Local Env Notes
 
-The below examples assume your current directory is the repository root,
-and that you're using an activated Python virtual environment located in
-PROJECT_ROOT/.venv
+The below examples assume your current directory is the repository root, and that you're using an activated Python virtual environment located in PROJECT_ROOT/.venv
 
 Create a virtual environment in the project root and install the requirements
 ```
@@ -37,4 +35,11 @@ pip freeze > src/requirements.txt
 
 # Commit the updated requirements
 git add src/requirements.txt && git commit -m "Add pydantic requirement"
+```
+
+Select your virtual environment's Python as the VSCode Python interpreter so you can see accurate type hints and warnings, etc in VSCode.
+```
+# In VSCode, hit Cmd-shift-p and select "Python: Select Interpreter"
+# In the dropdown that appears, pick the version of Python located
+# in your .venv directory
 ```
