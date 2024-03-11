@@ -3,28 +3,36 @@
 This module defines a PICOS type and associate sub-types that will be used to
 validate user provided PICOS data.
 """
-from typing import List
+from typing import Set
 from pydantic import BaseModel
 
-class Intervention(BaseModel):
+class PicosAliased(BaseModel):
+    """Base class for a PICOS aliased type.
+
+    Attributes:
+        names: Names used to refer to this item.
+    """
+    names: Set[str]
+
+class Population(PicosAliased):
+    """Represents an Population, or the "P" in PICOS.
+    """
+
+class Intervention(PicosAliased):
     """Represents an Intervention, or the "I" in PICOS.
-
-    Attributes:
-        name: The primary name of the intervention.
-        synonyms: Other names names used to refer to this intervention.
     """
-    name: str
-    synonyms: List[str]
 
-class Outcome(BaseModel):
+class Comparator(PicosAliased):
+    """Represents a Comparator, or the "C" in PICOS.
+    """
+
+class Outcome(PicosAliased):
     """Represents an Outcome, or the "O" in PICOS.
-
-    Attributes:
-        name: The primary name of the intervention.
-        synonyms: Other names names used to refer to this Outcome.
     """
-    name: str
-    synonyms: List[str]
+
+class Study_Design(PicosAliased):
+    """Represents a Study Design, or the "S" in PICOS.
+    """
 
 class Picos(BaseModel):
     """Represents a PICOS object used during a systematic review.
@@ -36,8 +44,8 @@ class Picos(BaseModel):
         outcomes: What is being measured.
         study_design: The type of studies being considered.
     """
-    population: str
-    interventions: List[Intervention]
-    comparitors: str
-    outcomes: List[Outcome]
-    study_design: str
+    population: Set[Population]
+    interventions: Set[Intervention]
+    comparators: Set[Comparator]
+    outcomes: Set[Outcome]
+    study_designs: Set[Study_Design]
