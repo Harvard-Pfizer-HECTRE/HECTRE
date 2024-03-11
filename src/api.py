@@ -26,7 +26,7 @@ def invoke_model(prompt):
     return hectre.invoke_model(prompt)
 
 
-def extract_data(pdfObject, Picos):
+def extract_data(pdfObject, picosObject: Picos):
     '''
     Main entry function that is called by the front end to initiate the extraction
     process.
