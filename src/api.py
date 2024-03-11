@@ -1,5 +1,6 @@
 import logging
 
+from picos import Picos
 from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def invoke_model(prompt):
     return hectre.invoke_model(prompt)
 
 
-def extract_data(pdfObject, picosObject):
+def extract_data(pdfObject, Picos):
     '''
     Main entry function that is called by the front end to initiate the extraction
     process.
