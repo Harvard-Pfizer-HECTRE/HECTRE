@@ -38,13 +38,13 @@ class Picos(BaseModel):
     """Represents a PICOS object used during a systematic review.
 
     Attributes:
-        population: The patient population.
-        intervention: The treatments being considered.
-        comparitors: The main alternative to the intervention.
+        populations: The patient populations.
+        interventions: The treatments being considered.
+        comparitors: The alternatives to the interventions.
         outcomes: What is being measured.
-        study_design: The type of studies being considered.
+        study_designs: The type of studies being considered.
     """
-    population: Set[Population]
+    populations: Set[Population]
     interventions: Set[Intervention]
     comparators: Set[Comparator]
     outcomes: Set[Outcome]
