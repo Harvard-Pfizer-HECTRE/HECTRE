@@ -1,5 +1,5 @@
 
-from ..consts import NAME_TO_MODEL_CLASS
+from ..models.consts import NAME_TO_MODEL_CLASS
 from .config import Config
 
 class HectreException(Exception):

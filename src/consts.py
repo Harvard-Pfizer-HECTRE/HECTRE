@@ -1,5 +1,4 @@
-from .models.llama2_13b import Llama213bLlm
+# Put any constants used by the tool here.
 
-NAME_TO_MODEL_CLASS = {
-    "Llama213b": Llama213bLlm,
-}
+AWS_PROFILE: str = "capstone"
+AWS_REGION = "us-east-1"
