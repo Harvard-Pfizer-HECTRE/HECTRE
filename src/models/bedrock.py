@@ -23,6 +23,8 @@ class BedrockLlm(Llm):
     def __init__(self):
         super().__init__()
 
+        logger.info(f"Using model ID {self.MODEL_ID}")
+
         try:
             bedrock_session = boto3.Session(profile_name=self.CREDENTIAL_PROFILE)
             self.client = bedrock_session.client(service_name=self.SERVICE, region_name=self.REGION)

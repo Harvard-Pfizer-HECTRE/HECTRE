@@ -15,7 +15,7 @@ class Hectre:
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
 
-    def set_llm(self, llm_name):
+    def set_llm(self, llm_name: str) -> None:
         '''
         Set the LLM to be used by HECTRE.
 
@@ -27,7 +27,7 @@ class Hectre:
         except KeyError:
             raise HectreException(f"{llm_name} is not a supported LLM type!")
         
-    def invoke_model(self, prompt):
+    def invoke_model(self, prompt: str) -> str:
         '''
         Call the LLM to get an output.
 
@@ -38,3 +38,19 @@ class Hectre:
             str
         '''
         return self.llm.invoke(prompt)
+    
+    def get_readable_header(self, canonical_header: str) -> str:
+        '''
+        The headers in the CDF files may not be understood by LLM, so convert
+        them to a readable header.
+
+        Ex: AU converts to Authors, PY converts to Publishing Year.
+
+        Parameters:
+            canonical_header (str)
+
+        Returns:
+            str
+        '''
+        # TODO
+        return canonical_header

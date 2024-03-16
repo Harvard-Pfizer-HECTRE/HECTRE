@@ -8,6 +8,10 @@ class Paper(BaseModel):
         # TODO
         pass
 
+    def get_id(self) -> int:
+        # Return some unique ID for this paper.
+        raise NotImplementedError()
+
     def get_num_pages(self) -> int:
         # TODO
         raise NotImplementedError()
