@@ -1,6 +1,6 @@
 import logging
 
-from .picos import Picos
+from .input_parsers.picos import Picos
 from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
