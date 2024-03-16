@@ -1,4 +1,6 @@
+from typing import Optional
 
+from ..input_parsers.page import Page
 from ..models.consts import NAME_TO_MODEL_CLASS
 from .config import Config
 
@@ -54,3 +56,9 @@ class Hectre:
         '''
         # TODO
         return canonical_header
+    
+    def query_literature_data(self, header: str, page: Page, page_num: int) -> Optional[str]:
+        '''
+        Construct the prompt(s) to get the literature data from the page using the LLM.
+        '''
+        # TODO
