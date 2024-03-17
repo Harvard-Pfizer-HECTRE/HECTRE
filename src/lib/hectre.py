@@ -8,6 +8,12 @@ class HectreException(Exception):
     pass
 
 class Hectre:
+    '''
+    The overarching class of the HECTRE project.
+    HECTRE is able to either invoke the model, get literature data from a page,
+    or clinical data from a page or table.
+    '''
+
     def __init__(self):
         self.config = Config()
         try:

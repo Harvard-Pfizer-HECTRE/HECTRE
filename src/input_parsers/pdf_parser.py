@@ -5,6 +5,12 @@ from .paper import Paper
 from .parser import Parser
 
 class PdfParser(Parser):
+    '''
+    This is the PDF parser class, and inherits from the base Parser class.
+    This class has all the logic to take a file path or URL, get the contents,
+    and parse it into a Paper object.
+    '''
+
     def __init__(self, source, **kwargs):
         super().__init__()
         # TODO

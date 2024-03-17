@@ -2,6 +2,11 @@ import configparser
 import os
 
 class Config:
+    '''
+    This class instantiates an object with the INI configuration file, and is used
+    by HECTRE to set certain parameters, such as what LLM to use, and LLM parameters.
+    '''
+
     def __init__(self):
         self.get_config()
     
