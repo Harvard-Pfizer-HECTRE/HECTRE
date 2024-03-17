@@ -11,8 +11,8 @@ class PdfParser(Parser):
     and parse it into a Paper object.
     '''
 
-    def __init__(self, source, **kwargs):
-        super().__init__()
+    def __init__(self, source: str, **kwargs):
+        super().__init__(source)
         # TODO
         pass
 

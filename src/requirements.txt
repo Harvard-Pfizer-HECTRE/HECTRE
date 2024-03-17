@@ -1,6 +1,7 @@
 annotated-types==0.6.0
 boto3==1.33.8
 botocore==1.33.8
+click==8.1.7
 colorama==0.4.6
 iniconfig==2.0.0
 jmespath==1.0.1

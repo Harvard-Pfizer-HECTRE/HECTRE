@@ -4,6 +4,7 @@ from .cdf.cdf import Cdf
 from .consts import LITERATURE_DATA_HEADERS
 from .input_parsers.page import Page
 from .input_parsers.paper import Paper
+from. input_parsers.pdf_parser import PdfParser
 from .input_parsers.picos import Picos
 from .lib.hectre import Hectre
 
@@ -88,3 +89,23 @@ def extract_data(paper: Paper, picos: Picos) -> Cdf:
     extract_clinical_data(paper, picos, cdf)
 
     return cdf
+
+
+def extract_from_file_path(file_path: str, picos_string: str) -> Cdf:
+    '''
+    Overarching function to turn a file path and a PICOS string into a CDF object.
+    '''
+    pdf_parser = PdfParser.from_file(file_path)
+    paper = pdf_parser.parse()
+    picos = Picos(picos_string)
+    return extract_data(paper, picos)
+
+
+def extract_from_url(url: str, picos_string: str) -> Cdf:
+    '''
+    Overarching function to turn a URL and a PICOS string into a CDF object.
+    '''
+    pdf_parser = PdfParser.from_url(url)
+    paper = pdf_parser.parse()
+    picos = Picos(picos_string)
+    return extract_data(paper, picos)
