@@ -3,20 +3,33 @@
 This module defines a PICOS type and associate sub-types that will be used to
 validate user provided PICOS data.
 """
-from typing import Set
+from typing import (Set, Optional)
 from pydantic import BaseModel
 
-class PicosAliased(BaseModel):
-    """Base class for a PICOS aliased type.
-
-    Attributes:
-        names: Names used to refer to this item.
+class Ontology(BaseModel):
+    """Represents an Ontology
     """
-    names: Set[str]
+    name: str
 
-class Population(PicosAliased):
+    def __init__(self, name: str) -> None:
+        super().__init__(name=name)
+        self.synonyms: Set[str] = self.get_synonyms(name)
+
+    def get_synonyms(ont_name: str) -> Set[str]:
+        pass
+
+
+class Disease(BaseModel):
+    """Represents a Disease, a sub-part of a Population.
+    """
+    name: str
+    ontologies: Set[Ontology]
+
+class Population(BaseModel):
     """Represents an Population, or the "P" in PICOS.
     """
+    disease: Disease
+    demographic: str
 
 class Intervention(PicosAliased):
     """Represents an Intervention, or the "I" in PICOS.
