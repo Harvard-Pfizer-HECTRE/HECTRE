@@ -5,6 +5,7 @@ import sys
 import boto3
 from botocore.exceptions import ClientError
 
+from ..consts import AWS_PROFILE, AWS_REGION
 from .llm import Llm
 
 logger = logging.getLogger(__name__)
@@ -15,12 +16,14 @@ class BedrockLlm(Llm):
     '''
 
     MODEL_ID = None
-    CREDENTIAL_PROFILE = "capstone"
+    CREDENTIAL_PROFILE = AWS_PROFILE
     SERVICE = "bedrock-runtime"
-    REGION = "us-east-1"
+    REGION = AWS_REGION
 
     def __init__(self):
         super().__init__()
+
+        logger.info(f"Using model ID {self.MODEL_ID}")
 
         try:
             bedrock_session = boto3.Session(profile_name=self.CREDENTIAL_PROFILE)

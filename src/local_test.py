@@ -6,6 +6,13 @@ from .api import invoke_model
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+
+'''
+This file is used for basic testing of invoking the LLM.
+TODO: Move this to a unit test.
+'''
+
+
 if __name__ == '__main__':
     response = invoke_model("How are you today?")
     print(response)

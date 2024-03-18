@@ -11,4 +11,4 @@ class Llm:
         pass
 
     def invoke(self, prompt):
-        raise NotImplementedError
+        raise NotImplementedError()
