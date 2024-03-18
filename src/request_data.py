@@ -70,8 +70,9 @@ picos_reqs = [
     }
 ]
 
-
 if __name__ == '__main__':
+    # Creates a fully validated Picos instance using the above test data
+    # Dumps the pretty-printed JSON representation of the Picos instance.
     for p in picos_reqs:
         _p = Picos(**p)
         pprint(_p.model_dump(mode='json'))

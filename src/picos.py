@@ -7,13 +7,25 @@ from typing import Set
 from pydantic import BaseModel
 
 class Population(BaseModel):
-    """Represents a Population, or the "P" in PICOS.
+    """Represents the Population, or the "P" in PICOS.
+
+    Attributes:
+        disease: The name of the disease being studied.
+        sub_populations: Sub-groups of disease.
     """
     disease: str
     sub_populations: Set[str]
 
 class Intervention(BaseModel):
     """Represents an Intervention, or the "I" in PICOS.
+
+    Attributes:
+        drug_name: The name of the drug being used in this intervention.
+        drug_class: The class of the drug being used in this intervention.
+
+    Methods:
+        __hash__: Makes this a hashable type.
+        __eq__: Use for object comparison.
     """
     drug_name: str
     drug_class: str
