@@ -11,9 +11,7 @@ class Parser(BaseModel):
 
     This class is abstract, and we need to implement specific parser classes on top of it.
     '''
-
-    def __init__(self, source: str, **kwargs):
-        self.source = source
+    source: str
     
     def parse(self) -> Paper:
         raise NotImplementedError("Calling parse() on abstract class Parser.")

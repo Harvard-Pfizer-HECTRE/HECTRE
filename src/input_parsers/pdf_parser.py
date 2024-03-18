@@ -11,20 +11,15 @@ class PdfParser(Parser):
     and parse it into a Paper object.
     '''
 
-    def __init__(self, source: str, **kwargs):
-        super().__init__(source)
-        # TODO
-        pass
-
     @classmethod
     def from_file(cls, file_path: str) -> Type['PdfParser']:
         # TODO
-        return cls(file_path)
+        return cls(source=file_path)
 
     @classmethod
     def from_url(cls, url: str) -> Type['PdfParser']:
         # TODO
-        return cls(url)
+        return cls(source=url)
     
     def parse(self) -> Paper:
         # TODO

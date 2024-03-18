@@ -10,6 +10,11 @@ from .cdf.cdf import Cdf
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
+'''
+This file is used to run a full execution on a PDF file locally.
+'''
+
+
 @click.command()
 @click.argument('file_path', type=click.Path(exists=True))
 @click.argument('picos_string', type=str)
