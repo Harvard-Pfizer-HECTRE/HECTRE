@@ -3,49 +3,28 @@
 This module defines a PICOS type and associate sub-types that will be used to
 validate user provided PICOS data.
 """
-from typing import (Set, Optional)
+from typing import Set
 from pydantic import BaseModel
 
-class Ontology(BaseModel):
-    """Represents an Ontology
-    """
-    name: str
-
-    def __init__(self, name: str) -> None:
-        super().__init__(name=name)
-        self.synonyms: Set[str] = self.get_synonyms(name)
-
-    def get_synonyms(ont_name: str) -> Set[str]:
-        pass
-
-
-class Disease(BaseModel):
-    """Represents a Disease, a sub-part of a Population.
-    """
-    name: str
-    ontologies: Set[Ontology]
-
 class Population(BaseModel):
-    """Represents an Population, or the "P" in PICOS.
+    """Represents a Population, or the "P" in PICOS.
     """
-    disease: Disease
-    demographic: str
+    disease: str
+    sub_populations: Set[str]
 
-class Intervention(PicosAliased):
+class Intervention(BaseModel):
     """Represents an Intervention, or the "I" in PICOS.
     """
-
-class Comparator(PicosAliased):
-    """Represents a Comparator, or the "C" in PICOS.
-    """
-
-class Outcome(PicosAliased):
-    """Represents an Outcome, or the "O" in PICOS.
-    """
-
-class Study_Design(PicosAliased):
-    """Represents a Study Design, or the "S" in PICOS.
-    """
+    drug_name: str
+    drug_class: str
+    def __hash__(self):
+        return hash((self.drug_name, self.drug_class))
+    def __eq__(self, other):
+        return (
+            self.__class__ == other.__class__ and
+            self.drug_name == other.drug_name and
+            self.drug_class == other.drug_class
+        )
 
 class Picos(BaseModel):
     """Represents a PICOS object used during a systematic review.
@@ -57,8 +36,8 @@ class Picos(BaseModel):
         outcomes: What is being measured.
         study_designs: The type of studies being considered.
     """
-    populations: Set[Population]
+    population: Population
     interventions: Set[Intervention]
-    comparators: Set[Comparator]
-    outcomes: Set[Outcome]
-    study_designs: Set[Study_Design]
+    comparators: Set[str]
+    outcomes: Set[str]
+    study_designs: Set[str]
