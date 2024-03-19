@@ -1,11 +1,17 @@
 import logging
 
 from .cdf.cdf import Cdf
-from .consts import LITERATURE_DATA_HEADERS
+from .consts import (
+    LITERATURE_DATA_HEADERS,
+    SKIPPED_LITERATURE_DATA_HEADERS,
+)
 from .pdf.page import Page
 from .pdf.paper import Paper
 from. input_parsers.pdf_parser import PdfParser
-from .picos.picos import Picos
+from .picos.picos import (
+    Picos,
+    Population,
+)
 from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
@@ -40,9 +46,9 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     paper_id = paper.get_id()
 
     # First, loop over every literature data header we need in CDF
-    for col, canonical_header in enumerate(LITERATURE_DATA_HEADERS):
-        # Convert these into human-readable (LLM-readable) header names
-        header = hectre.get_readable_header(canonical_header)
+    for col, header in enumerate(LITERATURE_DATA_HEADERS):
+        if header in SKIPPED_LITERATURE_DATA_HEADERS:
+            continue
 
         # Some headers we skip, for one reason or another
         if header is None:
@@ -50,7 +56,7 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
 
         # Get the total number of pages, and try to extract that data from each page until we get something.
         num_pages = paper.get_num_pages()
-        for page_num in range(1, num_pages + 1):
+        for page_num in range(num_pages):
             page: Page = paper.get_page(page_num)
 
             result = hectre.query_literature_data(header=header, page=page, page_num=page_num)
@@ -58,9 +64,7 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
             if result:
                 # Set the value in the CDF
                 # TODO
-                # For now let's print it
-                logger.info(f"LLM result for {header}: {result}")
-                return
+                break
 
 
 def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
@@ -105,9 +109,8 @@ def extract_from_file_path(file_path: str, picos_string: str) -> Cdf:
     pdf_parser = PdfParser(file_path=file_path)
     paper = pdf_parser.parse()
     # TODO for PICOS
-    picos = Picos(populations=set(), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
+    picos = Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
     return extract_data(paper, picos)
-
 
 def extract_from_url(url: str, picos_string: str) -> Cdf:
     '''
@@ -116,5 +119,5 @@ def extract_from_url(url: str, picos_string: str) -> Cdf:
     pdf_parser = PdfParser(url=url)
     paper = pdf_parser.parse()
     # TODO for PICOS
-    picos = Picos(populations=set(), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
+    picos = Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
     return extract_data(paper, picos)
