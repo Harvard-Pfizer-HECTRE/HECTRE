@@ -17,7 +17,7 @@ class Cdf(BaseModel):
         '''
         if "," in value:
             # To be interchangeable with CSV, we cannot have commas in values.
-            raise ValueError(f"Cannot accept commas in CDF cell. Row {row}, column {col}, value: {value}")
+            raise ValueError(f"Cannot accept commas in CDF cell. Column {col}, value: {value}")
         # TODO
 
     def set_value(self, paper_id: int, row: int, col: int, value: str) -> None:

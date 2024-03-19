@@ -1,8 +1,6 @@
 
 from pydantic import BaseModel
-from typing import Type
-
-from .paper import Paper
+from typing import Any
 
 class Parser(BaseModel):
     '''
@@ -11,7 +9,5 @@ class Parser(BaseModel):
 
     This class is abstract, and we need to implement specific parser classes on top of it.
     '''
-    source: str
-    
-    def parse(self) -> Paper:
+    def parse(self) -> Any:
         raise NotImplementedError("Calling parse() on abstract class Parser.")
