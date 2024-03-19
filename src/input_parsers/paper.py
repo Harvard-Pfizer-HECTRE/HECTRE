@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 from .page import Page
 from .table import Table
@@ -14,10 +15,8 @@ class Paper(BaseModel):
 
     Paper objects are instantiated by the PDF parser, and are used by the data extractor.
     '''
-
-    def __init__(self):
-        # TODO
-        pass
+    pages: List[Page]
+    tables: List[Table]
 
     def get_id(self) -> int:
         '''
@@ -31,26 +30,22 @@ class Paper(BaseModel):
         '''
         Get the total number of pages in this paper.
         '''
-        # TODO
-        raise NotImplementedError()
+        return len(self.pages)
 
     def get_page(self, page_num: int) -> Page:
         '''
         Get a specific page in this paper.
         '''
-        # TODO
-        raise NotImplementedError()
+        return self.pages[page_num]
 
     def get_num_tables(self) -> int:
         '''
         Get the total number of tables in this paper.
         '''
-        # TODO
-        raise NotImplementedError()
+        return len(self.tables)
 
     def get_table(self, table_num: int) -> Table:
         '''
         Get a specific table in this paper.
         '''
-        # TODO
-        raise NotImplementedError()
+        return self.tables[table_num]

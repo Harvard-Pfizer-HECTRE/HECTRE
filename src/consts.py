@@ -7,7 +7,7 @@ AWS_PROFILE: str = "capstone"
 AWS_REGION = "us-east-1"
 
 LITERATURE_DATA_HEADERS: List[str] = [
-    # "DSID",
+    "DSID",
     "AU",
     "TI",
     "JR",

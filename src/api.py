@@ -43,6 +43,11 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     for col, canonical_header in enumerate(LITERATURE_DATA_HEADERS):
         # Convert these into human-readable (LLM-readable) header names
         header = hectre.get_readable_header(canonical_header)
+
+        # Some headers we skip, for one reason or another
+        if header is None:
+            continue
+
         # Get the total number of pages, and try to extract that data from each page until we get something.
         num_pages = paper.get_num_pages()
         for page_num in range(1, num_pages + 1):
@@ -52,7 +57,9 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
             # If we got a non-null result, it means we found it.
             if result:
                 # Set the value in the CDF
-                cdf.set_value_for_paper_id(paper_id=paper_id, col=col, value=result)
+                # TODO
+                # For now let's print it
+                logger.info(f"LLM result for {header}: {result}")
                 return
 
 
@@ -95,9 +102,10 @@ def extract_from_file_path(file_path: str, picos_string: str) -> Cdf:
     '''
     Overarching function to turn a file path and a PICOS string into a CDF object.
     '''
-    pdf_parser = PdfParser.from_file(file_path)
+    pdf_parser = PdfParser(file_path=file_path)
     paper = pdf_parser.parse()
-    picos = Picos(picos_string)
+    # TODO for PICOS
+    picos = Picos(populations=set(), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
     return extract_data(paper, picos)
 
 
@@ -105,7 +113,8 @@ def extract_from_url(url: str, picos_string: str) -> Cdf:
     '''
     Overarching function to turn a URL and a PICOS string into a CDF object.
     '''
-    pdf_parser = PdfParser.from_url(url)
+    pdf_parser = PdfParser(url=url)
     paper = pdf_parser.parse()
-    picos = Picos(picos_string)
+    # TODO for PICOS
+    picos = Picos(populations=set(), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
     return extract_data(paper, picos)
