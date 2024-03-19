@@ -4,10 +4,10 @@ from typing import Any, List, Optional
 import PyPDF2
 import tabula
 
-from .page import Page
-from .paper import Paper
+from ..pdf.page import Page
+from ..pdf.paper import Paper
 from .parser import Parser
-from .table import Table
+from ..pdf.table import Table
 
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
 
 from .parser import Parser
-from .picos import Picos
+from ..picos.picos import Picos
 
 class PicosParser(Parser):
     '''

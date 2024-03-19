@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ..input_parsers.page import Page
+from ..pdf.page import Page
 from ..models.consts import NAME_TO_MODEL_CLASS
 from .config import Config
 

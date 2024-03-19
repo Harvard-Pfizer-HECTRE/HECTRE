@@ -2,10 +2,10 @@ import logging
 
 from .cdf.cdf import Cdf
 from .consts import LITERATURE_DATA_HEADERS
-from .input_parsers.page import Page
-from .input_parsers.paper import Paper
+from .pdf.page import Page
+from .pdf.paper import Paper
 from. input_parsers.pdf_parser import PdfParser
-from .input_parsers.picos import Picos
+from .picos.picos import Picos
 from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
