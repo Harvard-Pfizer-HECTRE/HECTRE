@@ -57,7 +57,8 @@ class PdfParser(Parser):
                     page: Page = Page(number=page_index, text=pageObj.extract_text())
                     pages.append(page)
 
-                    # try extracting any tables
+                    # try extracting any tables (EDIT: tabula is too bad, let's try something else)
+                    '''
                     try:
                         tabula_tables = tabula.read_pdf(self.file_path, pages=page_index + 1, silent=True)
 
@@ -71,6 +72,7 @@ class PdfParser(Parser):
                             table_number += 1
                     except UnicodeDecodeError:
                         pass
+                    '''
         # if there is no file with this name - throw an error
         except FileNotFoundError:
             raise PdfParserException(f"File not found: {self.file_path}")
