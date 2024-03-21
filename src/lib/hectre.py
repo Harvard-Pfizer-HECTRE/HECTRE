@@ -1,20 +1,31 @@
-from typing import Optional
+import logging
 
-from ..input_parsers.page import Page
+from pydantic import BaseModel
+from typing import Any, Optional
+
+from ..consts import NO_DATA
+from ..ontology.definitions import Definitions
+from ..pdf.page import Page
 from ..models.consts import NAME_TO_MODEL_CLASS
 from .config import Config
+
+logger = logging.getLogger(__name__)
 
 class HectreException(Exception):
     pass
 
-class Hectre:
+class Hectre(BaseModel):
     '''
     The overarching class of the HECTRE project.
     HECTRE is able to either invoke the model, get literature data from a page,
     or clinical data from a page or table.
     '''
+    config: Any = None
+    definitions: Any = None
+    llm: Any = None
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.config = Config()
         try:
             llm_name = self.config["LLM"]["LLMName"]
@@ -22,6 +33,7 @@ class Hectre:
             raise HectreException("Could not find LLMName in configuration!")
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
+        self.definitions = Definitions()
 
     def set_llm(self, llm_name: str) -> None:
         '''
@@ -47,24 +59,23 @@ class Hectre:
         '''
         return self.llm.invoke(prompt)
     
-    def get_readable_header(self, canonical_header: str) -> str:
-        '''
-        The headers in the CDF files may not be understood by LLM, so convert
-        them to a readable header.
-
-        Ex: AU converts to Authors, PY converts to Publishing Year.
-
-        Parameters:
-            canonical_header (str)
-
-        Returns:
-            str
-        '''
-        # TODO
-        return canonical_header
-    
     def query_literature_data(self, header: str, page: Page, page_num: int) -> Optional[str]:
         '''
         Construct the prompt(s) to get the literature data from the page using the LLM.
         '''
-        # TODO
+        # TODO: Work on this
+        readable_header = self.definitions.convert_to_readable_name(header)
+        logger.info(f"Trying to fetch {readable_header} from page {page_num + 1}...")
+        prompt = f'''Below is page {page_num + 1} from a clinical trial paper:
+
+START OF PAGE
+{page.get_text()}
+END OF PAGE
+
+I want to find the {readable_header.lower()}; here is a description of the thing I want: "{self.definitions.get_field_description(header)}". Please respond with just the answer with no other words, or with "{NO_DATA}".'''
+        
+        output = self.invoke_model(prompt)
+        if NO_DATA in output:
+            return None
+        logger.info(f"Got answer: {output}")
+        return output

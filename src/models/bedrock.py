@@ -52,7 +52,7 @@ class BedrockLlm(Llm):
             # The different model providers have individual request and response formats.
 
             body = self.get_invoke_body(prompt)
-            logger.info(f"Invoking model with request size of {sys.getsizeof(body)} bytes")
+            logger.debug(f"Invoking model with request size of {sys.getsizeof(body)} bytes")
 
             response = self.client.invoke_model(
                 modelId=self.MODEL_ID, body=body,

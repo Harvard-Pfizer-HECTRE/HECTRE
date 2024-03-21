@@ -23,3 +23,13 @@ LITERATURE_DATA_HEADERS: List[str] = [
     "STD.GEO.LOCATION",
     "STD.PHASE",
 ]
+
+SKIPPED_LITERATURE_DATA_HEADERS: List[str] = [
+    "DSID",
+]
+
+SHORT_NAME_HEADER = "Field Name"
+READABLE_NAME_HEADER = "Field Label"
+FIELD_DESCRIPTION_HEADER = "Field Description"
+
+NO_DATA = "NO_DATA"

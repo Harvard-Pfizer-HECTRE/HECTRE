@@ -24,7 +24,7 @@ class Paper(BaseModel):
         This function returns that unique identifier.
         '''
         # TODO
-        raise NotImplementedError()
+        return 0
 
     def get_num_pages(self) -> int:
         '''

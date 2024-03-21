@@ -108,5 +108,5 @@ class Llama2(BedrockLlm):
         prompt_token_count = body["prompt_token_count"]
         generation_token_count = body["generation_token_count"]
         stop_reason = body["stop_reason"]
-        logger.info(f"Total tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
+        logger.debug(f"Total tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
         return completion

@@ -4,10 +4,10 @@ from typing import Any, List, Optional
 import PyPDF2
 import tabula
 
-from .page import Page
-from .paper import Paper
+from ..pdf.page import Page
+from ..pdf.paper import Paper
 from .parser import Parser
-from .table import Table
+from ..pdf.table import Table
 
 
 logger = logging.getLogger(__name__)
@@ -17,12 +17,14 @@ class PdfParserException(Exception):
     pass
 
 
-class PdfParser(Parser, extra='allow'):
+class PdfParser(Parser):
     '''
     This is the PDF parser class, and inherits from the base Parser class.
     This class has all the logic to take a file path or URL, get the contents,
     and parse it into a Paper object.
     '''
+    file_path: str = None
+
     def __init__(self, file_path: str = None, url: str = None):
         super().__init__()
 
