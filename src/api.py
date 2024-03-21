@@ -90,6 +90,9 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     if not treatment_arms:
         logger.error(f"Could not find any treatment arms for paper {paper_id}!")
 
+    # TODO: Now we can query a bunch of specific information about each treatment arm and put in CDF
+    # Such as percent male, arm age, regiment, arm dosage, etc.
+
     # Get all the nominal time values
     time_values = []
     for page_num in range(num_pages):
@@ -101,6 +104,8 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     if not time_values:
         logger.error(f"Could not find any time values for paper {paper_id}!")
 
+    # TODO: Now we can query some additional information about each time value
+
     # Loop through every outcome
     for outcome in outcomes:
         # Loop through every treatment arm
@@ -110,6 +115,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
 
                 # Hardcode one specific clinical data value we want to find, as a test
                 # Start on page 2, as a test, to make results better
+                # Ideally we want to query all of the clinical data columns here.
                 for page_num in range(1, num_pages):
                     page: Page = paper.get_page(page_num)
 

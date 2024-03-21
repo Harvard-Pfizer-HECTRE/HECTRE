@@ -159,7 +159,7 @@ I want to find all the nominal time values for treatments in the paper. Please r
 
     def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, page: Page, page_num: int) -> Optional[str]:
         '''
-        Construct the prompt(s) to get the clinical data from the page using the LLM.
+        Construct the prompt(s) to get a specific clinical data from the page using the LLM.
         '''
         readable_header = self.definitions.convert_to_readable_name(header)
         logger.info(f"Trying to fetch {readable_header} at time {time_value} for arm {treatment_arm} for outcome {outcome} from page {page_num + 1}...")
