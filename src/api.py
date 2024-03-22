@@ -77,7 +77,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     paper_id = paper.get_id()
     num_pages = paper.get_num_pages()
 
-    outcomes = ["HbA1c"] # Hardcode this for testing
+    outcomes = picos.outcomes
 
     # Get all the treatment arms in the paper
     treatment_arms = []
@@ -89,6 +89,10 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
             break
     if not treatment_arms:
         logger.error(f"Could not find any treatment arms for paper {paper_id}!")
+        # Technically we won't have any rows if there are no treatment arms, but we
+        # don't want to throw either because we may be processing multiple papers.
+        # This means extracting from this paper has essentially failed.
+        return
 
     # TODO: Now we can query a bunch of specific information about each treatment arm and put in CDF
     # Such as percent male, arm age, regiment, arm dosage, etc.
@@ -159,5 +163,6 @@ def extract_data(file_path: str = None, url: str = None, picos_string: str = Non
     pdf_parser = PdfParser(file_path=file_path, url=url)
     paper = pdf_parser.parse()
     # TODO for PICOS
-    picos = Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(), study_designs=set())
+    outcomes = picos_string.split(";")
+    picos = Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(outcomes), study_designs=set())
     return extract_data_from_objects(paper, picos)
