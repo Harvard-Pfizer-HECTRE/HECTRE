@@ -1,13 +1,7 @@
-
-import logging
-import sys
-
 import click
 
 from .api import extract_data
 from .cdf.cdf import Cdf
-
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 '''

@@ -1,10 +1,4 @@
-
-import logging
-import sys
-
 from .api import invoke_model
-
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 '''

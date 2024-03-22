@@ -11,4 +11,4 @@ class Llama270bLlm(Llama2):
     Instantiate this class, then call "invoke(<prompt>)" to get responses.
     '''
 
-    MODEL_ID = "meta.llama2-70b-chat-v1"
+    MODEL_ID: str = "meta.llama2-70b-chat-v1"

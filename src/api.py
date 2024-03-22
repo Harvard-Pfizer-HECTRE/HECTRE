@@ -17,7 +17,7 @@ from .lib.hectre import Hectre
 logger = logging.getLogger(__name__)
 
 # Global HECTRE singleton
-hectre = None
+hectre = Hectre()
 
 def invoke_model(prompt):
     '''
@@ -30,10 +30,6 @@ def invoke_model(prompt):
     Returns:
         str: The output from the model.
     '''
-    global hectre
-    if hectre is None:
-        hectre = Hectre()
-
     return hectre.invoke_model(prompt)
 
 
@@ -143,10 +139,6 @@ def extract_data_from_objects(paper: Paper, picos: Picos) -> Cdf:
     Returns:
         No output. This function will take a while, so we will store the output elsewhere.
     '''
-    global hectre
-    if hectre is None:
-        hectre = Hectre()
-
     cdf = Cdf()
 
     extract_literature_data(paper, picos, cdf)

@@ -1,6 +1,7 @@
 
 import logging
 import json
+from typing import Optional
 
 from .bedrock import BedrockLlm
 
@@ -12,7 +13,11 @@ class Llama2(BedrockLlm):
     https://aws.amazon.com/bedrock/pricing/
     '''
 
-    MODEL_ID = None
+    MODEL_ID: Optional[str] = None
+
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    max_gen_len: Optional[float] = None
 
     def __init__(self):
         super().__init__()
@@ -109,4 +114,4 @@ class Llama2(BedrockLlm):
         generation_token_count = body["generation_token_count"]
         stop_reason = body["stop_reason"]
         logger.debug(f"Total tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
-        return completion
+        return completion.strip()

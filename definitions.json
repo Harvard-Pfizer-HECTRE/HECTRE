@@ -76,7 +76,7 @@
         "Field Label": "Study Acronyms",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Optional- study acronyms  - name that the study is represented as in the clinical community or literature",
+        "Field Description": "Name that the study is represented as in the clinical community or literature",
         "Sample Data": "\u201dIMPROVE\u201d\n\"ESTEEM1\" - aprimilast study for psoriasis NCT: NCT01194219"
     },
     {
