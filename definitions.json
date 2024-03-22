@@ -9,10 +9,10 @@
     },
     {
         "Field Name": "AU",
-        "Field Label": "Author",
+        "Field Label": "Authors",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "LI: Authors in semicolon separated list \nIR: NDA Sponsor",
+        "Field Description": "Authors in semicolon separated list",
         "Sample Data": "LI: Andrei, A. ; Smith, C\nIR: Elan Pharmaceutical Research Corporation\n\nAuthors are recorded as \nLASTNAME<SPACE CHARACTER>FIRSTINITIAL; LASTNAME<SPACE CHARACTER>FIRSTINITIAL; etc"
     },
     {
@@ -65,7 +65,7 @@
     },
     {
         "Field Name": "AB",
-        "Field Label": "Publication Abstract ",
+        "Field Label": "Publication Abstract",
         "Field Type": "Character",
         "Valid Entries": "",
         "Field Description": "IR: brief background of relevant clinical trials\nLI: manuscript abstract",
@@ -85,14 +85,14 @@
         "Field Type": "Character",
         "Valid Entries": "",
         "Field Description": "Harvard - clinicaltrials.gov ID (NCT) , if present",
-        "Sample Data": "NCT00111449\n"
+        "Sample Data": "NCT00111449"
     },
     {
         "Field Name": "STD.IND",
         "Field Label": "Study Indication",
         "Field Type": "Predefined",
         "Valid Entries": "AD\nT2D",
-        "Field Description": "\u00a0Study Indication Description which can include comorbidity as a semi colon separated list\nHarvard - Pfizer to suply based on selected abstracts\n",
+        "Field Description": "Study Indication Description which can include comorbidity as a semi colon separated list\nHarvard - Pfizer to suply based on selected abstracts\n",
         "Sample Data": " "
     },
     {
@@ -345,7 +345,7 @@
     },
     {
         "Field Name": "CHBSL.VAL",
-        "Field Label": "changeFromBaseline",
+        "Field Label": "Change From Baseline",
         "Field Type": "Numeric",
         "Valid Entries": "",
         "Field Description": "Change from Baseline absolute value or % change from baseline\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
@@ -401,18 +401,18 @@
     },
     {
         "Field Name": "RSP.VAL",
-        "Field Label": "Response",
+        "Field Label": "Response Value",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "\u00a0Actual Absolute value of the endpoint at the specified time (if relevant)\n\nFor Hazard Ratios, simply record a single record with the Hazard Ratio value for the test treatment (numerator of the HR), not the control treatment value.\n\nAlso for HRs, Corresponding Medians (eg OS for OS-HR) are recorded in 2 rows rather than 1. Therefore these corresponding rows could be used to record the required control and test numbers (although the test numbers would also be in the OS-HR row as an example) for the HR formulas. (- 2016-08-17 this has to be reviewed with Sima/Meg/Dana to check the specifics with an example)\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Specific value of the endpoint at the specified time (if applicable)",
         "Sample Data": "The absolute value of the endpoint or endpoint subscale\nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
         "Field Name": "RSP.VALU",
-        "Field Label": "responseUnits",
+        "Field Label": "Unit of Response Value",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "unit of response\n\nFor the case where Hazard Ratios are being reported for RSP.VAL, the RSP.VALU will be recorded as the associated ARM.NUM in a ratio form to indicate the CONTROL arm, normally recorded as denominator and as STANDARD = 0 and the TRT arm recorded as the associated ARM.NUM as the numerator of the ratio, i.e. \"1/0\".\n\nAdditionally for the case were Hazard Ratios are being reported for RSP.VAL, If the HR has been reported as control/test (0/1) instead of test/control (1/0) then the HR and 95% CI need to be transposed and databased as standard (1/0)\n",
+        "Field Description": "Either \"percent\" or the special units for the response value",
         "Sample Data": "Number of events\nIncidence Rate\nPercentage Incidence\nFor Hazard Ratio - record as \"1/0\" as an example. See note for Field Description for RSP.VALU for more details.\nIf not reported or missing, then do not record a value, i.e. leave the field as empty."
     },
     {
