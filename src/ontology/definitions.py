@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from typing import Any, Dict
 
 from ..consts import (
-    FIELD_DESCRIPTION_HEADER,
     READABLE_NAME_HEADER,
     SHORT_NAME_HEADER,
 )
@@ -38,27 +37,19 @@ class Definitions(BaseModel):
                 self.definitions_dict_by_readable_name[readable_name] = entry
 
 
-    def convert_to_readable_name(self, short_name: str) -> str:
+    def get_field_by_name(self, name: str) -> Dict[str, str]:
         '''
-        Convert a shortened name, like IS or PG, to readable names like Publication Issue or Publication Pages.
+        Get the dictionary for this field by its short name.
         '''
-        if short_name not in self.definitions_dict_by_short_name:
-            raise DefinitionsException(f"Short name of {short_name} not found in definitions!")
-        return self.definitions_dict_by_short_name[short_name][READABLE_NAME_HEADER]
+        if name not in self.definitions_dict_by_short_name:
+            raise DefinitionsException(f"Field name of {name} not found in definitions!")
+        return self.definitions_dict_by_short_name[name]
 
 
-    def convert_to_short_name(self, name: str) -> str:
+    def get_field_by_label(self, name: str) -> Dict[str, str]:
         '''
-        Convert a name, like Publication Issue or Publication Pages, to shortened names like IS or PG.
+        Get the dictionary for this field by its label (readable name).
         '''
         if name not in self.definitions_dict_by_readable_name:
-            raise DefinitionsException(f"Readable name of {name} not found in definitions!")
-        return self.definitions_dict_by_readable_name[name][SHORT_NAME_HEADER]
-    
-    def get_field_description(self, short_name: str) -> str:
-        '''
-        Get a description of this field.
-        '''
-        if short_name not in self.definitions_dict_by_short_name:
-            raise DefinitionsException(f"Short name of {short_name} not found in definitions!")
-        return self.definitions_dict_by_short_name[short_name][FIELD_DESCRIPTION_HEADER]
+            raise DefinitionsException(f"Field label of {name} not found in definitions!")
+        return self.definitions_dict_by_readable_name[name]

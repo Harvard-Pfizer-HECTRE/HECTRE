@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 # Put any constants used by the tool here.
 # Don't import any heavy dependencies, this file should be pure.
@@ -45,8 +45,14 @@ SKIPPED_LITERATURE_DATA_HEADERS: List[str] = [
     "DSID",
 ]
 
-SHORT_NAME_HEADER = "Field Name"
-READABLE_NAME_HEADER = "Field Label"
-FIELD_DESCRIPTION_HEADER = "Field Description"
+SHORT_NAME_HEADER: str = "Field Name"
+READABLE_NAME_HEADER: str = "Field Label"
 
-NO_DATA = "NO_DATA"
+# Prompting related constants
+NO_DATA: str = "NO_DATA"
+
+VAR_DICT: Dict[str, str] = {
+    "Page_Start_Indicator": "[Page Begins]\n",
+    "Page_End_Indicator": "\n[Page Ends]",
+    "No_Data": NO_DATA,
+}
