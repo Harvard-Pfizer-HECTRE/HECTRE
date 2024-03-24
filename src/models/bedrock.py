@@ -1,6 +1,7 @@
 
 import logging
 import sys
+from typing import Any, Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -15,10 +16,12 @@ class BedrockLlm(Llm):
     This is the base class for any API LLM that is using Amazon Bedrock.
     '''
 
-    MODEL_ID = None
-    CREDENTIAL_PROFILE = AWS_PROFILE
-    SERVICE = "bedrock-runtime"
-    REGION = AWS_REGION
+    MODEL_ID: Optional[str] = None
+    CREDENTIAL_PROFILE: str = AWS_PROFILE
+    SERVICE: str = "bedrock-runtime"
+    REGION: str = AWS_REGION
+
+    client: Any = None
 
     def __init__(self):
         super().__init__()
@@ -32,13 +35,13 @@ class BedrockLlm(Llm):
             logger.error('Error getting Amazon Bedrock client, have you put your credentials in "~/.aws/credentials" and "~/.aws/config" yet? Use profile name "capstone".')
             raise e
         
-    def get_invoke_body(self, prompt):
+    def get_invoke_body(self, prompt: str) -> Any:
         return prompt
     
-    def process_response(self, response):
+    def process_response(self, response: Any) -> str:
         return response
 
-    def invoke(self, prompt):
+    def invoke(self, prompt: str) -> str:
         '''
         Invokes the model, and returns a response.
 
@@ -53,12 +56,15 @@ class BedrockLlm(Llm):
 
             body = self.get_invoke_body(prompt)
             logger.debug(f"Invoking model with request size of {sys.getsizeof(body)} bytes")
+            logger.debug(f"BEGIN PROMPT\n{prompt}\nEND PROMPT")
 
             response = self.client.invoke_model(
                 modelId=self.MODEL_ID, body=body,
             )
 
-            return self.process_response(response)
+            processed_response = self.process_response(response)
+            logger.debug(f"BEGIN RESPONSE\n{processed_response}\nEND RESPONSE")
+            return processed_response
 
         except ClientError:
             logger.error("Couldn't invoke the model!")

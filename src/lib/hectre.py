@@ -1,9 +1,17 @@
+from datetime import datetime
 import logging
+import os
+import sys
 
 from pydantic import BaseModel
 from typing import Any, List, Optional
 
-from ..consts import NO_DATA
+from ..consts import (
+    GREEN,
+    NO_DATA,
+    RESET,
+    SILENCED_LOGGING_MODULES
+)
 from ..ontology.definitions import Definitions
 from ..pdf.page import Page
 from ..models.consts import NAME_TO_MODEL_CLASS
@@ -24,9 +32,11 @@ class Hectre(BaseModel):
     definitions: Any = None
     llm: Any = None
 
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.config = Config()
+        self.set_up_logging()
         try:
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
@@ -34,6 +44,38 @@ class Hectre(BaseModel):
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
+
+
+    def set_up_logging(self) -> None:
+        '''
+        Set up everything related to logging.
+        '''
+        rootLogger = logging.getLogger()
+
+        # Silence some specific modules
+        for log_name, log_obj in logging.Logger.manager.loggerDict.items():
+            if any([disabled_log_name in log_name for disabled_log_name in SILENCED_LOGGING_MODULES]):
+                log_obj.disabled = True
+
+        # Set up the file logger that prints to a log file
+        # Will create a different file for every time HECTRE is initialized
+        log_folder_path = os.path.join(os.path.dirname(__file__), "../../logs")
+        if not os.path.exists(log_folder_path):
+            os.makedirs(log_folder_path)
+        log_file_name = datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".log"
+        fileHandler = logging.FileHandler(log_folder_path + "/" + log_file_name, encoding='utf8')
+        fileHandler.setLevel(self.config["General"]["FileLoggingLevel"])
+        fileHandler.setFormatter(logging.Formatter("%(asctime)s [%(name)s] [%(levelname)-4.8s] %(message)s"))
+        rootLogger.addHandler(fileHandler)
+
+        # Set up the stdout logger that prints to screen
+        consoleHandler = logging.StreamHandler(sys.stdout)
+        consoleHandler.setLevel(self.config["General"]["ConsoleLoggingLevel"])
+        consoleHandler.setFormatter(logging.Formatter("%(message)s"))
+        rootLogger.addHandler(consoleHandler)
+
+        rootLogger.setLevel("DEBUG")
+
 
     def set_llm(self, llm_name: str) -> None:
         '''
@@ -105,7 +147,7 @@ I want to find the {readable_header.lower()}; here is a description of the thing
         output = self.invoke_model(prompt)
         if NO_DATA in output:
             return None
-        logger.info(f"Got answer: {output}")
+        logger.info(f"Got answer: {GREEN}{output}{RESET}")
         return output
     
 
@@ -128,7 +170,7 @@ I want to find all the treatment arms in the paper. Please respond with just the
         output = self.invoke_model(prompt)
         if NO_DATA in output:
             return []
-        logger.info(f"Got answer: {output}")
+        logger.info(f"Got answer: {GREEN}{output}{RESET}")
         ret = [arm.strip() for arm in output.split(';')]
         return list(set(ret))
     
@@ -152,7 +194,7 @@ I want to find all the nominal time values for treatments in the paper. Please r
         output = self.invoke_model(prompt)
         if NO_DATA in output:
             return []
-        logger.info(f"Got answer: {output}")
+        logger.info(f"Got answer: {GREEN}{output}{RESET}")
         ret = [val.strip() for val in output.split(';')]
         return list(set(ret))
     
@@ -178,5 +220,5 @@ I want to find the exact {readable_header.lower()} for {treatment_arm} at time {
         output = self.invoke_model(prompt)
         if NO_DATA in output:
             return None
-        logger.info(f"Got answer: {output}")
+        logger.info(f"Got answer: {GREEN}{output}{RESET}")
         return output
