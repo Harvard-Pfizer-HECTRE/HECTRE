@@ -20,7 +20,7 @@
         "Field Label": "Publication Title",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "LI: Abstract or Citation Title\nRI:\u00a0NDA # or EPAR #, Brand name (generic name)",
+        "Field Description": "Title of the clinical trial paper, usually found on page 1. Not to be confused with the journal name.",
         "Sample Data": "LI: Recent data on anti-inflammatory ,or analgesic treatment"
     },
     {
@@ -28,7 +28,7 @@
         "Field Label": "Publication Journal",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "LI: Journal Name if DS==LI or PST\nMay be missing for IR records",
+        "Field Description": "Journal Name",
         "Sample Data": "ARCH.MED.INTERNA"
     },
     {
@@ -36,7 +36,7 @@
         "Field Label": "Publication Year",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "4 digit numeric Year value\nLI: Publication Year (PY)\nRI: Approval Year\nPST: Presentation Year\nOTH: Posting Year for Web reporting, etc.",
+        "Field Description": "4 digit numeric Year value of the publication year",
         "Sample Data": "1984"
     },
     {
@@ -44,7 +44,7 @@
         "Field Label": "Publication Volume",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Journal Volume\nMay be missing for IR records",
+        "Field Description": "Journal Volume",
         "Sample Data": "36"
     },
     {
@@ -52,7 +52,7 @@
         "Field Label": "Publication Issue",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Journal Issue Number\nMay be missing for IR records",
+        "Field Description": "Journal Issue Number, not to be confused with the Publication Volume",
         "Sample Data": "2"
     },
     {
@@ -60,7 +60,7 @@
         "Field Label": "Publication Pages",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Hyphen delimited pages/location for Journal or PST/Abstract publication",
+        "Field Description": "Hyphen delimited pages of the paper in the journal",
         "Sample Data": "Page Ranges are separated by a tilde \"~\" character:\n245~256"
     },
     {
@@ -68,7 +68,7 @@
         "Field Label": "Publication Abstract",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "IR: brief background of relevant clinical trials\nLI: manuscript abstract",
+        "Field Description": "manuscript abstract",
         "Sample Data": "LI: Lonarid, an association of analgesic and antipyrethic drugs, was administered\u2026\nIR: Background: The sponsor has submitted two randomized, double-blind, multicenter, placebo controlled trials\u2026\n\nQuotation Marks (Single and Double) and Commas must be excluded from the abstract. While this implies an edit to most abstract texts, it's required for this format. "
     },
     {
@@ -76,7 +76,7 @@
         "Field Label": "Study Acronyms",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Name that the study is represented as in the clinical community or literature",
+        "Field Description": "Name that the study is represented in the clinical community or literature. Often some letters in all caps and may include numbers.",
         "Sample Data": "\u201dIMPROVE\u201d\n\"ESTEEM1\" - aprimilast study for psoriasis NCT: NCT01194219"
     },
     {
@@ -84,7 +84,7 @@
         "Field Label": "Clinical Trials Registry Identifier",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Harvard - clinicaltrials.gov ID (NCT) , if present",
+        "Field Description": "clinicaltrials.gov ID (NCT), if present",
         "Sample Data": "NCT00111449"
     },
     {
@@ -92,7 +92,7 @@
         "Field Label": "Study Indication",
         "Field Type": "Predefined",
         "Valid Entries": "AD\nT2D",
-        "Field Description": "Study Indication Description which can include comorbidity as a semi colon separated list\nHarvard - Pfizer to suply based on selected abstracts\n",
+        "Field Description": "Study Indication Description which can include comorbidity as a semi colon separated list",
         "Sample Data": " "
     },
     {
@@ -201,10 +201,10 @@
     },
     {
         "Field Name": "N.STUDY",
-        "Field Label": "Number Subjects Study",
+        "Field Label": "Number of Subjects in Study",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "N capturing the total # of subjects in the enrolled into the entire study and intended to be treated. Not tied to a specific treatment nor study arm.\nIf missing N.STUDY is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".\n",
+        "Field Description": "Total number of subjects enrolled in the entire study and intended to be treated. Not tied to a specific treatment nor study arm.",
         "Sample Data": "Total number of subjects in the study, Record as BLANK/EMPTY in an Excel File if value is not reported or is missing.\n\nN.STUDY 202\nN.STRATA 104\nN.ARM 26\nN.ARM.IMPUTE  4\nN.ARM.EVENT 2\nARM.IMPUTE OC"
     },
     {

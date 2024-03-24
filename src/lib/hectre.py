@@ -4,13 +4,14 @@ import os
 import sys
 
 from pydantic import BaseModel
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from ..consts import (
     GREEN,
     NO_DATA,
     RESET,
-    SILENCED_LOGGING_MODULES
+    SILENCED_LOGGING_MODULES,
+    VAR_DICT
 )
 from ..ontology.definitions import Definitions
 from ..pdf.page import Page
@@ -106,11 +107,13 @@ class Hectre(BaseModel):
     def build_new_prompt(self, question: str) -> str:
         '''
         Wrap the actual question to ask in some pre-made prompt engineering.
+        Don't call this by itself, this is used by some nested methods.
         '''
         prompt = self.config["Prompt Engineering"]["Prelude"] + "\n"
         prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
-        prompt += self.config["Prompt Engineering"]["Prefix"] + question + "\n"
+        prompt += question + "\n"
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+        prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
     
     
@@ -118,107 +121,128 @@ class Hectre(BaseModel):
         '''
         Update the prompt with the response and the new question.
         Use this for follow-up questions and multi-shot prompting.
+        Don't call this by itself, this is used by some nested methods.
         '''
         prompt += response + "\n"
         prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
-        prompt += self.config["Prompt Engineering"]["Prefix"] + question + "\n"
+        prompt += question + "\n"
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+        prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
     
 
-    def query_literature_data(self, header: str, page: Page, page_num: int) -> Optional[str]:
+    def format_prompt(self, prompt: str, header_dict: Dict[str, str] = {}, extra_dict: Dict[str, str] = {}) -> str:
+        '''
+        Take a prompt from the YAML, and format it with variables.
+        Don't call this by itself, this is used by some nested methods.
+        '''
+        format_dict = {}
+        # First add some constants from VAR_DICT
+        for key, val in VAR_DICT.items():
+            if "{" + key + "}" in prompt:
+                format_dict[key] = val
+        # Now add headers in definitions
+        for key, val in header_dict.items():
+            key = key.replace(" ", "_")
+            if "{" + key + "}" in prompt:
+                format_dict[key] = val
+        # Finally add whatever extra that was pased in
+        for key, val in extra_dict.items():
+            if "{" + key + "}" in prompt:
+                format_dict[key] = val
+        # Now do the string format
+        try:
+            prompt = prompt.format(**format_dict)
+        except KeyError as e:
+            logger.error(f"Could not format the prompt correctly: {prompt}")
+            raise e
+        return prompt
+    
+    
+    def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None) -> str:
+        '''
+        Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on text that corresponds to a header (header).
+        
+        Parameters:
+            name (str): the name of the field, e.g. "authors", "treatment arms"
+            prompt_name (str): the prompt to be used from the config.yaml file, e.g. "PromptLiterature", "PromptTreatmentArms"
+            text (str): the text to query from, could be table, page, multiple pages adjoined, etc.
+            text_context (str): the context of the text, e.g. "page 5", "table 2"
+            header (str): the related header in the CDF (if any)
+        '''
+        logger.info(f"Trying to fetch {name} from {text_context}...")
+        header_dict = self.definitions.get_field_by_name(header) if header else {}
+        extra_vars = extra_vars or {}
+        prompt_num = 1
+        prompt_key = f"{prompt_name}1"
+        prior_content = ""
+        response = ""
+        # Iterate on each prompt
+        while prompt_key in self.config["Prompt Engineering"]:
+            prompt = self.config["Prompt Engineering"][prompt_key]
+            extra_dict = {
+                "Text_Context": text_context,
+                "Text": text,
+            }
+            extra_dict.update(extra_vars)
+            prompt = self.format_prompt(prompt, header_dict=header_dict, extra_dict=extra_dict)
+                
+            # Now we have the prompt, now either create prompt from scratch or extend a previous conversation
+            if not prior_content:
+                prompt = self.build_new_prompt(prompt)
+            else:
+                prompt = self.update_prompt(prompt=prior_content, response=response, question=prompt)
+
+            response = self.invoke_model(prompt)
+            prior_content = prompt
+
+            prompt_num += 1
+            prompt_key = f"{prompt_name}{prompt_num}"
+
+        if not response or NO_DATA in response:
+            return ""
+        logger.info(f"Got answer: {GREEN}{response}{RESET}")
+        return response
+    
+
+    def query_literature_data(self, header: str, text: str, text_context: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get the literature data from the page using the LLM.
         '''
-        readable_header = self.definitions.convert_to_readable_name(header)
-        logger.info(f"Trying to fetch {readable_header} from page {page_num + 1}...")
-
-        question = f'''Below is page {page_num + 1} from a clinical trial paper:
-
-START OF PAGE
-{page.get_text()}
-END OF PAGE
-
-I want to find the {readable_header.lower()}; here is a description of the thing I want: "{self.definitions.get_field_description(header)}". Please respond with just the answer with no other words, or with "{NO_DATA}".
-'''
-
-        prompt = self.build_new_prompt(question)
-        
-        output = self.invoke_model(prompt)
-        if NO_DATA in output:
-            return None
-        logger.info(f"Got answer: {GREEN}{output}{RESET}")
-        return output
+        header_dict = self.definitions.get_field_by_name(header)
+        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptLiterature", text=text, text_context=text_context, header=header)
     
 
-    def query_treatment_arms(self, page: Page, page_num: int) -> List[str]:
+    def query_treatment_arms(self, text: str, text_context: str) -> List[str]:
         '''
         Get all the treatment arms, if they can be found on the page, as a list of strings.
         '''
-
-        logger.info(f"Trying to fetch treatment arms from page {page_num + 1}...")
-        question = f'''Below is page {page_num + 1} from a clinical trial paper:
-
-START OF PAGE
-{page.get_text()}
-END OF PAGE
-
-I want to find all the treatment arms in the paper. Please respond with just the answer, with each treatment arm separated by semi-colon with no other words, or with "{NO_DATA}" if they cannot be deduced from this page.
-'''
-        prompt = self.build_new_prompt(question)
-        
-        output = self.invoke_model(prompt)
-        if NO_DATA in output:
+        response = self.invoke_prompt_on_text(name="treatment arms", prompt_name="PromptTreatmentArms", text=text, text_context=text_context)
+        if not response:
             return []
-        logger.info(f"Got answer: {GREEN}{output}{RESET}")
-        ret = [arm.strip() for arm in output.split(';')]
+        ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
     
 
-    def query_time_values(self, page: Page, page_num: int) -> List[str]:
+    def query_time_values(self, text: str, text_context: str) -> List[str]:
         '''
         Get all the nominal time values, if they can be found on the page, as a list of strings.
         '''
-
-        logger.info(f"Trying to fetch nominal time values from page {page_num + 1}...")
-        question = f'''Below is page {page_num + 1} from a clinical trial paper:
-
-START OF PAGE
-{page.get_text()}
-END OF PAGE
-
-I want to find all the nominal time values for treatments in the paper. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{NO_DATA}" if they cannot be deduced from this page.
-'''
-        prompt = self.build_new_prompt(question)
-        
-        output = self.invoke_model(prompt)
-        if NO_DATA in output:
+        response = self.invoke_prompt_on_text(name="time values", prompt_name="PromptTimeValues", text=text, text_context=text_context)
+        if not response:
             return []
-        logger.info(f"Got answer: {GREEN}{output}{RESET}")
-        ret = [val.strip() for val in output.split(';')]
+        ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
     
 
-    def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, page: Page, page_num: int) -> Optional[str]:
+    def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get a specific clinical data from the page using the LLM.
         '''
-        readable_header = self.definitions.convert_to_readable_name(header)
-        logger.info(f"Trying to fetch {readable_header} at time {time_value} for arm {treatment_arm} for outcome {outcome} from page {page_num + 1}...")
-
-        question = f'''Below is page {page_num + 1} from a clinical trial paper:
-
-START OF PAGE
-{page.get_text()}
-END OF PAGE
-
-I want to find the exact {readable_header.lower()} for {treatment_arm} at time {time_value} for endpoint {outcome}; here is a description of the thing I want: "{self.definitions.get_field_description(header)}". Please respond with just the answer with no other words, or with "{NO_DATA}".
-'''
-
-        prompt = self.build_new_prompt(question)
-        
-        output = self.invoke_model(prompt)
-        if NO_DATA in output:
-            return None
-        logger.info(f"Got answer: {GREEN}{output}{RESET}")
-        return output
+        header_dict = self.definitions.get_field_by_name(header)
+        extra_vars = {
+            "Outcome": outcome,
+            "Treatment_Arm": treatment_arm,
+            "Time_Value": time_value,
+        }
+        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptClinical", text=text, text_context=text_context, header=header, extra_vars=extra_vars)
