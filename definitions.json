@@ -52,7 +52,7 @@
         "Field Label": "Publication Issue",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Journal Issue Number",
+        "Field Description": "Journal Issue Number, not to be confused with the Publication Volume",
         "Sample Data": "2"
     },
     {
@@ -76,7 +76,7 @@
         "Field Label": "Study Acronyms",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Name that the study is represented as in the clinical community or literature. Often some letters in all caps and may include numbers.",
+        "Field Description": "Name that the study is represented in the clinical community or literature. Often some letters in all caps and may include numbers.",
         "Sample Data": "\u201dIMPROVE\u201d\n\"ESTEEM1\" - aprimilast study for psoriasis NCT: NCT01194219"
     },
     {
@@ -84,7 +84,7 @@
         "Field Label": "Clinical Trials Registry Identifier",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Harvard - clinicaltrials.gov ID (NCT) , if present",
+        "Field Description": "clinicaltrials.gov ID (NCT), if present",
         "Sample Data": "NCT00111449"
     },
     {
@@ -92,7 +92,7 @@
         "Field Label": "Study Indication",
         "Field Type": "Predefined",
         "Valid Entries": "AD\nT2D",
-        "Field Description": "Study Indication Description which can include comorbidity as a semi colon separated list\nHarvard - Pfizer to suply based on selected abstracts\n",
+        "Field Description": "Study Indication Description which can include comorbidity as a semi colon separated list",
         "Sample Data": " "
     },
     {
@@ -201,10 +201,10 @@
     },
     {
         "Field Name": "N.STUDY",
-        "Field Label": "Number Subjects Study",
+        "Field Label": "Number of Subjects in Study",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "N capturing the total # of subjects in the enrolled into the entire study and intended to be treated. Not tied to a specific treatment nor study arm.\nIf missing N.STUDY is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".\n",
+        "Field Description": "Total number of subjects enrolled in the entire study and intended to be treated. Not tied to a specific treatment nor study arm.",
         "Sample Data": "Total number of subjects in the study, Record as BLANK/EMPTY in an Excel File if value is not reported or is missing.\n\nN.STUDY 202\nN.STRATA 104\nN.ARM 26\nN.ARM.IMPUTE  4\nN.ARM.EVENT 2\nARM.IMPUTE OC"
     },
     {

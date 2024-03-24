@@ -3,15 +3,14 @@ import logging
 from .cdf.cdf import Cdf
 from .consts import (
     LITERATURE_DATA_HEADERS,
-    SKIPPED_LITERATURE_DATA_HEADERS,
+    PER_TREATMENT_ARM_HEADERS,
+    PER_TREATMENT_ARM_PER_TIME_HEADERS,
 )
 from .pdf.page import Page
 from .pdf.paper import Paper
 from. input_parsers.pdf_parser import PdfParser
-from .picos.picos import (
-    Picos,
-    Population,
-)
+from. input_parsers.picos_parser import PicosParser
+from .picos.picos import Picos
 from .lib.hectre import Hectre
 
 logger = logging.getLogger(__name__)
@@ -42,14 +41,7 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     paper_id = paper.get_id()
 
     # First, loop over every literature data header we need in CDF
-    for col, header in enumerate(LITERATURE_DATA_HEADERS):
-        if header in SKIPPED_LITERATURE_DATA_HEADERS:
-            continue
-
-        # Some headers we skip, for one reason or another
-        if header is None:
-            continue
-
+    for header in LITERATURE_DATA_HEADERS:
         # Get the total number of pages, and try to extract that data from each page until we get something.
         num_pages = paper.get_num_pages()
         for page_num in range(num_pages):
@@ -90,9 +82,6 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
         # This means extracting from this paper has essentially failed.
         return
 
-    # TODO: Now we can query a bunch of specific information about each treatment arm and put in CDF
-    # Such as percent male, arm age, regiment, arm dosage, etc.
-
     # Get all the nominal time values
     time_values = []
     for page_num in range(num_pages):
@@ -104,15 +93,34 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     if not time_values:
         logger.error(f"Could not find any time values for paper {paper_id}!")
 
-    # TODO: Now we can query some additional information about each time value
+    # Loop through every treatment arm
+    for treatment_arm in treatment_arms:
+        # First let's populate some information pertaining to each treatment arm
+        for header in PER_TREATMENT_ARM_HEADERS:
+            # Get the total number of pages, and try to extract that data from each page until we get something.
+            num_pages = paper.get_num_pages()
+            for page_num in range(num_pages):
+                page: Page = paper.get_page(page_num)
 
-    # Loop through every outcome
-    for outcome in outcomes:
-        # Loop through every treatment arm
-        for treatment_arm in treatment_arms:
-            # Loop through every time value
-            for time_value in time_values:
+                # TODO: Add function in hectre to query per-treatment arm data
+                # TODO: Then add the result to CDF
 
+        # Loop through every time value
+        for time_value in time_values:
+            # Let's populate some information per-treatment-arm and per-time
+            for header in PER_TREATMENT_ARM_PER_TIME_HEADERS:
+                # Get the total number of pages, and try to extract that data from each page until we get something.
+                num_pages = paper.get_num_pages()
+                for page_num in range(num_pages):
+                    page: Page = paper.get_page(page_num)
+
+                    # TODO: Add function in hectre to query per-treatment arm and per-time data
+                    # TODO: Then add the result to CDF
+
+            # Loop through every outcome
+            for outcome in outcomes:
+
+                # TODO: Work on this, and iterate through all clinical data headers
                 # Hardcode one specific clinical data value we want to find, as a test
                 # Start on page 2, as a test, to make results better
                 # Ideally we want to query all of the clinical data columns here.
@@ -154,7 +162,6 @@ def extract_data(file_path: str = None, url: str = None, picos_string: str = Non
     '''
     pdf_parser = PdfParser(file_path=file_path, url=url)
     paper = pdf_parser.parse()
-    # TODO for PICOS
-    outcomes = picos_string.split(";")
-    picos = Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(outcomes), study_designs=set())
+    picos_parser = PicosParser(picos_string=picos_string)
+    picos = picos_parser.parse()
     return extract_data_from_objects(paper, picos)

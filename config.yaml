@@ -54,7 +54,7 @@ Prompt Engineering:
   PromptLiterature1: |-
     Below is page {Page_Num} from a clinical trial paper:
     {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
-    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Tell me just the answer with no other words, or with "{No_Data}" if it cannot be found. What's the answer?
+    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Please respond with just the answer, without any additional words, or with "{No_Data}" if it cannot be found.
   #PromptLiterature2: |-
   #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
@@ -62,7 +62,7 @@ Prompt Engineering:
   PromptTreatmentArms1: |-
     Below is page {Page_Num} from a clinical trial paper:
     {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
-    I want to find all the treatment arms in the paper. Please respond with just the answer, with each treatment arm separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page. What's the answer?
+    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no additional words. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
 
   # Prompts for extracting the nominal time values
   PromptTimeValues1: |-
