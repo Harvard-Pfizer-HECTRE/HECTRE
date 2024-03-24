@@ -52,26 +52,26 @@ Prompt Engineering:
 
   # Prompts for extracting literature data
   PromptLiterature1: |-
-    Below is page {Page_Num} from a clinical trial paper:
-    {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
     I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Please respond with just the answer, without any additional words, or with "{No_Data}" if it cannot be found.
   #PromptLiterature2: |-
   #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
   # Prompts for extracting treatment arms
   PromptTreatmentArms1: |-
-    Below is page {Page_Num} from a clinical trial paper:
-    {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
     Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no additional words. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
 
   # Prompts for extracting the nominal time values
   PromptTimeValues1: |-
-    Below is page {Page_Num} from a clinical trial paper:
-    {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
     I want to find all the nominal time values that the clinical trial measures at in the paper. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page. What's the answer?
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
-    Below is page {Page_Num} from a clinical trial paper:
-    {Page_Start_Indicator}{Page_Text}{Page_End_Indicator}
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
     I want to find the exact {Field_Label} for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a description of the thing I want: "{Field_Description}". This data typically only appears in a table. Please respond with just the answer with no other words, or with "{No_Data}". What's the answer?

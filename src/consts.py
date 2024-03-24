@@ -110,7 +110,7 @@ READABLE_NAME_HEADER: str = "Field Label"
 NO_DATA: str = "NO_DATA"
 
 VAR_DICT: Dict[str, str] = {
-    "Page_Start_Indicator": "[Page Begins]\n",
-    "Page_End_Indicator": "\n[Page Ends]",
+    "Text_Start_Indicator": "[Clinical Trial Text Begins]\n",
+    "Text_End_Indicator": "\n[Clinical Trial Text Ends]",
     "No_Data": NO_DATA,
 }

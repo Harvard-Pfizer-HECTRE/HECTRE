@@ -46,8 +46,10 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
         num_pages = paper.get_num_pages()
         for page_num in range(num_pages):
             page: Page = paper.get_page(page_num)
+            text = page.get_text()
+            text_context = f"page {page_num + 1}"
 
-            result = hectre.query_literature_data(header=header, page=page, page_num=page_num)
+            result = hectre.query_literature_data(header=header, text=text, text_context=text_context)
             # If we got a non-null result, it means we found it.
             if result:
                 # Set the value in the CDF
@@ -71,7 +73,10 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     treatment_arms = []
     for page_num in range(num_pages):
         page: Page = paper.get_page(page_num)
-        treatment_arms = hectre.query_treatment_arms(page=page, page_num=page_num)
+        text = page.get_text()
+        text_context = f"page {page_num + 1}"
+
+        treatment_arms = hectre.query_treatment_arms(text=text, text_context=text_context)
         # If we got a non-empty result, it means we found it.
         if treatment_arms:
             break
@@ -86,7 +91,10 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
     time_values = []
     for page_num in range(num_pages):
         page: Page = paper.get_page(page_num)
-        time_values = hectre.query_time_values(page=page, page_num=page_num)
+        text = page.get_text()
+        text_context = f"page {page_num + 1}"
+
+        time_values = hectre.query_time_values(text=text, text_context=text_context)
         # If we got a non-empty result, it means we found it.
         if time_values:
             break
@@ -126,8 +134,10 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
                 # Ideally we want to query all of the clinical data columns here.
                 for page_num in range(1, num_pages):
                     page: Page = paper.get_page(page_num)
+                    text = page.get_text()
+                    text_context = f"page {page_num + 1}"
 
-                    result = hectre.query_clinical_data(header="RSP.VAL", outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, page=page, page_num=page_num)
+                    result = hectre.query_clinical_data(header="RSP.VAL", outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
                     # If we got a non-null result, it means we found it.
                     if result:
                         # Set the value in the CDF

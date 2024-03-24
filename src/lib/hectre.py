@@ -159,18 +159,18 @@ class Hectre(BaseModel):
         return prompt
     
     
-    def invoke_prompt_on_page(self, name: str, prompt_name: str, page: Page, page_num: int, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None) -> str:
+    def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None) -> str:
         '''
-        Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on page (page) that corresponds to a header (header).
+        Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on text that corresponds to a header (header).
         
         Parameters:
             name (str): the name of the field, e.g. "authors", "treatment arms"
             prompt_name (str): the prompt to be used from the config.yaml file, e.g. "PromptLiterature", "PromptTreatmentArms"
-            page
-            page_num
+            text (str): the text to query from, could be table, page, multiple pages adjoined, etc.
+            text_context (str): the context of the text, e.g. "page 5", "table 2"
             header (str): the related header in the CDF (if any)
         '''
-        logger.info(f"Trying to fetch {name} from page {page_num + 1}...")
+        logger.info(f"Trying to fetch {name} from {text_context}...")
         header_dict = self.definitions.get_field_by_name(header) if header else {}
         extra_vars = extra_vars or {}
         prompt_num = 1
@@ -181,8 +181,8 @@ class Hectre(BaseModel):
         while prompt_key in self.config["Prompt Engineering"]:
             prompt = self.config["Prompt Engineering"][prompt_key]
             extra_dict = {
-                "Page_Num": f"{page_num + 1}",
-                "Page_Text": page.get_text(),
+                "Text_Context": text_context,
+                "Text": text,
             }
             extra_dict.update(extra_vars)
             prompt = self.format_prompt(prompt, header_dict=header_dict, extra_dict=extra_dict)
@@ -205,33 +205,37 @@ class Hectre(BaseModel):
         return response
     
 
-    def query_literature_data(self, header: str, page: Page, page_num: int) -> Optional[str]:
+    def query_literature_data(self, header: str, text: str, text_context: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get the literature data from the page using the LLM.
         '''
         header_dict = self.definitions.get_field_by_name(header)
-        return self.invoke_prompt_on_page(name=header_dict['Field Label'], prompt_name="PromptLiterature", page=page, page_num=page_num, header=header)
+        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptLiterature", text=text, text_context=text_context, header=header)
     
 
-    def query_treatment_arms(self, page: Page, page_num: int) -> List[str]:
+    def query_treatment_arms(self, text: str, text_context: str) -> List[str]:
         '''
         Get all the treatment arms, if they can be found on the page, as a list of strings.
         '''
-        response = self.invoke_prompt_on_page(name="treatment arms", prompt_name="PromptTreatmentArms", page=page, page_num=page_num)
+        response = self.invoke_prompt_on_text(name="treatment arms", prompt_name="PromptTreatmentArms", text=text, text_context=text_context)
+        if not response:
+            return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
     
 
-    def query_time_values(self, page: Page, page_num: int) -> List[str]:
+    def query_time_values(self, text: str, text_context: str) -> List[str]:
         '''
         Get all the nominal time values, if they can be found on the page, as a list of strings.
         '''
-        response = self.invoke_prompt_on_page(name="time values", prompt_name="PromptTimeValues", page=page, page_num=page_num)
+        response = self.invoke_prompt_on_text(name="time values", prompt_name="PromptTimeValues", text=text, text_context=text_context)
+        if not response:
+            return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
     
 
-    def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, page: Page, page_num: int) -> Optional[str]:
+    def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get a specific clinical data from the page using the LLM.
         '''
@@ -241,4 +245,4 @@ class Hectre(BaseModel):
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
         }
-        return self.invoke_prompt_on_page(name=header_dict['Field Label'], prompt_name="PromptClinical", page=page, page_num=page_num, header=header, extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptClinical", text=text, text_context=text_context, header=header, extra_vars=extra_vars)
