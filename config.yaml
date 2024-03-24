@@ -32,7 +32,7 @@ LLM:
 Prompt Engineering:
   # This section includes the text used in the prompts that feed in the model.
 
-  # Some variables are supported in some prompts, such as Page_Text, Page_Num, Field_Label, Field_Description, etc.
+  # Some variables are supported in some prompts, such as Text, Text_Context (e.g. page 1), Field_Label (e.g. Authors), Field_Description, etc.
   # Variables need to be enclosed in {}. Check out the existing prompts for examples.
 
   # You can also do follow-up prompts, ex:
