@@ -1,31 +1,53 @@
-from pydantic import BaseModel
-from typing import Optional
+"""A model for working with CDF data.
+"""
+from pydantic import BaseModel, create_model, Field
+from typing import List, Dict, TypeVar, Generic, Type
+import json
+from pathlib import Path
 
-class Cdf(BaseModel):
-    def __init__(self):
-        # TODO
-        # Each paper will have its own structure and row indexing.
-        # Ex: paper ID 1 will have its own unique rows 1, 2, and 3;
-        # and paper ID 2 will have its own unique rows 1, 2, and 3...
-        # Then we consolidate them at the end.
-        pass
+# Relative to parent directory of this file.
+FIELD_DEFINITIONS_FILENAME = "field_definitions.json"
 
-    def set_value_for_paper_id(self, paper_id: int, col: int, value: str) -> None:
-        '''
-        We need to set some general values for a paper that will carry over to every
-        single row. Ex: author names.
-        '''
-        if "," in value:
-            # To be interchangeable with CSV, we cannot have commas in values.
-            raise ValueError(f"Cannot accept commas in CDF cell. Column {col}, value: {value}")
-        # TODO
+FieldsBaseType = TypeVar('FieldsBaseType')
+ClinicalType = TypeVar('ClinicalType')
+LiteratureType = TypeVar('LiteratureType')
 
-    def set_value(self, paper_id: int, row: int, col: int, value: str) -> None:
-        if "," in value:
-            # To be interchangeable with CSV, we cannot have commas in values.
-            raise ValueError(f"Cannot accept commas in CDF cell. Row {row}, column {col}, value: {value}")
-        # TODO
+# Create fields dynamically for LiteratureData and Result models based on definitions.json
+# Create method of CDF to create dataframe from LiteratureData and Results
 
-    def get_value(self, paper_id: int, row: int, col: int) -> Optional[str]:
-        # TODO
-        pass
+class FieldsBaseModel(BaseModel):
+    pass
+
+def create_fields_model(name: str, fields: List[Dict]):
+    model_fields = {item['Field Name']: (str, '') for item in fields}
+    model = create_model(
+        name,
+        __base__ = FieldsBaseModel,
+        **model_fields
+    )
+    return model
+
+def get_field_defs() -> List[Dict]:
+    working_directory = Path(__file__).absolute().parent
+    path = working_directory / FIELD_DEFINITIONS_FILENAME
+    with path.open() as f:
+        fields = json.loads(f.read())
+    return fields
+
+class CDF(BaseModel):
+    field_defs: List[Dict]
+    literature_field_defs: List[Dict]
+    clinical_field_defs: List[Dict]
+    literature_data: Dict
+    clinical_data: List[Dict]
+
+    @classmethod
+    def create(cls):
+        field_defs = get_field_defs()
+        return cls(
+            field_defs = field_defs,
+            literature_field_defs = [field for field in field_defs if field['Category'] == 'Literature'],
+            clinical_field_defs = [field for field in field_defs if field['Category'] == 'Clinical'],
+            literature_data = {},
+            clinical_data = []
+        )
