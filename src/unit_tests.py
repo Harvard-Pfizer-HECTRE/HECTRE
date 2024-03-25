@@ -13,10 +13,23 @@ def cli():
 
 @cli.command()
 def cdf():
-    # This will fail, since a lot of parts are not implemented yet
     cdf: CDF = CDF.create()
     click.echo(cdf.model_dump_json())
 
+@cli.command()
+def lit_data():
+    ld: LiteratureData = LiteratureData()
+    click.echo(ld.model_dump())
+
+@cli.command()
+def getfielddefs():
+    get_field_defs()
+    #click.echo(ld.model_dump())
+
+@cli.command()
+def test_alias():
+    d = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    print(d)
 
 if __name__ == '__main__':
     cli()

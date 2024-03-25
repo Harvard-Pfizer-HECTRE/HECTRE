@@ -1,7 +1,8 @@
 """A model for working with CDF data.
 """
-from pydantic import BaseModel, create_model, Field
-from typing import List, Dict, TypeVar, Generic, Type
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Dict, TypeVar, Generic, Type, ForwardRef, Optional
+from enum import Enum
 import json
 from pathlib import Path
 
@@ -15,17 +16,81 @@ LiteratureType = TypeVar('LiteratureType')
 # Create fields dynamically for LiteratureData and Result models based on definitions.json
 # Create method of CDF to create dataframe from LiteratureData and Results
 
-class FieldsBaseModel(BaseModel):
-    pass
-
-def create_fields_model(name: str, fields: List[Dict]):
-    model_fields = {item['Field Name']: (str, '') for item in fields}
-    model = create_model(
-        name,
-        __base__ = FieldsBaseModel,
-        **model_fields
+class CDFData(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=lambda field_name: field_name.replace('_', '.')
     )
-    return model
+
+class LiteratureData(CDFData):
+    DSID: str = Field(default='')
+    AU: str = Field(default='')
+    TI: str = Field(default='')
+    JR: str = Field(default='')
+    PY: str = Field(default='')
+    VL: str = Field(default='')
+    IS: str = Field(default='')
+    PG: str = Field(default='')
+    AB: str = Field(default='')
+    SA: str = Field(default='')
+    REGID: str = Field(default='')
+    STD_IND: str = Field(default='')
+    STD_DESIGN: str = Field(default='')
+    STD_GEO_LOCATION: str = Field(default='')
+    STD_PHASE: str = Field(default='')
+
+
+class ClinicalData(CDFData):
+    ARM_NUM: str = Field(default='')
+    ARM_BLIND: str = Field(default='')
+    ARM_RANDFLG: str = Field(default='')
+    ARM_TRT: str = Field(default='')
+    ARM_TRTCLASS: str = Field(default='')
+    ARM_DOSE: str = Field(default='')
+    ARM_DOSEU: str = Field(default='')
+    ARM_ROUTE: str = Field(default='')
+    ARM_REGIMEN: str = Field(default='')
+    ARM_FORMULATION: str = Field(default='')
+    N_STUDY: str = Field(default='')
+    N_ARM: str = Field(default='')
+    N_ARM_STATANAL: str = Field(default='')
+    N_ARM_EVENT_SUBJ: str = Field(default='')
+    STATANAL_POP: str = Field(default='')
+    STATANAL_METHOD: str = Field(default='')
+    STATANAL_IMP_METHOD: str = Field(default='')
+    ARM_TIME1: str = Field(default='')
+    ARM_TIME1U: str = Field(default='')
+    ENDPOINT: str = Field(default='')
+    BSL_STAT: str = Field(default='')
+    BSL_VAL: str = Field(default='')
+    BSL_VALU: str = Field(default='')
+    BSL_VAR: str = Field(default='')
+    BSL_VARU: str = Field(default='')
+    BSL_LCI: str = Field(default='')
+    BSL_UCI: str = Field(default='')
+    CHBSL_STAT: str = Field(default='')
+    CHBSL_VAL: str = Field(default='')
+    CHBSL_VALU: str = Field(default='')
+    CHBSL_VAR: str = Field(default='')
+    CHBSL_VARU: str = Field(default='')
+    CHBSL_LCI: str = Field(default='')
+    CHBSL_UCI: str = Field(default='')
+    RSP_STAT: str = Field(default='')
+    RSP_VAL: str = Field(default='')
+    RSP_VALU: str = Field(default='')
+    RSP_VAR: str = Field(default='')
+    RSP_VARU: str = Field(default='')
+    RSP_LCI: str = Field(default='')
+    RSP_UCI: str = Field(default='')
+    PCHBSL_STAT: str = Field(default='')
+    PCHBSL_VAL: str = Field(default='')
+    PCHBSL_VAR: str = Field(default='')
+    PCHBSL_VARU: str = Field(default='')
+    PCHBSL_LCI: str = Field(default='')
+    PCHBSL_UCI: str = Field(default='')
+    ARM_PCT_MALE: str = Field(default='')
+    ARM_AGE: str = Field(default='')
+    ARM_AGEU: str = Field(default='')
+
 
 def get_field_defs() -> List[Dict]:
     working_directory = Path(__file__).absolute().parent
@@ -34,20 +99,11 @@ def get_field_defs() -> List[Dict]:
         fields = json.loads(f.read())
     return fields
 
+def print_field_defs():
+    field_defs = get_field_defs()
+    for field in field_defs:
+        fname = field['Field Name'].replace('.', '_')
+        print(f'{fname}: str = Field(default='')')
 class CDF(BaseModel):
-    field_defs: List[Dict]
-    literature_field_defs: List[Dict]
-    clinical_field_defs: List[Dict]
-    literature_data: Dict
-    clinical_data: List[Dict]
-
-    @classmethod
-    def create(cls):
-        field_defs = get_field_defs()
-        return cls(
-            field_defs = field_defs,
-            literature_field_defs = [field for field in field_defs if field['Category'] == 'Literature'],
-            clinical_field_defs = [field for field in field_defs if field['Category'] == 'Clinical'],
-            literature_data = {},
-            clinical_data = []
-        )
+    literature_data: Optional[LiteratureData] = None
+    clinical_data: List[ClinicalData]
