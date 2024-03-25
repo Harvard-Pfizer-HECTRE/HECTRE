@@ -1,9 +1,9 @@
 """A model for working with CDF data.
 """
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Dict, TypeVar, Generic, Type, ForwardRef, Optional
-from enum import Enum
+from typing import List, Dict, TypeVar, Optional
 import json
+import pandas as pd
 from pathlib import Path
 
 # Relative to parent directory of this file.
@@ -106,4 +106,18 @@ def print_field_defs():
         print(f'{fname}: str = Field(default='')')
 class CDF(BaseModel):
     literature_data: Optional[LiteratureData] = None
-    clinical_data: List[ClinicalData]
+    clinical_data: Optional[List[ClinicalData]] = []
+
+    def set_literature_data(self, values: Dict) -> None:
+        self.literature_data = LiteratureData(**values)
+    
+    def add_clinical_data(self, values: Dict) -> None:
+        self.clinical_data.append(ClinicalData(**values))
+    
+    def to_df(self) -> pd.DataFrame:
+        rows = []
+        for result in self.clinical_data:
+            row = self.literature_data.model_dump() | result.model_dump()
+            rows.append(row)
+        df = pd.DataFrame(rows)
+        return df
