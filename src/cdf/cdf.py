@@ -91,19 +91,6 @@ class ClinicalData(CDFData):
     ARM_AGE: str = Field(default='')
     ARM_AGEU: str = Field(default='')
 
-
-def get_field_defs() -> List[Dict]:
-    working_directory = Path(__file__).absolute().parent
-    path = working_directory / FIELD_DEFINITIONS_FILENAME
-    with path.open() as f:
-        fields = json.loads(f.read())
-    return fields
-
-def print_field_defs():
-    field_defs = get_field_defs()
-    for field in field_defs:
-        fname = field['Field Name'].replace('.', '_')
-        print(f'{fname}: str = Field(default='')')
 class CDF(BaseModel):
     literature_data: Optional[LiteratureData] = None
     clinical_data: Optional[List[ClinicalData]] = []
