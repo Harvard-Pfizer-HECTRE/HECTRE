@@ -1,6 +1,6 @@
 import logging
 
-from .cdf.cdf import Cdf
+from .cdf.cdf import CDF
 from .consts import (
     CLINICAL_DATA_HEADERS,
     LITERATURE_DATA_HEADERS,
@@ -33,13 +33,13 @@ def invoke_model(prompt):
     return hectre.invoke_model(prompt)
 
 
-def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
+def extract_literature_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     '''
     Extract all the literature data such as authors, title, etc.
     Modifies the CDF in-place.
     '''
 
-    paper_id = paper.get_id()
+    lit_data = {}
 
     # First, loop over every literature data header we need in CDF
     for header in LITERATURE_DATA_HEADERS:
@@ -53,17 +53,18 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
             result = hectre.query_literature_data(header=header, text=text, text_context=text_context)
             # If we got a non-null result, it means we found it.
             if result:
-                # Set the value in the CDF
-                # TODO
+                # Set the value in lit_data dict
+                lit_data[header] = result
                 break
+    cdf.set_literature_data(lit_data)
+    
 
 
-def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
+def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     '''
     Extract all the clinical data.
     Modifies the CDF in-place.
     '''
-    # TODO
 
     paper_id = paper.get_id()
     num_pages = paper.get_num_pages()
@@ -140,11 +141,12 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
                         # TODO: We need to somehow conglomerate the data
                         if result:
                             # Set the value in the CDF
-                            # TODO
+                            logger.info("RESULT")
+                            logger.info(result)
                             break
 
 
-def extract_data_from_objects(paper: Paper, picos: Picos) -> Cdf:
+def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
     '''
     Main entry function that initiates the extraction process.
     TODO: Finish this function up
@@ -156,16 +158,16 @@ def extract_data_from_objects(paper: Paper, picos: Picos) -> Cdf:
     Returns:
         No output. This function will take a while, so we will store the output elsewhere.
     '''
-    cdf = Cdf()
+    cdf = CDF()
 
     extract_literature_data(paper, picos, cdf)
-
+    # TODO remove
     extract_clinical_data(paper, picos, cdf)
 
     return cdf
 
 
-def extract_data(file_path: str = None, url: str = None, picos_string: str = None) -> Cdf:
+def extract_data(file_path: str = None, url: str = None, picos_string: str = None) -> CDF:
     '''
     Overarching function to turn a file path and a PICOS string into a CDF object.
     '''
