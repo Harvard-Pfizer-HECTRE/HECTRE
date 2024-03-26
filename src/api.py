@@ -1,8 +1,9 @@
 import logging
 
 from math import floor
+import json
 
-from .cdf.cdf import CDF
+from .cdf.cdf import CDF, ClinicalData
 from .consts import (
     CLINICAL_DATA_HEADERS,
     LITERATURE_DATA_HEADERS,
@@ -130,6 +131,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                     # TODO: Then add the result to CDF
 
             # Loop through every outcome
+            arm_data = {'ARM.TIME1': time_value, 'ARM.TRT': treatment_arm}
             for outcome in outcomes:
 
                 # Query all clinical data all at once?
@@ -147,7 +149,8 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                             # TODO: We need to somehow conglomerate the data
                             if result:
                                 # Set the value in the CDF
-                                cdf.add_clinical_data(result)
+                                cd = ClinicalData.from_json(result, json.dumps(arm_data))
+                                cdf.clinical_data.append(cd)
                                 logger.info(result)
                                 break
                         else:
