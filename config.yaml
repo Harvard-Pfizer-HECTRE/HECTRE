@@ -26,7 +26,7 @@ LLM:
   # Still need high nucleus sampling (top_p) to get medical terms
   NucleusSampling: 0.9
   # Maximum tokens in the output
-  MaxGenerationLength: 200
+  MaxGenerationLength: 1000
 
 
 Prompt Engineering:
@@ -74,4 +74,6 @@ Prompt Engineering:
   PromptClinical1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find the exact {Field_Label} for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a description of the thing I want: "{Field_Description}". This data typically only appears in a table. Please respond with just the answer with no other words, or with "{No_Data}". What's the answer?
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in:
+    {Template}
+    Please respond with just the JSON with no other words.

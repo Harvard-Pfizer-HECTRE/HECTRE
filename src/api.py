@@ -2,6 +2,7 @@ import logging
 
 from .cdf.cdf import Cdf
 from .consts import (
+    CLINICAL_DATA_HEADERS,
     LITERATURE_DATA_HEADERS,
     PER_TREATMENT_ARM_HEADERS,
     PER_TREATMENT_ARM_PER_TIME_HEADERS,
@@ -128,21 +129,19 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
             # Loop through every outcome
             for outcome in outcomes:
 
-                # TODO: Work on this, and iterate through all clinical data headers
-                # Hardcode one specific clinical data value we want to find, as a test
-                # Start on page 2, as a test, to make results better
-                # Ideally we want to query all of the clinical data columns here.
-                for page_num in range(1, num_pages):
+                # Query all clinical data all at once?
+                for page_num in range(num_pages):
                     page: Page = paper.get_page(page_num)
-                    text = page.get_text()
-                    text_context = f"page {page_num + 1}"
+                    if page.get_has_table():
+                        text = page.get_text()
+                        text_context = f"page {page_num + 1}"
 
-                    result = hectre.query_clinical_data(header="RSP.VAL", outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
-                    # If we got a non-null result, it means we found it.
-                    if result:
-                        # Set the value in the CDF
-                        # TODO
-                        break
+                        result = hectre.query_clinical_data(name="clinical data", headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
+                        # TODO: We need to somehow conglomerate the data
+                        if result:
+                            # Set the value in the CDF
+                            # TODO
+                            break
 
 
 def extract_data_from_objects(paper: Paper, picos: Picos) -> Cdf:

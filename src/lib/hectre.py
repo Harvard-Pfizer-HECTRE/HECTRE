@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 
+import json
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -89,8 +90,8 @@ class Hectre(BaseModel):
             self.llm = NAME_TO_MODEL_CLASS[llm_name]()
         except KeyError:
             raise HectreException(f"{llm_name} is not a supported LLM type!")
-        
-        
+
+
     def invoke_model(self, prompt: str) -> str:
         '''
         Call the LLM to get an output.
@@ -102,8 +103,8 @@ class Hectre(BaseModel):
             str
         '''
         return self.llm.invoke(prompt)
-    
-    
+
+
     def build_new_prompt(self, question: str) -> str:
         '''
         Wrap the actual question to ask in some pre-made prompt engineering.
@@ -115,8 +116,8 @@ class Hectre(BaseModel):
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
         prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
-    
-    
+
+
     def update_prompt(self, prompt: str, response: str, question: str):
         '''
         Update the prompt with the response and the new question.
@@ -129,7 +130,7 @@ class Hectre(BaseModel):
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
         prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
-    
+
 
     def format_prompt(self, prompt: str, header_dict: Dict[str, str] = {}, extra_dict: Dict[str, str] = {}) -> str:
         '''
@@ -157,12 +158,12 @@ class Hectre(BaseModel):
             logger.error(f"Could not format the prompt correctly: {prompt}")
             raise e
         return prompt
-    
-    
+
+
     def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None) -> str:
         '''
         Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on text that corresponds to a header (header).
-        
+
         Parameters:
             name (str): the name of the field, e.g. "authors", "treatment arms"
             prompt_name (str): the prompt to be used from the config.yaml file, e.g. "PromptLiterature", "PromptTreatmentArms"
@@ -186,7 +187,7 @@ class Hectre(BaseModel):
             }
             extra_dict.update(extra_vars)
             prompt = self.format_prompt(prompt, header_dict=header_dict, extra_dict=extra_dict)
-                
+
             # Now we have the prompt, now either create prompt from scratch or extend a previous conversation
             if not prior_content:
                 prompt = self.build_new_prompt(prompt)
@@ -203,7 +204,7 @@ class Hectre(BaseModel):
             return ""
         logger.info(f"Got answer: {GREEN}{response}{RESET}")
         return response
-    
+
 
     def query_literature_data(self, header: str, text: str, text_context: str) -> Optional[str]:
         '''
@@ -211,7 +212,7 @@ class Hectre(BaseModel):
         '''
         header_dict = self.definitions.get_field_by_name(header)
         return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptLiterature", text=text, text_context=text_context, header=header)
-    
+
 
     def query_treatment_arms(self, text: str, text_context: str) -> List[str]:
         '''
@@ -222,7 +223,7 @@ class Hectre(BaseModel):
             return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
-    
+
 
     def query_time_values(self, text: str, text_context: str) -> List[str]:
         '''
@@ -233,16 +234,26 @@ class Hectre(BaseModel):
             return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
-    
 
-    def query_clinical_data(self, header: str, outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> Optional[str]:
+
+    def query_clinical_data(self, name: str, headers: List[str], outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> Optional[str]:
         '''
-        Construct the prompt(s) to get a specific clinical data from the page using the LLM.
+        Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
+        name = headers
+        clinical_json = "{\n"
+        for header in headers:
+            header_dict = self.definitions.get_field_by_name(header)
+            header_name = header_dict['Field Name']
+            header_label = header_dict['Field Label']
+            header_description = header_dict['Field Description']
+            clinical_json += f'  "{header_name}":  # Fill in: {header_label}. {header_description}\n'
+        clinical_json += "}"
         header_dict = self.definitions.get_field_by_name(header)
         extra_vars = {
             "Outcome": outcome,
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
+            "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptClinical", text=text, text_context=text_context, header=header, extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, header=header, extra_vars=extra_vars)
