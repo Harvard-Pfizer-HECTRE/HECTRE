@@ -1,9 +1,10 @@
-import configparser
 import os
+
+import yaml
 
 class Config:
     '''
-    This class instantiates an object with the INI configuration file, and is used
+    This class instantiates an object with the config.YAML configuration file, and is used
     by HECTRE to set certain parameters, such as what LLM to use, and LLM parameters.
     '''
 
@@ -18,14 +19,13 @@ class Config:
 
     def get_config(self):
         '''
-        Parses the configuration in the config.ini and store it in this object, as well as return it.
+        Parses the configuration in the config.yaml and store it in this object, as well as return it.
 
         Returns:
             Dict[str, Dict]
         '''
         if not getattr(self, "config", None):
-            config_path = os.path.join(os.path.dirname(__file__), "../../config.ini")
-            config = configparser.ConfigParser()
-            config.read(config_path)
-            self.config = config
+            config_path = os.path.join(os.path.dirname(__file__), "../../config.yaml")
+            with open(config_path) as f:
+                self.config = yaml.safe_load(f)
         return self.config

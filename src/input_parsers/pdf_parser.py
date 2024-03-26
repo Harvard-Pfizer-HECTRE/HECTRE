@@ -30,13 +30,13 @@ class PdfParser(Parser):
 
         if file_path is None and url is None:
             raise PdfParserException("Either file path or URL must be provided to PDF parser!")
-        
+
         if url is not None:
             raise NotImplementedError()
-        
+
         self.file_path = file_path
-        
-    
+
+
     def parse(self) -> Paper:
         pages: List[Page] = []
         tables: List[Table] = []
@@ -57,25 +57,26 @@ class PdfParser(Parser):
                     page: Page = Page(number=page_index, text=pageObj.extract_text())
                     pages.append(page)
 
-                    # try extracting any tables (EDIT: tabula is too bad, let's try something else)
-                    '''
                     try:
                         tabula_tables = tabula.read_pdf(self.file_path, pages=page_index + 1, silent=True)
-
                         for i in range(0, len(tabula_tables)):
                             logger.info(f"Reading table {table_number} on page {page_index + 1}")
                             # get rid of indexes
                             table_no_ind = tabula_tables[i].set_index(tabula_tables[i].columns[0])
+                            # Exclude empty tables
+                            if table_no_ind.empty:
+                                continue
+                            # Otherwise mark this page as having table(s)
+                            page.set_has_table(True)
                             # create Table object and append to list
-                            table: Table = Table(number=table_number, page_number=page_index, text=table_no_ind.to_string())
-                            tables.append(table)
-                            table_number += 1
+                            #table: Table = Table(number=table_number, page_number=page_index, text=table_no_ind.to_string())
+                            #tables.append(table)
+                            #table_number += 1
                     except UnicodeDecodeError:
                         pass
-                    '''
+
         # if there is no file with this name - throw an error
         except FileNotFoundError:
             raise PdfParserException(f"File not found: {self.file_path}")
-        
+
         return Paper(pages=pages, tables=tables)
-    

@@ -1,0 +1,79 @@
+# This file is editable by non-programmers, to set how the tool will run.
+# Lines beginning with # are ignored.
+
+---
+
+General:
+  # This section has some general configurations
+
+  # The minimum logging messages that will appear on screen
+  # Choose from: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  # "Console" will log to the screen, and "File" will log to a .log file.
+  ConsoleLoggingLevel: INFO
+  FileLoggingLevel: DEBUG
+
+
+LLM:
+  # This section has to do with the LLM model used and the parameters set to the model.
+
+  # The LLM to actually use
+  # Available choices are:
+  #     Llama213b
+  #     Llama270b
+  LLMName: Llama270b
+  # Lower temperature to make the models not go crazy
+  Temperature: 0
+  # Still need high nucleus sampling (top_p) to get medical terms
+  NucleusSampling: 0.9
+  # Maximum tokens in the output
+  MaxGenerationLength: 1000
+
+
+Prompt Engineering:
+  # This section includes the text used in the prompts that feed in the model.
+
+  # Some variables are supported in some prompts, such as Text, Text_Context (e.g. page 1), Field_Label (e.g. Authors), Field_Description, etc.
+  # Variables need to be enclosed in {}. Check out the existing prompts for examples.
+
+  # You can also do follow-up prompts, ex:
+  # PromptLiterature1 = What's the answer to X?
+  # PromptLiterature2 = Now make sure X is in the right units.
+  # PromptLiterature3 = Just isolate the number in the answer.
+  # You can have just one prompt, or multiple follow-up prompts.
+
+  # This is included only at the very start of the prompt chain (need to encase in quotes to not interpret the square brackets as a list)
+  Prelude: '[You are extracting data from clinical trial papers. Only give short, precise, and accurate answers that can be found in the provided text.]'
+  # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
+  Prefix: ''
+  # This is the role of the LLM
+  HectreRole: Answer
+  # This is the role of the user
+  UserRole: Question
+
+  # Prompts for extracting literature data
+  PromptLiterature1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Please respond with just the answer, without any additional words, or with "{No_Data}" if it cannot be found.
+  #PromptLiterature2: |-
+  #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
+
+  # Prompts for extracting treatment arms
+  PromptTreatmentArms1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no additional words. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
+
+  # Prompts for extracting the nominal time values
+  PromptTimeValues1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    I want to find all the nominal time values that the clinical trial measures at in the paper. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page. What's the answer?
+
+  # Prompts for extracting clinical data information
+  PromptClinical1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in:
+    {Template}
+    Please respond with just the JSON with no other words.

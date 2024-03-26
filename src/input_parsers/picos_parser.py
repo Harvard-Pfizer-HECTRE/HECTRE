@@ -1,6 +1,9 @@
 
 from .parser import Parser
-from ..picos.picos import Picos
+from ..picos.picos import (
+    Picos,
+    Population,
+)
 
 class PicosParser(Parser):
     '''
@@ -10,5 +13,6 @@ class PicosParser(Parser):
     picos_string: str
 
     def parse(self) -> Picos:
-        # TODO
-        raise NotImplementedError()
+        # Simple parser that expects the picos string to just be semi-colon-separated outcomes
+        outcomes = self.picos_string.split(";")
+        return Picos(population=Population(disease="", sub_populations=set()), interventions=set(), comparators=set(), outcomes=set(outcomes), study_designs=set())

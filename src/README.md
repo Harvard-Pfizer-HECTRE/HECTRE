@@ -9,7 +9,7 @@ Currently you can just try to invoke the Llama 2 model and see the results.
 4. You can run the `local_test.py` with `python -m src.local_test` (or just `python -m local_test` if you are already in the /src directory).
 5. Feel free to change `local_test.py` to test out other prompts, or change `config.ini` to change model configurations.
 
-You can also try out doing an extraction on a local PDF file (this will fail for now):
+You can also try out doing an extraction on a local PDF file:
 1. Do the setup steps 1-3 from above.
 2. Run `local_test_parse_file_path.py` and pass in the PDF file path and the outcome string as two positional arguments.
 
