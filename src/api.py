@@ -1,5 +1,7 @@
 import logging
 
+from math import floor
+
 from .cdf.cdf import CDF
 from .consts import (
     CLINICAL_DATA_HEADERS,
@@ -135,15 +137,22 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                     page: Page = paper.get_page(page_num)
                     if page.get_has_table():
                         text = page.get_text()
-                        text_context = f"page {page_num + 1}"
-
-                        result = hectre.query_clinical_data(name="clinical data", headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
-                        # TODO: We need to somehow conglomerate the data
-                        if result:
-                            # Set the value in the CDF
-                            logger.info("RESULT")
-                            logger.info(result)
-                            break
+                        text_len = len(text)
+                        half_text_len = floor(text_len / 2)
+                        first_half_text = text[0:half_text_len]
+                        second_half_text = text[half_text_len:text_len]
+                        for half_page in [first_half_text,second_half_text]:
+                            text_context = f"page {page_num + 1}"
+                            result = hectre.query_clinical_data(name="clinical data", headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=half_page, text_context=text_context)
+                            # TODO: We need to somehow conglomerate the data
+                            if result:
+                                # Set the value in the CDF
+                                cdf.add_clinical_data(result)
+                                logger.info(result)
+                                break
+                        else:
+                            continue
+                        break
 
 
 def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:

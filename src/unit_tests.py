@@ -71,5 +71,16 @@ def test_cdf_to_csv():
     df = cdf.to_df()
     df.to_csv("test_output.csv")
 
+@cli.command()
+def test_from_json():
+    lit = LiteratureData(**{"AU": "JFN:MM"})
+    c1 = '{"BSL.LCI": 8.7}'
+    c2 = '{"CHBSL.VARU": "SD"}'
+    clin = ClinicalData.from_json(c1, c2)
+    cdf = CDF()
+    cdf.literature_data = lit
+    cdf.clinical_data = [clin]
+    print(cdf)
+
 if __name__ == '__main__':
     cli()

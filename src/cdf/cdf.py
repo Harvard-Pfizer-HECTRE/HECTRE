@@ -1,7 +1,8 @@
 """A model for working with CDF data.
 """
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Dict, TypeVar, Optional
+from __future__ import annotations
+from pydantic import BaseModel, Field, ConfigDict, Json
+from typing import List, Dict, Mapping, TypeVar, Optional, Union
 import json
 import pandas as pd
 from pathlib import Path
@@ -18,8 +19,20 @@ LiteratureType = TypeVar('LiteratureType')
 
 class CDFData(BaseModel):
     model_config = ConfigDict(
-        alias_generator=lambda field_name: field_name.replace('_', '.')
+        alias_generator=lambda field_name: field_name.replace('_', '.'),
+        coerce_numbers_to_str=True
     )
+    @classmethod
+    def from_dict(cls, values: Dict) -> CDFData:
+        return cls(**values)
+
+    @classmethod
+    def from_json(cls, *json_strs: Json[Dict]) -> CDFData:
+        values = {}
+        for json_str in json_strs:
+            deserialized = json.loads(json_str)
+            values = values | deserialized
+        return cls.from_dict(values)
 
 class LiteratureData(CDFData):
     DSID: str = Field(default='')
@@ -98,8 +111,8 @@ class CDF(BaseModel):
     def set_literature_data(self, values: Dict) -> None:
         self.literature_data = LiteratureData(**values)
     
-    def add_clinical_data(self, values: Dict) -> None:
-        self.clinical_data.append(ClinicalData(**values))
+    def add_clinical_data(self, values: Json[Dict]) -> None:
+        self.clinical_data.append(ClinicalData.model_validate_json(values))
     
     def to_df(self) -> pd.DataFrame:
         rows = []

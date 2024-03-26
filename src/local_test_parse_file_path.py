@@ -19,7 +19,7 @@ def extract_with_file_path(file_path: str, picos_string: str):
     cdf: CDF = extract_data(file_path=file_path, picos_string=picos_string)
     cdf_df = cdf.to_df()
     #click.echo(cdf_df)
-    cdf_df.to_csv("test_output.csv")
+    cdf_df.to_csv("CDF.csv")
 
 
 if __name__ == '__main__':
