@@ -151,7 +151,6 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                                 # Set the value in the CDF
                                 cd = ClinicalData.from_json(result, json.dumps(arm_data))
                                 cdf.clinical_data.append(cd)
-                                logger.info(result)
                                 break
                         else:
                             continue
