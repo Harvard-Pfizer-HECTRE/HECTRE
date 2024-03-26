@@ -132,11 +132,11 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: Cdf) -> None:
                 # Query all clinical data all at once?
                 for page_num in range(num_pages):
                     page: Page = paper.get_page(page_num)
-                    if page.has_table():
+                    if page.get_has_table():
                         text = page.get_text()
                         text_context = f"page {page_num + 1}"
 
-                        result = hectre.query_clinical_data(name="clinical data", headers=CLNICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
+                        result = hectre.query_clinical_data(name="clinical data", headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
                         # TODO: We need to somehow conglomerate the data
                         if result:
                             # Set the value in the CDF

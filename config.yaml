@@ -26,7 +26,7 @@ LLM:
   # Still need high nucleus sampling (top_p) to get medical terms
   NucleusSampling: 0.9
   # Maximum tokens in the output
-  MaxGenerationLength: 200
+  MaxGenerationLength: 1000
 
 
 Prompt Engineering:

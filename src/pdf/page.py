@@ -27,7 +27,7 @@ class Page(BaseModel):
         '''
         self.has_table = has_table
 
-    def has_table(self) -> bool:
+    def get_has_table(self) -> bool:
         '''
         Returns whether this page has a table.
         '''
