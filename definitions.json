@@ -124,7 +124,7 @@
         "Field Label": "Treatment Arm Identifier",
         "Field Type": "Numeric",
         "Valid Entries": "0,1,2,3,4,\u2026",
-        "Field Description": "Character Active Treatment ARM identifier: 1, 2, 3, 4, etc\nThis permits the data associated with the ARM to be grouped together.\n\nConvention is that ARM=0 is always PLACEBO or ACTIVE CONTROL\n\nIf ARM.CONTROL is not blank (i.e. recorded as  Active or Placebo) it's expected that there will be an ARM recorded with ARM.NUM=0 to identify the control arm. \n\nIf there are multiple control arms in a study, the placebo arm, if any is always recorded as ARM.NUM=0, active controls will be recorded with ARM.NUM=1 etc. \n\nStudy Treatments will be recorded with  ARM.NUM incremented from ARM.NUM for active or placebo control records.\n\nIf ARMs are combined or Pooled, then no ARM.NUM will be recorded.",
+        "Field Description": "Treatment ARM identifier: 1, 2, 3, 4, etc\n",
         "Sample Data": "0, 1, 2, 3, 4, etc"
     },
     {
