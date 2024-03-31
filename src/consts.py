@@ -20,7 +20,24 @@ GREY: str = "\x1b[38;20m"
 SILENCED_LOGGING_MODULES: List[str] = [
     "botocore",
     "urllib3",
+    "pdfminer",
 ]
+
+
+# Extraction related constants
+UNICODE_REPLACE_MAP: Dict[str, str] = {
+    "/C1": ".",
+    "/C0": "-",
+    "ﬁ": "fi",
+    "ﬂ": "fl",
+    "–": "-",
+    "CAF .9E": "CAFÉ",
+    "L €ubeck": "Lübeck",
+    "’": "'",
+    " €ı": "ï",
+    "": "",
+}
+
 
 # LLM related constants
 LITERATURE_DATA_HEADERS: List[str] = [

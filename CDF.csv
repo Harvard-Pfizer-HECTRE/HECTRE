@@ -1,0 +1,244 @@
+,DSID,AU,TI,JR,PY,VL,IS,PG,AB,SA,REGID,STD_IND,STD_DESIGN,STD_GEO_LOCATION,STD_PHASE,ARM_NUM,ARM_BLIND,ARM_RANDFLG,ARM_TRT,ARM_TRTCLASS,ARM_DOSE,ARM_DOSEU,ARM_ROUTE,ARM_REGIMEN,ARM_FORMULATION,N_STUDY,N_ARM,N_ARM_STATANAL,N_ARM_EVENT_SUBJ,STATANAL_POP,STATANAL_METHOD,STATANAL_IMP_METHOD,ARM_TIME1,ARM_TIME1U,ENDPOINT,BSL_STAT,BSL_VAL,BSL_VALU,BSL_VAR,BSL_VARU,BSL_LCI,BSL_UCI,CHBSL_STAT,CHBSL_VAL,CHBSL_VALU,CHBSL_VAR,CHBSL_VARU,CHBSL_LCI,CHBSL_UCI,RSP_STAT,RSP_VAL,RSP_VALU,RSP_VAR,RSP_VARU,RSP_LCI,RSP_UCI,PCHBSL_STAT,PCHBSL_VAL,PCHBSL_VAR,PCHBSL_VARU,PCHBSL_LCI,PCHBSL_UCI,ARM_PCT_MALE,ARM_AGE,ARM_AGEU
+0,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg weekly (qw) + medium-potency TCS,,,,,,,,,,108,,,,1 year,,,median,31.7,%,2.9,SD,28.5,35.1,mean,13.1,%,1.9,SE,10.3,16.1,median,50.0,%,5.6,SD,44.4,55.7,mean,23.1,1.9,SE,19.3,27.1,,,
+1,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg weekly (qw) + medium-potency TCS,,,,,,,,,,108,,,,16 weeks,,,median,31.7,%,2.9,SD,28.5,35.1,mean,13.1,%,1.9,SE,10.3,16.1,median,50.0,%,5.6,SD,44.4,55.7,mean,23.1,1.9,SE,19.3,27.1,,,
+2,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg weekly (qw) + medium-potency TCS,,,,,,,,,,108,,,,beyond 1 year,,,median,31.7,%,2.9,SD,28.5,35.1,mean,13.1,%,1.9,SE,10.3,16.1,mean,50.0,%,5.6,SE,44.8,55.3,mean,23.1,2.2,SE,19.2,27.1,,,
+3,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Placebo + medium-potency TCS.,,,,,,,,,,108,,,,1 year,,,median,31.7,%,2.9,SD,28.8,34.6,mean,12.9,%,1.5,SE,10.9,14.9,mean,50.0,%,5.6,SE,44.8,55.2,mean,43.2,4.7,SE,38.8,47.6,,,
+4,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Placebo + medium-potency TCS.,,,,,,,,,,108,,,,16 weeks,,,median,31.7,%,2.9,SD,28.8,34.6,mean,12.9,%,1.5,SE,10.9,14.9,median,50.0,%,5.6,SD,44.4,55.6,mean,43.2,1.6,SE,40.6,45.8,,,
+5,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Placebo + medium-potency TCS.,,,,,,,,,,108,,,,beyond 1 year,,,median,31.7,%,2.9,SD,28.5,35.1,mean,13.1,%,1.9,SE,10.3,16.1,median,50.0,%,5.5,SD,44.5,55.7,mean,23.1,1.9,SE,19.3,27.1,,,
+6,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg every 2 weeks (q2w) + medium-potency TCS,,,,,,,,,,108,,,,1 year,,,median,31.7,%,2.9,SD,28.8,34.6,mean,13.1,%,1.9,SE,10.3,15.9,mean,50.0,%,5.6,SE,44.8,55.2,mean,44.4,4.8,SE,40.1,48.7,,,
+7,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg every 2 weeks (q2w) + medium-potency TCS,,,,,,,,,,108,,,,16 weeks,,,median,31.7,%,2.9,SD,28.5,35.1,mean,-11.4,%,1.5,SE,-13.4,-9.5,mean,50.0,%,5.6,SE,44.8,55.3,mean,-32.1,1.6,SE,-34.8,-29.4,,,
+8,,M. de Bruin-Weller; D. Thac/C223i; C.H. Smith; K. Reich; M.J. Cork; A. Radin; Q. Zhang; B. Akinlade; A. Gadkari; L. Eckert; T. Hultsch; Z. Chen; G. Pirozzi; N.M.H. Graham; B. Shumel,"""Dupilumab with concomitant topical corticosteroid treatment in adults with atopic dermatitis with an inadequate response or intolerance to ciclosporin A or when this treatment is medically inadvisable: a placebo-controlled, randomized phase III clinical trial (LIBERTY AD CAFÉ)""",British Journal of Dermatology,2018,178.,"178, 5.",1083-1101,"The abstract of the clinical trial is:
+Background Atopic dermatitis is a chronic inflammatory skin disease that may require
+systemic therapy. Ciclosporin A (CsA) is a widely used, potent immunosuppressant
+but it is not effective in all patients with atopic dermatitis, and side-effects limit its
+use. Dupilumab, a fully human anti-interleukin 4 receptor-alpha monoclonal anti-
+body, inhibits signaling of IL-4 and IL-13, key drivers of Type 2/Th2-mediated
+inflammation, and is approved in the U.S.A. and the European Union for the treat-ment of inadequately-controlled moderate-to-severe atopic dermatitis in adults.
+Objectives To evaluate efficacy and safety of dupilumab with concomitant topical
+corticosteroids (TCS) in adults with atopic dermatitis with inadequate response
+to/intolerance of CsA, or for whom CsA treatment was medically inadvisable.
+Methods In this 16-week, double-blind, randomized, placebo-controlled, phase III
+trial, patients were randomized 1 : 1 : 1 to subcutaneous dupilumab 300 mg
+weekly (qw) or every 2 weeks (q2w) or placebo. All received concomitant med-
+ium-potency TCS from Week -2 through Week 16; dosage could be tapered if
+lesions cleared, or stopped for adverse reactions to TCS.
+Results In total, 390 patients were screened, 325 were randomized, and 318 com-
+pleted the trial. Treatment groups had similar baseline characteristics. Significantly
+more patients in the dupilumab qw +TCS and q2w +TCS groups achieved ≥75%
+improvement from baseline in the Eczema Area and Severity Index at Week 16 vs.
+the placebo +TCS group (primary end point) (59 .1% and 62 .6% vs. 29 .6%,
+respectively; P<0.001 vs. placebo +TCS, both doses). Other clinical outcomes
+and atopic dermatitis symptoms were significantly improved in the dupilumab qw
+group compared with the placebo group. Adverse events were similar across
+groups.
+Conclusions Dupilumab with concomitant TCS was effective and safe in adults
+with atopic dermatitis with inadequate response to/intolerance of CsA, or for
+whom CsA treatment was medically inadvisable.",LIBERTY AD CAFÉ,NCT02755649,Atopic dermatitis,"Double-blind, randomized, placebo-controlled, phase III trial",GLOBAL,Phase 3,,,,Dupilumab 300 mg every 2 weeks (q2w) + medium-potency TCS,,,,,,,,,,108,,,,beyond 1 year,,,median,31.7,%,2.9,SD,28.5,35.1,mean,13.1,%,1.9,SE,10.3,16.1,mean,50.0,%,5.6,SE,44.8,55.3,mean,23.1,2.2,SE,19.2,27.1,,,

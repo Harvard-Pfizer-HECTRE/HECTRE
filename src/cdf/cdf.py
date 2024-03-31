@@ -31,7 +31,7 @@ class CDFData(BaseModel):
         values = {}
         for json_str in json_strs:
             deserialized = json.loads(json_str)
-            values = values | deserialized
+            values.update(deserialized)
         return cls.from_dict(values)
 
 class LiteratureData(CDFData):
@@ -117,7 +117,8 @@ class CDF(BaseModel):
     def to_df(self) -> pd.DataFrame:
         rows = []
         for result in self.clinical_data:
-            row = self.literature_data.model_dump() | result.model_dump()
+            row = self.literature_data.model_dump()
+            row.update(result.model_dump())
             rows.append(row)
         df = pd.DataFrame(rows)
         return df
