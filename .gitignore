@@ -169,3 +169,6 @@ hectre-be-app/app.db
 
 # Log files
 logs/
+
+# Output files
+output/

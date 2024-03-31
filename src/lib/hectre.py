@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 
-import json
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -246,7 +245,7 @@ class Hectre(BaseModel):
         '''
         Get all the per-treatment arm data.
         '''
-        name = "per-arm data"
+        name = f"per-arm data for {treatment_arm}"
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
         extra_vars = {
             "Treatment_Arm": treatment_arm,
@@ -270,7 +269,7 @@ class Hectre(BaseModel):
         '''
         Get all the per-treatment arm and per-time data.
         '''
-        name = "per-arm and per-time data"
+        name = f"per-arm and per-time data for arm {treatment_arm} and time {time_value}"
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
         extra_vars = {
             "Treatment_Arm": treatment_arm,

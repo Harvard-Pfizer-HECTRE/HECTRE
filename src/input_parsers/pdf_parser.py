@@ -49,7 +49,6 @@ class PdfParser(Parser):
                     num_pages = pdf_file_reader.numPages
                     logger.info(f"Found {num_pages} pages in the PDF")
 
-                    table_number = 1
                     # extract the text and tables of every page
                     for page_index in range(num_pages):
                         logger.info(f"Reading page {page_index + 1}")

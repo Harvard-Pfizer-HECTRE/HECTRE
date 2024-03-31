@@ -1,11 +1,13 @@
 """A model for working with CDF data.
 """
 from __future__ import annotations
+
+import os
+
 from pydantic import BaseModel, Field, ConfigDict, Json
-from typing import List, Dict, Mapping, TypeVar, Optional, Union
+from typing import List, Dict, TypeVar, Optional
 import json
 import pandas as pd
-from pathlib import Path
 
 # Relative to parent directory of this file.
 FIELD_DEFINITIONS_FILENAME = "field_definitions.json"
@@ -122,3 +124,15 @@ class CDF(BaseModel):
             rows.append(row)
         df = pd.DataFrame(rows)
         return df
+    
+
+    def save_to_string(self) -> str:
+        # Return the full CSV string
+        return self.to_df().to_csv()
+    
+
+    def save_to_file(self, name, path=os.path.join(os.path.dirname(__file__), "../../output")) -> None:
+        # Save the CDF contents to file
+        if not os.path.exists(path):
+            os.makedirs(path)
+        self.to_df().to_csv(os.path.join(path, f"{name}.csv"))
