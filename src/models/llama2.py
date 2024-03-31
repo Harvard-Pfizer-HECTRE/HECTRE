@@ -48,13 +48,13 @@ class Llama2(BedrockLlm):
         '''
         # Set custom paramaters if you want to, prior to calling invoke()
         if temperature is not None:
-            logger.info(f"Set model temperature={temperature}")
+            logger.debug(f"Set model temperature={temperature}")
             self.temperature = temperature
         if top_p is not None:
-            logger.info(f"Set model top_p={top_p}")
+            logger.debug(f"Set model top_p={top_p}")
             self.top_p = top_p
         if max_gen_len is not None:
-            logger.info(f"Set model max_gen_len={max_gen_len}")
+            logger.debug(f"Set model max_gen_len={max_gen_len}")
             self.max_gen_len = max_gen_len
 
     def set_parameters_from_config(self, config):

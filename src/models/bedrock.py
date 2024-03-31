@@ -26,7 +26,7 @@ class BedrockLlm(Llm):
     def __init__(self):
         super().__init__()
 
-        logger.info(f"Using model ID {self.MODEL_ID}")
+        logger.debug(f"Using model ID {self.MODEL_ID}")
 
         try:
             bedrock_session = boto3.Session(profile_name=self.CREDENTIAL_PROFILE)

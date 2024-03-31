@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 
-import json
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -113,8 +112,8 @@ class Hectre(BaseModel):
         prompt = self.config["Prompt Engineering"]["Prelude"] + "\n"
         prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
         prompt += question + "\n"
+        prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
-        prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
 
 
@@ -124,11 +123,13 @@ class Hectre(BaseModel):
         Use this for follow-up questions and multi-shot prompting.
         Don't call this by itself, this is used by some nested methods.
         '''
+        prompt = prompt[:-(len(self.config["Prompt Engineering"]["Prefix"]) + len(self.config["Prompt Engineering"]["HectreRole"]) + 4)]
+        prompt += "\n" + self.config["Prompt Engineering"]["HectreRole"] + ": "
         prompt += response + "\n"
         prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
         prompt += question + "\n"
+        prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
-        prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
 
 
@@ -160,7 +161,7 @@ class Hectre(BaseModel):
         return prompt
 
 
-    def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None) -> str:
+    def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None, keep_no_data_response: bool = False) -> str:
         '''
         Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on text that corresponds to a header (header).
 
@@ -200,10 +201,25 @@ class Hectre(BaseModel):
             prompt_num += 1
             prompt_key = f"{prompt_name}{prompt_num}"
 
-        if not response or NO_DATA in response:
+        if not keep_no_data_response and (not response or NO_DATA in response):
             return ""
         logger.info(f"Got answer: {GREEN}{response}{RESET}")
         return response
+    
+
+    def get_json_template_string_for_data_extraction(self, headers: List[str]) -> str:
+        '''
+        Construct the JSON template to feed into the LLM, with all the headers it should output.
+        '''
+        clinical_json = "{\n"
+        for header in headers:
+            header_dict = self.definitions.get_field_by_name(header)
+            header_name = header_dict['Field Name']
+            header_label = header_dict['Field Label']
+            header_description = header_dict['Field Description']
+            clinical_json += f'  "{header_name}": "",  # Fill in value {header_label}. Description: {header_description}\n'
+        clinical_json += "}"
+        return clinical_json
 
 
     def query_literature_data(self, header: str, text: str, text_context: str) -> Optional[str]:
@@ -225,6 +241,19 @@ class Hectre(BaseModel):
         return list(set(ret))
 
 
+    def query_per_treatment_arm_data(self, text: str, headers: List[str], treatment_arm: str, text_context: str) -> str:
+        '''
+        Get all the per-treatment arm data.
+        '''
+        name = f"per-arm data for {treatment_arm}"
+        clinical_json = self.get_json_template_string_for_data_extraction(headers)
+        extra_vars = {
+            "Treatment_Arm": treatment_arm,
+            "Template": clinical_json,
+        }
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArm", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+
+
     def query_time_values(self, text: str, text_context: str) -> List[str]:
         '''
         Get all the nominal time values, if they can be found on the page, as a list of strings.
@@ -234,26 +263,32 @@ class Hectre(BaseModel):
             return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
+    
+
+    def query_per_treatment_arm_per_time_data(self, text: str, headers: List[str], treatment_arm: str, time_value: str, text_context: str) -> str:
+        '''
+        Get all the per-treatment arm and per-time data.
+        '''
+        name = f"per-arm and per-time data for arm {treatment_arm} and time {time_value}"
+        clinical_json = self.get_json_template_string_for_data_extraction(headers)
+        extra_vars = {
+            "Treatment_Arm": treatment_arm,
+            "Time_Value": time_value,
+            "Template": clinical_json,
+        }
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArmPerTime", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
 
 
-    def query_clinical_data(self, name: str, headers: List[str], outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> Optional[str]:
+    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
-        name = headers
-        clinical_json = "{\n"
-        for header in headers:
-            header_dict = self.definitions.get_field_by_name(header)
-            header_name = header_dict['Field Name']
-            header_label = header_dict['Field Label']
-            header_description = header_dict['Field Description']
-            clinical_json += f'  "{header_name}":  # Fill in: {header_label}. {header_description}\n'
-        clinical_json += "}"
-        header_dict = self.definitions.get_field_by_name(header)
+        name = f"clinical data for {outcome} with {treatment_arm} for {time_value}"
+        clinical_json = self.get_json_template_string_for_data_extraction(headers)
         extra_vars = {
             "Outcome": outcome,
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, header=header, extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)

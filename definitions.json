@@ -20,7 +20,7 @@
         "Field Label": "Publication Title",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Title of the clinical trial paper, usually found on page 1. Not to be confused with the journal name.",
+        "Field Description": "Title of the clinical trial paper. Not to be confused with the journal name. It can be a long title with punctuations.",
         "Sample Data": "LI: Recent data on anti-inflammatory ,or analgesic treatment"
     },
     {
@@ -68,7 +68,7 @@
         "Field Label": "Publication Abstract",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "manuscript abstract",
+        "Field Description": "abstract of the clinical trial",
         "Sample Data": "LI: Lonarid, an association of analgesic and antipyrethic drugs, was administered\u2026\nIR: Background: The sponsor has submitted two randomized, double-blind, multicenter, placebo controlled trials\u2026\n\nQuotation Marks (Single and Double) and Commas must be excluded from the abstract. While this implies an edit to most abstract texts, it's required for this format. "
     },
     {
@@ -76,7 +76,7 @@
         "Field Label": "Study Acronyms",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Name that the study is represented in the clinical community or literature. Often some letters in all caps and may include numbers.",
+        "Field Description": "Name that the study is represented in the clinical community or literature. Often some letters in all caps and may include numbers. Ex: IMPROVE, ESTEEM1",
         "Sample Data": "\u201dIMPROVE\u201d\n\"ESTEEM1\" - aprimilast study for psoriasis NCT: NCT01194219"
     },
     {
@@ -116,7 +116,7 @@
         "Field Label": "Study Phase of Development",
         "Field Type": "Predefined",
         "Valid Entries": "Phase 1\nPhase 2\nPhase 3\nPhase 4",
-        "Field Description": "Phase 1 - early development, typically PRE-POC but could be \"Clinical Pharmacology\" study type, i.e. executed in late phase development to support labelling, i..e. DDI, special populations, etc.\nPhase 2\nPhase 3\nPhase 4 - post approval/post marketing\n\nNote that Exclusion/Inclusion criteria may specify Phase of Development but those are NOT a substitute for the classification of STD.PHASE\n\nIf not reported, must be recorded as a BLANK field, i.e. ,, two commas in succession for a CSV/ASCII file or blank in an EXCEL.",
+        "Field Description": "Phase 1 - early development, typically PRE-POC but could be \"Clinical Pharmacology\" study type, i.e. executed in late phase development to support labelling, i..e. DDI, special populations, etc., Phase 2, Phase 3, Phase 4 - post approval/post marketing",
         "Sample Data": "Phase 1\nPhase 2\nPhase 3\nPhase 4"
     },
     {
@@ -132,7 +132,7 @@
         "Field Label": "ARM Blinded Type",
         "Field Type": "Predefined",
         "Valid Entries": "Double-Blind\nSingle-Blind\nOpen-Label\nSponsor Open",
-        "Field Description": "Double-Blind\nSingle-Blind\nOpen-Label\nSponsor Open=Investigator/Patient Blind",
+        "Field Description": "Double-Blind, Single-Blind, Open-Label, Sponsor Open=Investigator/Patient Blind",
         "Sample Data": "double-blind, single-blind, placebo-controlled"
     },
     {
@@ -148,7 +148,7 @@
         "Field Label": "Reported Study ARM Treatment Name",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Actual treament name typically reporting the Generic Drug name\nUse United state adopted name (USAN)\nMultiple ARM.TRT entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRTCLASS; ARM.TRADENM; ARM.DOSE; ARM.DOSERANGE; ARM.DOSEU; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION\n\n\"placebo\" treatments are only recorded as \"placebo\" in ARM.TRT, BT.TRT, PRIOR.TRT, etc.",
+        "Field Description": "Actual treament name typically reporting the Generic Drug name. Use United state adopted name (USAN). Multiple ARM.TRT entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRTCLASS; ARM.TRADENM; ARM.DOSE; ARM.DOSERANGE; ARM.DOSEU; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION\n\n\"placebo\" treatments are only recorded as \"placebo\" in ARM.TRT, BT.TRT, PRIOR.TRT, etc.",
         "Sample Data": "arm.trt1;arm.trt2;arm.trt3  # no missing entries\n;arm.trt2;arm.trt3                # missing entry # 1\narm.trt1;;arm.trt3                  # missing entry # 2\narm.trt1;arm.trt2;                  # missing entry # 3"
     },
     {
@@ -164,7 +164,7 @@
         "Field Label": "Reported Study ARM Average Dose",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Dose reported for a particular study ARM\nCould be expressed as an Average Daily Dose or even an average Dose computed during the course of a titration\nMultiple ARM.DOSE entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRT; ARM.TRTCLASS; ARM.TRADENM; ARM.DOSERANGE; ARM.DOSEU; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION\n\nIf not reported, ARM.DOSE is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Dose reported for a particular study ARM\nCould be expressed as an Average Daily Dose or even an average Dose computed during the course of a titration\nMultiple ARM.DOSE entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRT; ARM.TRTCLASS; ARM.TRADENM; ARM.DOSERANGE; ARM.DOSEU; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION",
         "Sample Data": "Dose=average amount of dose, else Record as BLANK/EMPTY in an Excel File if value is not reported or is missing.\narm.dose1;arm.dose2;arm.dose3  # no missing entries\n;arm.dose2;arm.dose3                # missing entry # 1\narm.dose1;;arm.dose3                  # missing entry # 2\narm.dose1;arm.dose2;                  # missing entry # 3"
     },
     {
@@ -172,8 +172,8 @@
         "Field Label": "Reported Study ARM Average Dose Units",
         "Field Type": "Predefined",
         "Valid Entries": "MG\nGM\nKG\nUG\nPG\nLB\nOZ\nML\nUG/KG\nNG\nMG/K\nMG/KG\nMG/KG/DAY\nMG/L\nMG/DAY\nMCG/HR\nOTHER",
-        "Field Description": "\u00a0Dose Units units reported for a particular Study ARM\nMultiple ARM.DOSEU entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRT; ARM.TRTCLASS; ARM.TRADENM; ARM.DOSE; ARM.DOSERANGE; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION",
-        "Sample Data": "PDS Standards tables\nMG = milligrams\nGM = grams\nKG = kilograms\nUG = micrograms\nPG = picograms\nLB = pounds\nOZ = Ounces\nML = milliliters\nUG/KG = micrograms/kilogram\nNG = nanograms\nMG/KG=milligrams/kilogram\nMG/KG/DAY = milligrams/kilogram/day\nMG/L = milligrams/liter\nMG/DAY = milligrams/day\nMCG/HR =  microgram/hour\nOTHER = OTHER\n\narm.doseu1;arm.doseu2;arm.doseu3  # no missing entries\n;arm.doseu2;arm.doseu3                # missing entry # 1\narm.doseu1;;arm.doseu3                  # missing entry # 2\narm.doseu1;arm.doseu2;                  # missing entry # 3"
+        "Field Description": "Dose Units units reported for a particular Study ARM. Multiple ARM.DOSEU entries are entered delimited in order by semi-colons, \";\".\nOrdering must be consistent with values entered for  ARM.TRT; ARM.TRTCLASS; ARM.TRADENM; ARM.DOSE; ARM.DOSERANGE; ARM.REGIMEN; ARM.ROUTE; ARM.EXPOSURETIME; ARM.EXPOSURETIMEU; ARM.FORMULATION",
+        "Sample Data": "PDS Standards tables\nMG = milligrams\nGM = grams\nKG = kilograms\nUG = micrograms\nPG = picograms\nLB = pounds\nOZ = Ounces\nML = milliliters\nUG/KG = micrograms/kilogram\nNG = nanograms\nMG/KG=milligrams/kilogram\nMG/KG/DAY = milligrams/kilogram/day\nMG/L = milligrams/liter\nMG/DAY = milligrams/day\nMCG/HR =  microgram/hour\nOTHER = OTHER\n\narm.doseu1;arm.doseu2;arm.doseu3  # no missing entries\n;arm.doseu2;arm.doseu3                # missing entry # 1\narm.doseu1;;arm.doseu3                  # missing entry # 2\narm.doseu1;arm.doseu2;"
     },
     {
         "Field Name": "ARM.ROUTE",
@@ -212,7 +212,7 @@
         "Field Label": "numberOfSubjectsPerTreatmentArm",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "N capturing # of subjects in treatment ARM for a particular response or endpoint, whether Efficacy or Safety.\nIf missing N.ARM is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "N capturing # of subjects in treatment ARM for a particular response or endpoint, whether Efficacy or Safety.",
         "Sample Data": "Total number of subjects for each treatment\n"
     },
     {
@@ -220,31 +220,31 @@
         "Field Label": "observedNumberofSubjects",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "N capturing the # of subjects for each time point within ARM or SUBARM, within timepoint, within a specific reported statistical analysis method (STATANAL.METHOD) and population (STATANAL.POP)\nIf missing N.ARM.STATANAL is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "N capturing the # of subjects for each time point within ARM or SUBARM, within timepoint, within a specific reported statistical analysis method (STATANAL.METHOD) and population (STATANAL.POP)",
         "Sample Data": "This is the number of observed cases, Record as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
         "Field Name": "N.ARM.EVENT.SUBJ",
-        "Field Label": "Number of Unique Subjects reporting an EVENT by ARM",
+        "Field Label": "Number of Unique Subjects reporting an event by treatment arm",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "# of unique subjects in treatment arm for a particular response when the response is a proportion or rate.\nIf missing N.ARM.EVENT.SUBJ is recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Number of unique subjects reporting an event in the treatment arm for a particular response.",
         "Sample Data": ""
     },
     {
         "Field Name": "STATANAL.POP",
-        "Field Label": "statisticalAnalysisPopulation",
+        "Field Label": "statistical analysis population",
         "Field Type": "Predefined",
         "Valid Entries": "ITT\nmITT\nFAS\nPP\nSA\nCO",
-        "Field Description": "Analysis Population \nITT - Intention to Treat\nmITT - modified ITT\nFAS - full analysis set\nPP - per protocol\nSA - safety anlaysis population\nCO - completers only\n(Blank/Missing/Empty if no STATANAL.POP not specified or reported, i.e. \"\")",
+        "Field Description": "Analysis Population; ITT - Intention to Treat, mITT - modified ITT, FAS - full analysis set, PP - per protocol, SA - safety anlaysis population, CO - completers only",
         "Sample Data": ""
     },
     {
         "Field Name": "STATANAL.METHOD",
-        "Field Label": "StatisticalAnalysisMethod",
+        "Field Label": "statistical analysis method",
         "Field Type": "Predefined",
         "Valid Entries": "(Indication specific terms may be specified by the Pfizer Disease Area or Indication team. )\n\nLSMeans\nKM\nUNIVARIATE\nMULTIVARIATE\nANCOVA\nANOVA\nBinary Logistic Regression\nBonferroni Correction Test\nBonferroni Holm Adjustment\nBonferroni Test\nBonferronis Correction Test\nChisquare Test\nCox Proportional Hazards Model\nCox Proportional Hazards Regression Model\nCox Regression Model\nDunnetts Test\nFishers Exact Test\nFriedman Repeated Measures Analysis Of Variance\nFriedman Test\nFriedmann Rank Sum Test\nGeneralized Estimated Equation Method\nKolmogorov-Smirnov Test\nKruskal Wallis Test\nLinear Mixed Model Analysis\nLinear Regression Model\nLog Rank Test\nLog Rank Test\nLog Rank Test Stratified\nLogistic Regression Model\nMann Whitney Rank Sum Test\nMann Whitney Test\nMann Whitney U Test\nMANOVA\nMixed Effects Regression Modeling\nMixed Linear Model\nMixed Linear Model Analysis Of Covariance\nMixed Model\nMMRM\nMultiple Linear Regression\nMultivariate Cox Proportional Hazards\nMultivariate Cox Regression Analysis\nNewman Keuls Test\nOne Way RM ANOVA\nPaired T Test\nPosthoc Sensitivity Analysis\nRegression Analysis\nRepeated Measurements Linear Model\nRepeated Measures\nRM ANCOVA\nRM ANOVA\nRM MANOVA\nSample T Test\nShapiro Wilk Test\nSigned Rank Test\nSpearman Rank Correlation Analysis\nStudent T Test\nT Test\nTukey Kramer Test\nUnivariate Analysis\nUnivariate Cox Proportional Hazards\nUnpaired T Test\nWeighted Regression Analysis\nWilcoxon Mann Whitney Test\nWilcoxon M+P112atched Paired Test\nWilcoxon Matched Pairs Signed Ranks Test\nWilcoxon Rank Sum Test\nWilcoxon Signed Rank Paired Statistical Test\nWilcoxon Signed Rank Sum Test\nWilcoxon Signed Rank Test\nWilcoxon Test\nWillam Test",
-        "Field Description": "STATANAL.METHOD to detail the stats analysis method eg Least Square Means, Kaplan Meier.",
+        "Field Description": "Details the stats analysis method. e.g. Least Square Means, Kaplan Meier",
         "Sample Data": ""
     },
     {
@@ -260,7 +260,7 @@
         "Field Label": "Nominal Time Value for the ARM Endpoint",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "For longitudinal or time based measurements or endpoints, TIME1 permits recording replicates within a period.\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "For longitudinal or time based measurements or endpoints, TIME1 permits recording replicates within a period.",
         "Sample Data": "Three time units (i.e. weeks) prior to start of first dose = -3\nTwo time units  prior to start of second dose= -2\nOne time unit prior to start of first dose= -1\nBaseline time = 0\nFirst time unit of the first dose=1  \nSecond time unit after the first dose =2\n3rd time unit=3\n4th time unit=4\n5th time unit=5\netc\u2026\nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
@@ -281,7 +281,7 @@
     },
     {
         "Field Name": "BSL.STAT",
-        "Field Label": "baselineResponseStatistic",
+        "Field Label": "baseline response statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean",
         "Field Description": "Definition of baseline value statistic, i.e. mean, median, LSMean etc.",
@@ -289,23 +289,23 @@
     },
     {
         "Field Name": "BSL.VAL",
-        "Field Label": "baselineResponse",
+        "Field Label": "baseline response",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "baseline value of the ENDPOINT or ENDPOINT/ENDPOINTSUB at the beginning of treatment period for a study arm\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "baseline value of the endpoint at the beginning of treatment period for a study arm.",
         "Sample Data": "baseline value prior to the start of treatment\nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
         "Field Name": "BSL.VALU",
-        "Field Label": "baselineResponseUnits",
+        "Field Label": "baseline response units",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Baseline units",
+        "Field Description": "units of the previous baseline response",
         "Sample Data": ""
     },
     {
         "Field Name": "BSL.VAR",
-        "Field Label": "baselineResponseVariance",
+        "Field Label": "baseline response variance",
         "Field Type": "Numeric",
         "Valid Entries": "",
         "Field Description": "Standard deviation, standard error, of the Baseline value",
@@ -313,10 +313,10 @@
     },
     {
         "Field Name": "BSL.VARU",
-        "Field Label": "baselineResponseVarianceUnits",
+        "Field Label": "baseline response variance units",
         "Field Type": "Predefined",
         "Valid Entries": "SD\nSE\n80% CI\n90% CI\n95% CI\nSEbar",
-        "Field Description": "Baseline variance statistical definition, SD, SE, 80%, 90%, 95% CI\n?\tThe new term for upper and lower SE bars \u201cSEbar\u201d defined above should also be included and described for these fields",
+        "Field Description": "Baseline variance statistical definition, SD, SE, 80%, 90%, 95% CI",
         "Sample Data": "SD, SE, 80%CI, 90%CI, 95%CI, SEbar"
     },
     {
@@ -337,23 +337,23 @@
     },
     {
         "Field Name": "CHBSL.STAT",
-        "Field Label": "changeFromBaselineStatistic",
+        "Field Label": "change from baseline statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean",
-        "Field Description": "\u00a0Statistics used to describe the change from baseline in the article",
+        "Field Description": "Statistics used to describe the change from baseline in the article",
         "Sample Data": "Mean, median, \u2026"
     },
     {
         "Field Name": "CHBSL.VAL",
-        "Field Label": "Change From Baseline",
+        "Field Label": "Change From Baseline value",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Change from Baseline absolute value or % change from baseline\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Change from Baseline absolute value or % change from baseline",
         "Sample Data": "The change of the endpoint from baseline.  \nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
         "Field Name": "CHBSL.VALU",
-        "Field Label": "changeFromBaselineUnits",
+        "Field Label": "change from baseline units",
         "Field Type": "Predefined",
         "Valid Entries": "",
         "Field Description": "Change from baseline unit is recorded in units of the measurement , i.e. absolute value of the difference between RSP.VAL and BSL.VAL, basis.",
@@ -361,18 +361,18 @@
     },
     {
         "Field Name": "CHBSL.VAR",
-        "Field Label": "changeFromBaselineVariance",
+        "Field Label": "change from baseline variance",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Change from Baseline \u2013Standard deviation/Standard error/95% CI\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
-        "Sample Data": "The standard deviation, Standard error or 95% CI  for the endpoint change from baseline , Record as BLANK/EMPTY in an Excel File if value is not reported or is missing."
+        "Field Description": "Change from Baseline \u2013Standard deviation/Standard error/95% CI",
+        "Sample Data": "The standard deviation, Standard error or 95% CI"
     },
     {
         "Field Name": "CHBSL.VARU",
-        "Field Label": "changeFromBaselineVarianceUnits",
+        "Field Label": "change from baseline variance units",
         "Field Type": "Predefined",
         "Valid Entries": "SD\nSE\n80% CI\n90% CI\n95% CI\nSEbar",
-        "Field Description": "Change from Baseline variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI\nThe new term for upper and lower SE bars \u201cSEbar\u201d defined above should also be included and described for these fields\n",
+        "Field Description": "Change from Baseline variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI",
         "Sample Data": "SD, SE, 80%CI, 90%CI, 95%CI, SEbar"
     },
     {
@@ -380,7 +380,7 @@
         "Field Label": "Change from Baseline Lower Confidence Interval",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Lower limit of CHBSL.CI",
+        "Field Description": "Lower limit of confidence interval",
         "Sample Data": ""
     },
     {
@@ -388,12 +388,12 @@
         "Field Label": "Change from Baseline Upper Confidence Interval",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Upper limit of CHBSL.CI",
+        "Field Description": "Upper limit of confidence interval",
         "Sample Data": ""
     },
     {
         "Field Name": "RSP.STAT",
-        "Field Label": "responseStatistic",
+        "Field Label": "response statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean\nRatio\nPercent",
         "Field Description": "Statistic used to aggregate response value",
@@ -405,7 +405,7 @@
         "Field Type": "Numeric",
         "Valid Entries": "",
         "Field Description": "Specific value of the endpoint at the specified time (if applicable)",
-        "Sample Data": "The absolute value of the endpoint or endpoint subscale\nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
+        "Sample Data": "The absolute value of the endpoint or endpoint subscale"
     },
     {
         "Field Name": "RSP.VALU",
@@ -417,18 +417,18 @@
     },
     {
         "Field Name": "RSP.VAR",
-        "Field Label": "responseVariance",
+        "Field Label": "response variance",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Numeric statistical variance of the response outcome expressed in:\nvariance\nstandard deviation\nstandard error\nconfidence interval (CI)\npvalue (note value of the pvalue would primarily be captured if the Hazard Ratio was desired to be captured but not reported)",
+        "Field Description": "Numeric statistical variance of the response outcome expressed in:, variance, standard deviation, standard error, confidence interval (CI), pvalue",
         "Sample Data": ""
     },
     {
         "Field Name": "RSP.VARU",
-        "Field Label": "responseVarianceUnits",
+        "Field Label": "response variance units",
         "Field Type": "Predefined",
         "Valid Entries": "SD\nSE\n80% CI\n90% CI\n95% CI\nSEbar",
-        "Field Description": "Response variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI\n\"pvalue one-sided\"\n\"pvalue two-sided\"\nThe new term for upper and lower SE bars \u201cSEbar\u201d defined above should also be included and described for these fields\n\"pvalue\" if one or two sided is not reported",
+        "Field Description": "Response variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI, \"pvalue one-sided\", \"pvalue two-sided\"",
         "Sample Data": "SD, SE, 80%CI, 90%CI, 95%CI, SEbar"
     },
     {
@@ -460,7 +460,7 @@
         "Field Label": "Percent Change from Baseline Value",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Percent Change from Baseline value of the endpoint at the specified time (if relevant)\nNote: Unit is default to \"percent\" so is not recorded separately.",
+        "Field Description": "Percent Change from Baseline value of the endpoint at the specified time (if relevant)",
         "Sample Data": ""
     },
     {
@@ -468,7 +468,7 @@
         "Field Label": "Percent Change from Baseline Variance",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Numeric statistical variance of the Percent Change from Baseline value expressed in:\nvariance\nstandard deviation\nstandard error\n95% CI",
+        "Field Description": "Numeric statistical variance of the Percent Change from Baseline value expressed in: variance, standard deviation, standard error, 95% CI",
         "Sample Data": ""
     },
     {
@@ -476,7 +476,7 @@
         "Field Label": "Percent Change from Baseline Variance Unit",
         "Field Type": "Predefined",
         "Valid Entries": "SD\nSE\n80% CI\n90% CI\n95% CI\nSEbar",
-        "Field Description": "Percent Change from Baseline variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI\nThe new term for upper and lower SE bars \u201cSEbar\u201d defined above should also be included and described for these fields",
+        "Field Description": "Percent Change from Baseline variance statistical definition, i.e.SE, SD, 80%, 90%, 95% CI",
         "Sample Data": "SD, SE, 80%CI, 90%CI, 95%CI, SEbar"
     },
     {
@@ -500,7 +500,7 @@
         "Field Label": "ARM Percent Male Subjects",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Percentage of male subjects within ARM\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Percentage of male subjects within ARM",
         "Sample Data": "Record as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {
@@ -508,7 +508,7 @@
         "Field Label": "ARM Average Age",
         "Field Type": "Numeric",
         "Valid Entries": "",
-        "Field Description": "Reported Average (Mean/Geometric Mean/etc) age of the subjects in the study\n\nIf not reported or is missing this will be recorded as BLANK/EMPTY, i.e. \",,\" in the ASCII/CSV file. In an EXCEL file, the field must be BLANK/EMPTY, \"\".",
+        "Field Description": "Reported Average (Mean/Geometric Mean/etc) age of the subjects in the study",
         "Sample Data": "Average age at first dose in years\nRecord as BLANK/EMPTY in an Excel File if value is not reported or is missing."
     },
     {

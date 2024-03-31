@@ -44,7 +44,7 @@ Prompt Engineering:
   # This is included only at the very start of the prompt chain (need to encase in quotes to not interpret the square brackets as a list)
   Prelude: '[You are extracting data from clinical trial papers. Only give short, precise, and accurate answers that can be found in the provided text.]'
   # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
-  Prefix: ''
+  Prefix: '[Extract ONLY from the clinical trial page(s) above. Respond with just the answer without any additional words or explanations. Only retrieve the sure values found on the page! This is the last question.]'
   # This is the role of the LLM
   HectreRole: Answer
   # This is the role of the user
@@ -54,7 +54,7 @@ Prompt Engineering:
   PromptLiterature1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Please respond with just the answer, without any additional words, or with "{No_Data}" if it cannot be found.
+    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Respond with "{No_Data}" if it cannot be found. 
   #PromptLiterature2: |-
   #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
@@ -62,18 +62,34 @@ Prompt Engineering:
   PromptTreatmentArms1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no additional words. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
+    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
+
+  # Prompts for extracting data per treatment arm
+  PromptPerTreatmentArm1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    Find data in JSON for {Treatment_Arm}; here is a template JSON to fill in (enclose values in quotes):
+    {Template}
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON.
 
   # Prompts for extracting the nominal time values
   PromptTimeValues1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the nominal time values that the clinical trial measures at in the paper. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page. What's the answer?
+    I want to find all the time values that the clinical trial measures at in the paper that has data. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+
+  # Prompts for extracting data per treatment arm and per time
+  PromptPerTreatmentArmPerTime1: |-
+    Below is {Text_Context} from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    Find data in JSON for {Treatment_Arm} at time {Time_Value}; here is a template JSON to fill in (enclose values in quotes):
+    {Template}
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in:
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in (enclose values in quotes):
     {Template}
-    Please respond with just the JSON with no other words.
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.

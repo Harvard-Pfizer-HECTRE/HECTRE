@@ -1,12 +1,13 @@
 import logging
 
-from math import floor
 import json
+import json5
 
 from .cdf.cdf import CDF, ClinicalData
 from .consts import (
     CLINICAL_DATA_HEADERS,
     LITERATURE_DATA_HEADERS,
+    NO_DATA,
     PER_TREATMENT_ARM_HEADERS,
     PER_TREATMENT_ARM_PER_TIME_HEADERS,
 )
@@ -109,52 +110,78 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     # Loop through every treatment arm
     for treatment_arm in treatment_arms:
         # First let's populate some information pertaining to each treatment arm
-        for header in PER_TREATMENT_ARM_HEADERS:
-            # Get the total number of pages, and try to extract that data from each page until we get something.
-            num_pages = paper.get_num_pages()
-            for page_num in range(num_pages):
-                page: Page = paper.get_page(page_num)
+        per_treatment_arm_data_json = {}
+        num_pages = paper.get_num_pages()
+        for page_num in range(num_pages):
+            page: Page = paper.get_page(page_num)
+            text_context = f"page {page_num + 1}"
+            text = page.get_text()
+            result = hectre.query_per_treatment_arm_data(text=text, headers=PER_TREATMENT_ARM_HEADERS, treatment_arm=treatment_arm, text_context=text_context)
+            # If we got any results, load it as JSON object, and update our JSON for this clinical data row
+            if result:
+                try:
+                    result_json = json5.loads(result)
+                    per_treatment_arm_data_json.update(result_json)
+                    if not NO_DATA in per_treatment_arm_data_json.values():
+                        # If all fields are filled, we can exit early
+                        break
+                except json.JSONDecodeError as e:
+                    logger.error(f"Could not decode per-treatment arm data output: {result}")
+                    raise e
 
-                # TODO: Add function in hectre to query per-treatment arm data
-                # TODO: Then add the result to CDF
+        # TODO: Add the per-arm result to CDF
 
         # Loop through every time value
         for time_value in time_values:
             # Let's populate some information per-treatment-arm and per-time
-            for header in PER_TREATMENT_ARM_PER_TIME_HEADERS:
-                # Get the total number of pages, and try to extract that data from each page until we get something.
-                num_pages = paper.get_num_pages()
-                for page_num in range(num_pages):
-                    page: Page = paper.get_page(page_num)
-
-                    # TODO: Add function in hectre to query per-treatment arm and per-time data
-                    # TODO: Then add the result to CDF
+            per_treatment_arm_per_time_json = {}
+            num_pages = paper.get_num_pages()
+            for page_num in range(num_pages):
+                page: Page = paper.get_page(page_num)
+                text_context = f"page {page_num + 1}"
+                text = page.get_text()
+                result = hectre.query_per_treatment_arm_per_time_data(text=text, headers=PER_TREATMENT_ARM_PER_TIME_HEADERS, treatment_arm=treatment_arm, time_value=time_value, text_context=text_context)
+                # If we got any results, load it as JSON object, and update our JSON for this clinical data row
+                if result:
+                    try:
+                        result_json = json5.loads(result)
+                        per_treatment_arm_per_time_json.update(result_json)
+                        if not NO_DATA in per_treatment_arm_per_time_json.values():
+                            # If all fields are filled, we can exit early
+                            break
+                    except json.JSONDecodeError as e:
+                        logger.error(f"Could not decode per-treatment arm per-time data output: {result}")
+                        raise e
+                    
+            # TODO: Add the per-arm per-time result to CDF
 
             # Loop through every outcome
             arm_data = {'ARM.TIME1': time_value, 'ARM.TRT': treatment_arm}
             for outcome in outcomes:
-
-                # Query all clinical data all at once?
+                clinical_data_json = {}
+                # Loop through every page
                 for page_num in range(num_pages):
                     page: Page = paper.get_page(page_num)
+                    # Only if the page has tables
                     if page.get_has_table():
+                        text_context = f"page {page_num + 1}"
                         text = page.get_text()
-                        text_len = len(text)
-                        half_text_len = floor(text_len / 2)
-                        first_half_text = text[0:half_text_len]
-                        second_half_text = text[half_text_len:text_len]
-                        for half_page in [first_half_text,second_half_text]:
-                            text_context = f"page {page_num + 1}"
-                            result = hectre.query_clinical_data(name="clinical data", headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=half_page, text_context=text_context)
-                            # TODO: We need to somehow conglomerate the data
-                            if result:
-                                # Set the value in the CDF
-                                cd = ClinicalData.from_json(result, json.dumps(arm_data))
-                                cdf.clinical_data.append(cd)
-                                break
-                        else:
-                            continue
-                        break
+                        result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, text=text, text_context=text_context)
+                        # If we got any results, load it as JSON object, and update our JSON for this clinical data row
+                        if result:
+                            try:
+                                result_json = json5.loads(result)
+                                clinical_data_json.update(result_json)
+                                if not NO_DATA in clinical_data_json.values():
+                                    # If all fields are filled, we can exit early
+                                    break
+                            except json.JSONDecodeError as e:
+                                logger.error(f"Could not decode clinical data output: {result}")
+                                raise e
+                
+                # Finally, set the value in the CDF for this one row
+                cd = ClinicalData.from_json(json.dumps(clinical_data_json), json.dumps(arm_data))
+                cdf.clinical_data.append(cd)
 
 
 def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
@@ -170,11 +197,8 @@ def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
         No output. This function will take a while, so we will store the output elsewhere.
     '''
     cdf = CDF()
-
     extract_literature_data(paper, picos, cdf)
-    # TODO remove
     extract_clinical_data(paper, picos, cdf)
-
     return cdf
 
 
