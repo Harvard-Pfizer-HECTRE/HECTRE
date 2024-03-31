@@ -124,13 +124,13 @@ class Hectre(BaseModel):
         Use this for follow-up questions and multi-shot prompting.
         Don't call this by itself, this is used by some nested methods.
         '''
-        prompt = prompt[-(len(self.config["Prompt Engineering"]["Prefix"]) + len(self.config["Prompt Engineering"]["HectreRole"]) + 4):]
-        prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+        prompt = prompt[:-(len(self.config["Prompt Engineering"]["Prefix"]) + len(self.config["Prompt Engineering"]["HectreRole"]) + 4)]
+        prompt += "\n" + self.config["Prompt Engineering"]["HectreRole"] + ": "
         prompt += response + "\n"
         prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
         prompt += question + "\n"
+        prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
         prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
-        prompt += self.config["Prompt Engineering"]["Prefix"]
         return prompt
 
 

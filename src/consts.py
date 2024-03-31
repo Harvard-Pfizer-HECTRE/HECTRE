@@ -26,15 +26,19 @@ SILENCED_LOGGING_MODULES: List[str] = [
 
 # Extraction related constants
 UNICODE_REPLACE_MAP: Dict[str, str] = {
-    "/C1": ".",
-    "/C0": "-",
+    # Should always replace
     "ﬁ": "fi",
     "ﬂ": "fl",
     "–": "-",
-    "CAF .9E": "CAFÉ",
-    "L €ubeck": "Lübeck",
     "’": "'",
+    # May depend on paper
     " €ı": "ï",
+    "c/C223": "ç",
+    "CAF .9E": "CAFÉ",
+    "L €ub": "Lüb",
+    "/C1": ".",
+    "/C0": "-",
+    # Get rid of unknown unicodes last
     "": "",
 }
 
