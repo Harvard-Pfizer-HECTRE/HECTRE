@@ -1,6 +1,6 @@
 import click, pprint
 
-from cdf.cdf import *
+from ..cdf.cdf import *
 
 '''
 This file is used to run unit tests.
