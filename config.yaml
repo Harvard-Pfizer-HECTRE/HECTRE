@@ -18,13 +18,17 @@ LLM:
 
   # The LLM to actually use
   # Available choices are:
-  #     Llama213b
-  #     Llama270b
-  LLMName: Llama270b
+  #     Llama213bChat
+  #     Llama270bChat
+  #     Mistral7bInstruct
+  #     Mixtral8x7bInstruct
+  LLMName: Mixtral8x7bInstruct
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
   NucleusSampling: 0
+  # Top tokens to consider when selecting next token (top_k). Llama 2 doesn't use this.
+  TopTokens: 1
   # Maximum tokens in the output
   MaxGenerationLength: 1000
 

@@ -1,7 +1,7 @@
 
 from .llama2 import Llama2
 
-class Llama270bLlm(Llama2):
+class Llama270bChatLlm(Llama2):
     '''
     This is the Meta Llama 2 model with 70b tokens.
     This is more expensive than the 13b variant, but more powerful.
