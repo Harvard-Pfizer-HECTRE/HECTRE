@@ -118,6 +118,7 @@ class Hectre(BaseModel):
                 # Only update if dict 1 has NO_DATA and dict 2 has data
                 if not NO_DATA in val and NO_DATA in outdict[key]:
                     outdict[key] = val
+        return outdict
 
 
     def build_new_prompt(self, question: str) -> str:

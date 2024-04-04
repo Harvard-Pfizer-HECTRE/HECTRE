@@ -76,8 +76,6 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
     "ARM.REGIMEN",
     "ARM.FORMULATION",
     "N.ARM",
-    "ARM.TIME1",
-    "ARM.TIME1U",
     "ARM.PCT.MALE",
     "ARM.AGE",
     "ARM.AGEU",
