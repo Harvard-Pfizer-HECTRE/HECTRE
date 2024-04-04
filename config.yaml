@@ -23,8 +23,8 @@ LLM:
   LLMName: Llama270b
   # Lower temperature to make the models not go crazy
   Temperature: 0
-  # Still need high nucleus sampling (top_p) to get medical terms
-  NucleusSampling: 0.9
+  # Lower nucleus sampling (top_p) to not get varying results
+  NucleusSampling: 0
   # Maximum tokens in the output
   MaxGenerationLength: 1000
 
@@ -42,9 +42,9 @@ Prompt Engineering:
   # You can have just one prompt, or multiple follow-up prompts.
 
   # This is included only at the very start of the prompt chain (need to encase in quotes to not interpret the square brackets as a list)
-  Prelude: '[You are extracting data from clinical trial papers. Only give short, precise, and accurate answers that can be found in the provided text.]'
+  Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. The "Answer" only consists of accurate data that is found in the document provided by "Question." The "Answer" is precise, succinct, and accurate.]'
   # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
-  Prefix: '[Extract ONLY from the clinical trial page(s) above. Respond with just the answer without any additional words or explanations. Only retrieve the sure values found on the page! This is the last question.]'
+  Prefix: '[The "Answer" extracts ONLY from the clinical trial page(s) above. It responds with just the answer without any additional words or explanations, and only retrieve the sure values found on the page! This is the last question.]'
   # This is the role of the LLM
   HectreRole: Answer
   # This is the role of the user

@@ -217,7 +217,7 @@ class Hectre(BaseModel):
             header_name = header_dict['Field Name']
             header_label = header_dict['Field Label']
             header_description = header_dict['Field Description']
-            clinical_json += f'  "{header_name}": "",  # Fill in value {header_label}. Description: {header_description}\n'
+            clinical_json += f'  "{header_name}": "",  # {header_label}. {header_description}\n'
         clinical_json += "}"
         return clinical_json
 
