@@ -14,3 +14,6 @@ class Llama213bLlm(Llama2):
     '''
 
     MODEL_ID: str = "meta.llama2-13b-chat-v1"
+
+    INPUT_TOKEN_PRICE_PER_1K: float = 0.00075
+    OUTPUT_TOKEN_PRICE_PER_1K: float = 0.001

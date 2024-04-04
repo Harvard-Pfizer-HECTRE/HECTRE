@@ -15,9 +15,15 @@ class Llama2(BedrockLlm):
 
     MODEL_ID: Optional[str] = None
 
+    INPUT_TOKEN_PRICE_PER_1K: float = 0
+    OUTPUT_TOKEN_PRICE_PER_1K: float = 0
+
     temperature: Optional[float] = None
     top_p: Optional[float] = None
     max_gen_len: Optional[float] = None
+
+    total_input_tokens: Optional[int] = 0
+    total_output_tokens: Optional[int] = 0
 
     def __init__(self):
         super().__init__()
@@ -113,5 +119,9 @@ class Llama2(BedrockLlm):
         prompt_token_count = body["prompt_token_count"]
         generation_token_count = body["generation_token_count"]
         stop_reason = body["stop_reason"]
-        logger.debug(f"Total tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
+        logger.debug(f"Prompt tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
+        self.total_input_tokens += prompt_token_count
+        self.total_output_tokens += generation_token_count
+        price_estimate = (self.total_input_tokens / 1000) * self.INPUT_TOKEN_PRICE_PER_1K + (self.total_output_tokens / 1000) * self.OUTPUT_TOKEN_PRICE_PER_1K
+        logger.debug(f"Total input tokens: {self.total_input_tokens}, total output tokens: {self.total_output_tokens}, total price estimate: ${price_estimate:.2f}")
         return completion.strip()
