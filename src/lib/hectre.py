@@ -102,6 +102,22 @@ class Hectre(BaseModel):
             str
         '''
         return self.llm.invoke(prompt)
+    
+
+    def combine_dicts(self, dict1: Dict[str, str], dict2: Dict[str, str]) -> Dict[str, str]:
+        '''
+        Combine two resultant dictionaries returned by the model. Since we care about "NO_DATA",
+        we need this custom combine function.
+        '''
+        outdict = {}
+        outdict.update(dict1)
+        for key, val in dict2.items():
+            if not key in outdict:
+                outdict[key] = val
+            else:
+                # Only update if dict 1 has NO_DATA and dict 2 has data
+                if not NO_DATA in val and NO_DATA in outdict[key]:
+                    outdict[key] = val
 
 
     def build_new_prompt(self, question: str) -> str:
