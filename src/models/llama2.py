@@ -1,11 +1,12 @@
 
 import logging
 import json
-from typing import Optional
+from typing import List, Optional
 
 from .bedrock import BedrockLlm
 
 logger = logging.getLogger(__name__)
+
 
 class Llama2(BedrockLlm):
     '''
@@ -18,50 +19,15 @@ class Llama2(BedrockLlm):
     INPUT_TOKEN_PRICE_PER_1K: float = 0
     OUTPUT_TOKEN_PRICE_PER_1K: float = 0
 
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    max_gen_len: Optional[float] = None
+    PARAMETERS: List[str] = [
+        "temperature",
+        "top_p",
+        "max_gen_len",
+    ]
 
     total_input_tokens: Optional[int] = 0
     total_output_tokens: Optional[int] = 0
 
-    def __init__(self):
-        super().__init__()
-        self.set_default_parameters()
-
-    def set_default_parameters(self):
-        '''
-        Sets the default parameters. The config file will override this.
-        '''
-        # Use a lower value to decrease randomness in the response.
-        # The default is 0.5.
-        self.temperature = 0.3
-        # Use a lower value to ignore less probable options. Set to 0 or 1.0 to disable.
-        # The default is 0.9.
-        self.top_p = 0.5
-        # Specify the maximum number of tokens to use in the generated response. The model truncates the response once the generated text exceeds max_gen_len.
-        # The default is 512.
-        self.max_gen_len = 512
-
-    def set_parameters(self, temperature=None, top_p=None, max_gen_len=None):
-        '''
-        Sets custom parameters.
-
-        Parameters:
-            temperature (float)
-            top_p (float)
-            max_gen_len (int)
-        '''
-        # Set custom paramaters if you want to, prior to calling invoke()
-        if temperature is not None:
-            logger.debug(f"Set model temperature={temperature}")
-            self.temperature = temperature
-        if top_p is not None:
-            logger.debug(f"Set model top_p={top_p}")
-            self.top_p = top_p
-        if max_gen_len is not None:
-            logger.debug(f"Set model max_gen_len={max_gen_len}")
-            self.max_gen_len = max_gen_len
 
     def set_parameters_from_config(self, config):
         '''
@@ -82,7 +48,8 @@ class Llama2(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(temperature, top_p, max_gen_len)
+        self.set_parameters(temperature=temperature, top_p=top_p, max_gen_len=max_gen_len)
+
 
     def get_invoke_body(self, prompt):
         '''

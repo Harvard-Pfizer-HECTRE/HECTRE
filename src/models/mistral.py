@@ -1,11 +1,12 @@
 
 import logging
 import json
-from typing import Optional
+from typing import List, Optional
 
 from .bedrock import BedrockLlm
 
 logger = logging.getLogger(__name__)
+
 
 class Mistral(BedrockLlm):
     '''
@@ -18,49 +19,16 @@ class Mistral(BedrockLlm):
     INPUT_TOKEN_PRICE_PER_1K: float = 0
     OUTPUT_TOKEN_PRICE_PER_1K: float = 0
 
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    top_k: Optional[float] = None
-    max_tokens: Optional[float] = None
+    PARAMETERS: List[str] = [
+        "temperature",
+        "top_p",
+        "top_k",
+        "max_tokens",
+    ]
 
     total_input_tokens: Optional[int] = 0
     total_output_tokens: Optional[int] = 0
 
-    def __init__(self):
-        super().__init__()
-        self.set_default_parameters()
-
-    def set_default_parameters(self):
-        '''
-        Sets the default parameters. The config file will override this.
-        '''
-        self.temperature = 0
-        self.top_p = 0
-        self.top_k = 0
-        self.max_tokens = 0
-
-    def set_parameters(self, temperature=None, top_p=None, top_k=None, max_tokens=None):
-        '''
-        Sets custom parameters.
-
-        Parameters:
-            temperature (float)
-            top_p (float)
-            max_gen_len (int)
-        '''
-        # Set custom paramaters if you want to, prior to calling invoke()
-        if temperature is not None:
-            logger.debug(f"Set model temperature={temperature}")
-            self.temperature = temperature
-        if top_p is not None:
-            logger.debug(f"Set model top_p={top_p}")
-            self.top_p = top_p
-        if top_k is not None:
-            logger.debug(f"Set model top_k={top_k}")
-            self.top_k = top_k
-        if max_tokens is not None:
-            logger.debug(f"Set model max_tokens={max_tokens}")
-            self.max_tokens = max_tokens
 
     def set_parameters_from_config(self, config):
         '''
@@ -82,7 +50,8 @@ class Mistral(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(temperature, top_p, top_k, max_tokens)
+        self.set_parameters(temperature=temperature, top_p=top_p, top_k=top_k, max_tokens=max_tokens)
+
 
     def get_invoke_body(self, prompt):
         '''
@@ -104,6 +73,7 @@ class Mistral(BedrockLlm):
             }
         )
     
+
     def process_response(self, response):
         '''
         This function does any post-processing that is immediately needed to convert the model output

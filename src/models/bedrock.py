@@ -23,6 +23,7 @@ class BedrockLlm(Llm):
 
     client: Any = None
 
+
     def __init__(self):
         super().__init__()
 
@@ -38,8 +39,10 @@ class BedrockLlm(Llm):
     def get_invoke_body(self, prompt: str) -> Any:
         return prompt
     
+
     def process_response(self, response: Any) -> str:
         return response
+
 
     def invoke(self, prompt: str) -> str:
         '''
