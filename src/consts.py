@@ -34,7 +34,8 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     # May depend on paper
     " €ı": "i",
     "c/C223": "c",
-    "CAF .9E": "CAFÉ",
+    "c /C223": "c",
+    "CAF /C19E": "CAFÉ",
     "L €ub": "Lub",
     "/C1": ".",
     "/C0": "-",
@@ -61,9 +62,6 @@ LITERATURE_DATA_HEADERS: List[str] = [
     "STD.GEO.LOCATION",
     "STD.PHASE",
     "N.STUDY",
-    "STATANAL.POP",
-    "STATANAL.METHOD",
-    # "STATANAL.IMP.METHOD", # We are not going to be imputing missing data
 ]
 
 PER_TREATMENT_ARM_HEADERS: List[str] = [
@@ -78,8 +76,6 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
     "ARM.REGIMEN",
     "ARM.FORMULATION",
     "N.ARM",
-    "ARM.TIME1",
-    "ARM.TIME1U",
     "ARM.PCT.MALE",
     "ARM.AGE",
     "ARM.AGEU",
@@ -90,6 +86,9 @@ PER_TREATMENT_ARM_PER_TIME_HEADERS: List[str] = [
 ]
 
 CLINICAL_DATA_HEADERS: List[str] = [
+    "STATANAL.POP",
+    "STATANAL.METHOD",
+    "STATANAL.IMP.METHOD",
     "N.ARM.EVENT.SUBJ",
     # Baseline characteristics
     "BSL.STAT",

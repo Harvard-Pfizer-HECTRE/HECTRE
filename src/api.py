@@ -121,7 +121,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
             if result:
                 try:
                     result_json = json5.loads(result)
-                    per_treatment_arm_data_json.update(result_json)
+                    per_treatment_arm_data_json = hectre.combine_dicts(per_treatment_arm_data_json, result_json)
                     if not NO_DATA in per_treatment_arm_data_json.values():
                         # If all fields are filled, we can exit early
                         break
@@ -145,7 +145,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                 if result:
                     try:
                         result_json = json5.loads(result)
-                        per_treatment_arm_per_time_json.update(result_json)
+                        per_treatment_arm_per_time_json = hectre.combine_dicts(per_treatment_arm_per_time_json, result_json)
                         if not NO_DATA in per_treatment_arm_per_time_json.values():
                             # If all fields are filled, we can exit early
                             break
@@ -171,7 +171,7 @@ def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
                         if result:
                             try:
                                 result_json = json5.loads(result)
-                                clinical_data_json.update(result_json)
+                                clinical_data_json = hectre.combine_dicts(clinical_data_json, result_json)
                                 if not NO_DATA in clinical_data_json.values():
                                     # If all fields are filled, we can exit early
                                     break

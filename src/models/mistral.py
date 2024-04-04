@@ -7,9 +7,9 @@ from .bedrock import BedrockLlm
 
 logger = logging.getLogger(__name__)
 
-class Llama2(BedrockLlm):
+class Mistral(BedrockLlm):
     '''
-    This is the Meta Llama 2 model.
+    This is the Mistral AI model.
     https://aws.amazon.com/bedrock/pricing/
     '''
 
@@ -20,7 +20,8 @@ class Llama2(BedrockLlm):
 
     temperature: Optional[float] = None
     top_p: Optional[float] = None
-    max_gen_len: Optional[float] = None
+    top_k: Optional[float] = None
+    max_tokens: Optional[float] = None
 
     total_input_tokens: Optional[int] = 0
     total_output_tokens: Optional[int] = 0
@@ -33,17 +34,12 @@ class Llama2(BedrockLlm):
         '''
         Sets the default parameters. The config file will override this.
         '''
-        # Use a lower value to decrease randomness in the response.
-        # The default is 0.5.
-        self.temperature = 0.3
-        # Use a lower value to ignore less probable options. Set to 0 or 1.0 to disable.
-        # The default is 0.9.
-        self.top_p = 0.5
-        # Specify the maximum number of tokens to use in the generated response. The model truncates the response once the generated text exceeds max_gen_len.
-        # The default is 512.
-        self.max_gen_len = 512
+        self.temperature = 0
+        self.top_p = 0
+        self.top_k = 0
+        self.max_tokens = 0
 
-    def set_parameters(self, temperature=None, top_p=None, max_gen_len=None):
+    def set_parameters(self, temperature=None, top_p=None, top_k=None, max_tokens=None):
         '''
         Sets custom parameters.
 
@@ -59,9 +55,12 @@ class Llama2(BedrockLlm):
         if top_p is not None:
             logger.debug(f"Set model top_p={top_p}")
             self.top_p = top_p
-        if max_gen_len is not None:
-            logger.debug(f"Set model max_gen_len={max_gen_len}")
-            self.max_gen_len = max_gen_len
+        if top_k is not None:
+            logger.debug(f"Set model top_k={top_k}")
+            self.top_k = top_k
+        if max_tokens is not None:
+            logger.debug(f"Set model max_tokens={max_tokens}")
+            self.max_tokens = max_tokens
 
     def set_parameters_from_config(self, config):
         '''
@@ -74,7 +73,8 @@ class Llama2(BedrockLlm):
             llm_section = config["LLM"]
             temperature = float(llm_section["Temperature"])
             top_p = float(llm_section["NucleusSampling"])
-            max_gen_len = int(llm_section["MaxGenerationLength"])
+            top_k = int(llm_section["TopTokens"])
+            max_tokens = int(llm_section["MaxGenerationLength"])
         except KeyError as e:
             logger.error("Section or value is missing in configuration! Make sure you didn't delete anything important!")
             raise e
@@ -82,7 +82,7 @@ class Llama2(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(temperature, top_p, max_gen_len)
+        self.set_parameters(temperature, top_p, top_k, max_tokens)
 
     def get_invoke_body(self, prompt):
         '''
@@ -99,7 +99,8 @@ class Llama2(BedrockLlm):
                 "prompt": prompt,
                 "temperature": self.temperature,
                 "top_p": self.top_p,
-                "max_gen_len": self.max_gen_len,
+                "top_k": self.top_k,
+                "max_tokens": self.max_tokens,
             }
         )
     
@@ -115,13 +116,7 @@ class Llama2(BedrockLlm):
             str
         '''
         body = json.loads(response["body"].read())
-        completion = body["generation"]
-        prompt_token_count = body["prompt_token_count"]
-        generation_token_count = body["generation_token_count"]
-        stop_reason = body["stop_reason"]
-        logger.debug(f"Prompt tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
-        self.total_input_tokens += prompt_token_count
-        self.total_output_tokens += generation_token_count
-        price_estimate = (self.total_input_tokens / 1000) * self.INPUT_TOKEN_PRICE_PER_1K + (self.total_output_tokens / 1000) * self.OUTPUT_TOKEN_PRICE_PER_1K
-        logger.debug(f"Total input tokens: {self.total_input_tokens}, total output tokens: {self.total_output_tokens}, total price estimate: ${price_estimate:.2f}")
+        completion = body["outputs"][0]["text"]
+        stop_reason = body["outputs"][0]["stop_reason"]
+        logger.debug(f"Stop reason: {stop_reason}")
         return completion.strip()
