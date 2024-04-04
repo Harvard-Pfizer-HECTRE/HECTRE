@@ -3,9 +3,11 @@ from typing import Dict, List
 # Put any constants used by the tool here.
 # Don't import any heavy dependencies, this file should be pure.
 
+
 # Account related constants
 AWS_PROFILE: str = "capstone"
 AWS_REGION: str = "us-east-1"
+
 
 # Logging constants
 RESET: str = "\x1b[0m"
@@ -22,6 +24,11 @@ SILENCED_LOGGING_MODULES: List[str] = [
     "urllib3",
     "pdfminer",
 ]
+
+LLM_BEGIN_PROMPT_LOGGING_INDICATOR = "BEGIN PROMPT\n"
+LLM_END_PROMPT_LOGGING_INDICATOR = "\nEND PROMPT"
+LLM_BEGIN_RESPONSE_LOGGING_INDICATOR = "BEGIN RESPONSE\n"
+LLM_END_RESPONSE_LOGGING_INDICATOR = "\nEND RESPONSE"
 
 
 # Extraction related constants
