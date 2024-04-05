@@ -91,13 +91,16 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
 ]
 
 PER_TREATMENT_ARM_PER_TIME_HEADERS: List[str] = [
-    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
 ]
 
-CLINICAL_DATA_HEADERS: List[str] = [
+STAT_GROUP_HEADERS: List[str] = [
     "STATANAL.POP",
     "STATANAL.METHOD",
     "STATANAL.IMP.METHOD",
+]
+
+CLINICAL_DATA_HEADERS: List[str] = [
+    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
     "N.ARM.EVENT.SUBJ",
     # Baseline characteristics
     "BSL.STAT",

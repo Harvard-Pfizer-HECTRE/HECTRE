@@ -85,20 +85,20 @@ Prompt Engineering:
   PromptTimeValues1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has data. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Please respond with just the time values with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
-  # Prompts for extracting data per treatment arm and per time
-  PromptPerTreatmentArmPerTime1: |-
+  # Prompts for extracting all the unique stat analysis groups
+  PromptStatGroups1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Find data in JSON for {Treatment_Arm} at time {Time_Value}; here is a template JSON to fill in (enclose values in quotes):
+    Find all of the statistical analysis groups, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
     {Template}
-    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the list of dictionaries JSON with no other words.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in (enclose values in quotes):
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}, with {Stat_Group}. Here is a template JSON to fill in (enclose values in quotes):
     {Template}
     If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.

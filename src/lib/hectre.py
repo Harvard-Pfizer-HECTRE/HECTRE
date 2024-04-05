@@ -12,6 +12,7 @@ from ..consts import (
     NO_DATA,
     RESET,
     SILENCED_LOGGING_MODULES,
+    STAT_GROUP_HEADERS,
     VAR_DICT
 )
 from ..ontology.definitions import Definitions
@@ -300,6 +301,17 @@ class Hectre(BaseModel):
         return list(set(ret))
     
 
+    def query_stat_groups(self, text: str, text_context: str) -> str:
+        '''
+        Get all the statistical analysis groups, as a list of dictionaries.
+        '''
+        clinical_json = self.get_json_template_string_for_data_extraction(STAT_GROUP_HEADERS)
+        extra_vars = {
+            "Template": clinical_json,
+        }
+        return self.invoke_prompt_on_text(name="statistical analysis groups", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+    
+
     def query_per_treatment_arm_per_time_data(self, text: str, headers: List[str], treatment_arm: str, time_value: str, text_context: str) -> str:
         '''
         Get all the per-treatment arm and per-time data.
@@ -314,16 +326,25 @@ class Hectre(BaseModel):
         return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArmPerTime", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
 
 
-    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> str:
+    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
-        name = f"clinical data for {outcome} with {treatment_arm} for {time_value}"
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
+        stat_group_text = ""
+        for key, val in stat_group.items():
+            if NO_DATA in val:
+                continue
+            header_dict = self.definitions.get_field_by_name(key)
+            header_label = header_dict['Field Label']
+            stat_group_text += f"{header_label}: {val}, "
+        stat_group_text = stat_group_text.strip().strip(",")
+        name = f"clinical data for {outcome} with {treatment_arm} for {time_value} and {stat_group_text}"
         extra_vars = {
             "Outcome": outcome,
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
+            "Stat_Group": stat_group_text,
             "Template": clinical_json,
         }
         return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)

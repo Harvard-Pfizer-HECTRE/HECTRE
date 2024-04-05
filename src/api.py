@@ -36,46 +36,125 @@ def invoke_model(prompt):
     return hectre.invoke_model(prompt)
 
 
+def extract_literature_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> None:
+    '''
+    Extract all the literature data such as authors, title, etc.
+    Modifies the CDF in-place.
+    '''
+    text  = paper.get_all_text()
+    text_context = "text"
+    result = hectre.query_literature_data(text=text, text_context=text_context)
+    if result:
+        try:
+            literature_data_json = json5.loads(result)
+        except json.JSONDecodeError as e:
+            logger.error(f"Could not decode literature data output: {result}")
+            raise e
+                
+    cdf.set_literature_data(literature_data_json)
+
+
 def extract_literature_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     '''
     Extract all the literature data such as authors, title, etc.
     Modifies the CDF in-place.
     '''
-    if hectre.whole_paper:
-        text  = paper.get_all_text()
-        text_context = "text"
+    # Get the total number of pages, and try to extract that data from each page until we get something.
+    literature_data_json = {}
+    num_pages = paper.get_num_pages()
+    for page_num in range(num_pages):
+        page: Page = paper.get_page(page_num)
+        text = page.get_text()
+        text_context = f"page {page_num + 1}"
+        
         result = hectre.query_literature_data(text=text, text_context=text_context)
+        # If we got a non-null result, it means we found it.
         if result:
             try:
-                literature_data_json = json5.loads(result)
+                result_json = json5.loads(result)
+                literature_data_json = hectre.combine_dicts(literature_data_json, result_json)
+                if not NO_DATA in literature_data_json.values():
+                    # If all fields are filled, we can exit early
+                    break
             except json.JSONDecodeError as e:
                 logger.error(f"Could not decode literature data output: {result}")
                 raise e
-    else:
-        # Get the total number of pages, and try to extract that data from each page until we get something.
-        literature_data_json = {}
-        num_pages = paper.get_num_pages()
-        for page_num in range(num_pages):
-            page: Page = paper.get_page(page_num)
-            text = page.get_text()
-            text_context = f"page {page_num + 1}"
-            
-            result = hectre.query_literature_data(text=text, text_context=text_context)
-            # If we got a non-null result, it means we found it.
-            if result:
-                try:
-                    result_json = json5.loads(result)
-                    literature_data_json = hectre.combine_dicts(literature_data_json, result_json)
-                    if not NO_DATA in literature_data_json.values():
-                        # If all fields are filled, we can exit early
-                        break
-                except json.JSONDecodeError as e:
-                    logger.error(f"Could not decode literature data output: {result}")
-                    raise e
                 
     cdf.set_literature_data(literature_data_json)
     
 
+def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> None:
+    '''
+    Extract all the clinical data.
+    Modifies the CDF in-place.
+    '''
+
+    paper_id = paper.get_id()
+    outcomes = picos.outcomes
+    text = paper.get_all_text()
+    text_context = f"text"
+
+    # Get all the treatment arms in the paper
+    treatment_arms = hectre.query_treatment_arms(text=text, text_context=text_context)
+
+    if not treatment_arms:
+        logger.error(f"Could not find any treatment arms for paper {paper_id}!")
+        # Technically we won't have any rows if there are no treatment arms, but we
+        # don't want to throw either because we may be processing multiple papers.
+        # This means extracting from this paper has essentially failed.
+        return
+
+    # Get all the nominal time values
+    time_values = hectre.query_time_values(text=text, text_context=text_context)
+
+    if not time_values:
+        logger.error(f"Could not find any time values for paper {paper_id}!")
+        return
+    
+    # Get all the statistical analysis groups
+    stat_groups_res = hectre.query_stat_groups(text=text, text_context=text_context)
+
+    try:
+        stat_groups = json5.loads(stat_groups_res)
+    except json.JSONDecodeError as e:
+        logger.error(f"Could not decode statistical analysis groups data output: {result}")
+        # This stat groups is broken
+        return
+
+    # Loop through every treatment arm
+    for treatment_arm in treatment_arms:
+        # First let's populate some information pertaining to each treatment arm
+        result = hectre.query_per_treatment_arm_data(text=text, headers=PER_TREATMENT_ARM_HEADERS, treatment_arm=treatment_arm, text_context=text_context)
+        # If we got any results, load it as JSON object, and update our JSON for this clinical data row
+        try:
+            per_treatment_arm_data_json = json5.loads(result)
+        except json.JSONDecodeError as e:
+            logger.error(f"Could not decode per-treatment arm data output: {result}")
+            # This treatment arm is broken, but let's continue to the next one
+            continue
+
+        # TODO: Add the per-arm result to CDF
+
+        # Loop through every time value
+        for time_value in time_values:
+            arm_data = {'ARM.TIME1': time_value, 'ARM.TRT': treatment_arm}
+            # Loop through every outcome
+            for outcome in outcomes:
+                # Loop through every stat group
+                for stat_group in stat_groups:
+                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=text, text_context=text_context)
+                    # If we got any results, load it as JSON object, and update our JSON for this clinical data row
+                    try:
+                        clinical_data_json = json5.loads(result)
+                    except json.JSONDecodeError as e:
+                        logger.error(f"Could not decode clinical data output: {result}")
+                        # We keep going
+                        continue
+                    
+                    # Finally, set the value in the CDF for this one row
+                    cd = ClinicalData.from_json(json.dumps(clinical_data_json), json.dumps(arm_data))
+                    cdf.clinical_data.append(cd)
+    
 
 def extract_clinical_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     '''
@@ -210,8 +289,13 @@ def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
         No output. This function will take a while, so we will store the output elsewhere.
     '''
     cdf = CDF()
-    extract_literature_data(paper, picos, cdf)
-    extract_clinical_data(paper, picos, cdf)
+    if hectre.whole_paper:
+        extract_literature_data_whole_paper(paper, picos, cdf)
+        extract_clinical_data_whole_paper(paper, picos, cdf)
+    else:
+        # This is not nearly as accurate, and is being abandoned for development
+        extract_literature_data(paper, picos, cdf)
+        extract_clinical_data(paper, picos, cdf)
     return cdf
 
 
