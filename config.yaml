@@ -18,11 +18,12 @@ LLM:
 
   # The LLM to actually use
   # Available choices are:
+  #     Claude3Haiku
   #     Llama213bChat
   #     Llama270bChat
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
-  LLMName: Mixtral8x7bInstruct
+  LLMName: Claude3Haiku
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results

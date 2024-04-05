@@ -8,21 +8,18 @@ from .bedrock import BedrockLlm
 logger = logging.getLogger(__name__)
 
 
-class MistralLlm(BedrockLlm):
+class AnthropicLlm(BedrockLlm):
     '''
-    This is the Mistral AI model.
-    https://aws.amazon.com/bedrock/pricing/
+    This is the Anthropic LLM.
     '''
 
     MODEL_ID: Optional[str] = None
+    ANTHROPIC_VERSION: str = "bedrock-2023-05-31"
 
     INPUT_TOKEN_PRICE_PER_1K: float = 0
     OUTPUT_TOKEN_PRICE_PER_1K: float = 0
 
     PARAMETERS: List[str] = [
-        "temperature",
-        "top_p",
-        "top_k",
         "max_tokens",
     ]
 
@@ -39,9 +36,6 @@ class MistralLlm(BedrockLlm):
         '''
         try:
             llm_section = config["LLM"]
-            temperature = float(llm_section["Temperature"])
-            top_p = float(llm_section["NucleusSampling"])
-            top_k = int(llm_section["TopTokens"])
             max_tokens = int(llm_section["MaxGenerationLength"])
         except KeyError as e:
             logger.error("Section or value is missing in configuration! Make sure you didn't delete anything important!")
@@ -50,7 +44,7 @@ class MistralLlm(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(temperature=temperature, top_p=top_p, top_k=top_k, max_tokens=max_tokens)
+        self.set_parameters(max_tokens=max_tokens)
 
 
     def get_invoke_body(self, prompt):
@@ -65,15 +59,23 @@ class MistralLlm(BedrockLlm):
         '''
         return json.dumps(
             {
-                "prompt": prompt,
-                "temperature": self.temperature,
-                "top_p": self.top_p,
-                "top_k": self.top_k,
+                "anthropic_version": self.ANTHROPIC_VERSION,
                 "max_tokens": self.max_tokens,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt,
+                            }
+                        ]
+                    }
+                ]
             }
         )
     
-
+    
     def process_response(self, response):
         '''
         This function does any post-processing that is immediately needed to convert the model output
@@ -86,7 +88,13 @@ class MistralLlm(BedrockLlm):
             str
         '''
         body = json.loads(response["body"].read())
-        completion = body["outputs"][0]["text"]
-        stop_reason = body["outputs"][0]["stop_reason"]
-        logger.debug(f"Stop reason: {stop_reason}")
+        completion = body["content"][0]["text"]
+        prompt_token_count = body["usage"]["input_tokens"]
+        generation_token_count = body["usage"]["output_tokens"]
+        stop_reason = body["stop_reason"]
+        logger.debug(f"Prompt tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
+        self.total_input_tokens += prompt_token_count
+        self.total_output_tokens += generation_token_count
+        price_estimate = (self.total_input_tokens / 1000) * self.INPUT_TOKEN_PRICE_PER_1K + (self.total_output_tokens / 1000) * self.OUTPUT_TOKEN_PRICE_PER_1K
+        logger.debug(f"Total input tokens: {self.total_input_tokens}, total output tokens: {self.total_output_tokens}, total price estimate: ${price_estimate:.2f}")
         return completion.strip()

@@ -8,9 +8,9 @@ from .bedrock import BedrockLlm
 logger = logging.getLogger(__name__)
 
 
-class Llama2(BedrockLlm):
+class MetaLlm(BedrockLlm):
     '''
-    This is the Meta Llama 2 model.
+    This is the Meta LLM.
     https://aws.amazon.com/bedrock/pricing/
     '''
 
