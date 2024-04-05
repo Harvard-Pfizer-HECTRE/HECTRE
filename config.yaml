@@ -23,7 +23,7 @@ LLM:
   #     Llama270bChat
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
-  LLMName: Claude3Haiku
+  LLMName: Mixtral8x7bInstruct
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
@@ -59,15 +59,17 @@ Prompt Engineering:
   PromptLiterature1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Respond with "{No_Data}" if it cannot be found. 
-  #PromptLiterature2: |-
-  #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
+    I want to find data in JSON format; here is a template JSON to fill in (enclose values in quotes):
+    {Template}
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON.
+  PromptLiterature2: |-
+    Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
   # Prompts for extracting treatment arms
   PromptTreatmentArms1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
+    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no other words. If the treatment arms cannot be deduced from the context, please respond with "{No_Data}".
 
   # Prompts for extracting data per treatment arm
   PromptPerTreatmentArm1: |-

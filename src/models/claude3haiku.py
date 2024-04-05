@@ -9,6 +9,7 @@ class Claude3Haiku(AnthropicLlm):
  
     Instantiate this class, then call "invoke(<prompt>)" to get responses.
     '''
+    USER_ASSISTANT_MODEL: bool = True
 
     MODEL_ID: str = "anthropic.claude-3-haiku-20240307-v1:0"
 

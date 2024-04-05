@@ -65,7 +65,7 @@ class MistralLlm(BedrockLlm):
         '''
         return json.dumps(
             {
-                "prompt": prompt,
+                "prompt": '\n'.join(prompt),
                 "temperature": self.temperature,
                 "top_p": self.top_p,
                 "top_k": self.top_k,

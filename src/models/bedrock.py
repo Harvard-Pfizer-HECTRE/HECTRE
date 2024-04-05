@@ -1,7 +1,7 @@
 
 import logging
 import sys
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -53,7 +53,7 @@ class BedrockLlm(Llm):
         return response
 
 
-    def invoke(self, prompt: str) -> str:
+    def invoke(self, prompt: List[str]) -> str:
         '''
         Invokes the model, and returns a response.
 
@@ -68,7 +68,8 @@ class BedrockLlm(Llm):
 
             body = self.get_invoke_body(prompt)
             logger.debug(f"Invoking model with request size of {sys.getsizeof(body)} bytes")
-            logger.debug(f"{LLM_BEGIN_PROMPT_LOGGING_INDICATOR}{prompt}{LLM_END_PROMPT_LOGGING_INDICATOR}")
+            logged_prompt = '\n'.join(prompt)
+            logger.debug(f"{LLM_BEGIN_PROMPT_LOGGING_INDICATOR}{logged_prompt}{LLM_END_PROMPT_LOGGING_INDICATOR}")
 
             response = self.client.invoke_model(
                 modelId=self.MODEL_ID, body=body,

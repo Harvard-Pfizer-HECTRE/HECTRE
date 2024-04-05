@@ -21,6 +21,7 @@ class AnthropicLlm(BedrockLlm):
 
     PARAMETERS: List[str] = [
         "max_tokens",
+        "temperature",
     ]
 
     total_input_tokens: Optional[int] = 0
@@ -36,6 +37,7 @@ class AnthropicLlm(BedrockLlm):
         '''
         try:
             llm_section = config["LLM"]
+            temperature = int(llm_section["Temperature"])
             max_tokens = int(llm_section["MaxGenerationLength"])
         except KeyError as e:
             logger.error("Section or value is missing in configuration! Make sure you didn't delete anything important!")
@@ -44,7 +46,7 @@ class AnthropicLlm(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(max_tokens=max_tokens)
+        self.set_parameters(temperature=temperature, max_tokens=max_tokens)
 
 
     def get_invoke_body(self, prompt):
@@ -57,21 +59,36 @@ class AnthropicLlm(BedrockLlm):
         Returns:
             str
         '''
+        user: bool = True
+        messages = []
+        for element in prompt:
+            if user:
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": element,
+                        }
+                    ]
+                })
+            else:
+                messages.append({
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": element,
+                        }
+                    ]
+                })
+            user = not user
         return json.dumps(
             {
                 "anthropic_version": self.ANTHROPIC_VERSION,
                 "max_tokens": self.max_tokens,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": prompt,
-                            }
-                        ]
-                    }
-                ]
+                "temperature": self.temperature,
+                "messages": messages,
             }
         )
     

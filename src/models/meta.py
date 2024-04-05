@@ -63,7 +63,7 @@ class MetaLlm(BedrockLlm):
         '''
         return json.dumps(
             {
-                "prompt": prompt,
+                "prompt": '\n'.join(prompt),
                 "temperature": self.temperature,
                 "top_p": self.top_p,
                 "max_gen_len": self.max_gen_len,

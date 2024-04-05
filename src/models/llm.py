@@ -15,6 +15,9 @@ class Llm(BaseModel, extra='allow'):
     A generic LLM class.
     '''
     PARAMETERS: List[str] = []
+    
+    # Some models, such as Claude 3, are designed as user-assistant models, not just text completion
+    USER_ASSISTANT_MODEL: bool = False
 
 
     def __init__(self):

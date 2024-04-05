@@ -40,10 +40,10 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     "’": "'",
     # May depend on paper
     " €ı": "i",
-    "c/C223": "c",
-    "c /C223": "c",
+    "c/C223": "ç",
+    "c /C223": "ç",
     "CAF /C19E": "CAFÉ",
-    "L €ub": "Lub",
+    "L €ub": "Lüb",
     "/C1": ".",
     "/C0": "-",
     # Get rid of unknown unicodes last
