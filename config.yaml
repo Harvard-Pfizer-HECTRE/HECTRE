@@ -23,7 +23,7 @@ LLM:
   #     Llama270bChat
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
-  LLMName: Mixtral8x7bInstruct
+  LLMName: Claude3Haiku
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
@@ -31,7 +31,9 @@ LLM:
   # Top tokens to consider when selecting next token (top_k). Llama 2 doesn't use this.
   TopTokens: 1
   # Maximum tokens in the output
-  MaxGenerationLength: 1000
+  MaxGenerationLength: 2000
+  # Send the whole paper in rather than do it by page (more accurate, but only works on Claude 3)
+  WholePaper: True
 
 
 Prompt Engineering:
@@ -47,9 +49,9 @@ Prompt Engineering:
   # You can have just one prompt, or multiple follow-up prompts.
 
   # This is included only at the very start of the prompt chain (need to encase in quotes to not interpret the square brackets as a list)
-  Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. The "Answer" only consists of accurate data that is found in the document provided by "Question." The "Answer" is precise, succinct, and accurate.]'
+  Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. Respond only with accurate data that is found in the document provided in the paper. Be precise, succinct, and accurate.]'
   # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
-  Prefix: '[The "Answer" extracts ONLY from the clinical trial page(s) above. It responds with just the answer without any additional words or explanations, and only retrieve the sure values found on the page! This is the last question.]'
+  Prefix: '[Extract ONLY from the clinical trial page(s) above. Respond with just the answer without any additional words or explanations, and only retrieve the sure values found on the page!]'
   # This is the role of the LLM
   HectreRole: Answer
   # This is the role of the user
@@ -62,8 +64,8 @@ Prompt Engineering:
     I want to find data in JSON format; here is a template JSON to fill in (enclose values in quotes):
     {Template}
     If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON.
-  PromptLiterature2: |-
-    Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
+  #PromptLiterature2: |-
+  #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
   # Prompts for extracting treatment arms
   PromptTreatmentArms1: |-

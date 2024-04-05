@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 from typing import List
 
+from ..consts import (
+    PAGE_END_INDICATOR,
+    PAGE_START_INDICATOR,
+)
 from .page import Page
 from .table import Table
 
@@ -49,3 +53,17 @@ class Paper(BaseModel):
         Get a specific table in this paper.
         '''
         return self.tables[table_num]
+    
+
+    def get_all_text(self) -> str:
+        '''
+        Get all text from the paper.
+        '''
+        ret = ""
+        for page_num in range(self.get_num_pages()):
+            page: Page = self.get_page(page_num)
+            text = page.get_text()
+            ret += PAGE_START_INDICATOR.format(page_num + 1)
+            ret += text
+            ret += PAGE_END_INDICATOR.format(page_num + 1)
+        return ret

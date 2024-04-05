@@ -41,27 +41,38 @@ def extract_literature_data(paper: Paper, picos: Picos, cdf: CDF) -> None:
     Extract all the literature data such as authors, title, etc.
     Modifies the CDF in-place.
     '''
-
-    # Get the total number of pages, and try to extract that data from each page until we get something.
-    literature_data_json = {}
-    num_pages = paper.get_num_pages()
-    for page_num in range(num_pages):
-        page: Page = paper.get_page(page_num)
-        text = page.get_text()
-        text_context = f"page {page_num + 1}"
-        
+    if hectre.whole_paper:
+        text  = paper.get_all_text()
+        text_context = "text"
         result = hectre.query_literature_data(text=text, text_context=text_context)
-        # If we got a non-null result, it means we found it.
         if result:
             try:
-                result_json = json5.loads(result)
-                literature_data_json = hectre.combine_dicts(literature_data_json, result_json)
-                if not NO_DATA in literature_data_json.values():
-                    # If all fields are filled, we can exit early
-                    break
+                literature_data_json = json5.loads(result)
             except json.JSONDecodeError as e:
                 logger.error(f"Could not decode literature data output: {result}")
                 raise e
+    else:
+        # Get the total number of pages, and try to extract that data from each page until we get something.
+        literature_data_json = {}
+        num_pages = paper.get_num_pages()
+        for page_num in range(num_pages):
+            page: Page = paper.get_page(page_num)
+            text = page.get_text()
+            text_context = f"page {page_num + 1}"
+            
+            result = hectre.query_literature_data(text=text, text_context=text_context)
+            # If we got a non-null result, it means we found it.
+            if result:
+                try:
+                    result_json = json5.loads(result)
+                    literature_data_json = hectre.combine_dicts(literature_data_json, result_json)
+                    if not NO_DATA in literature_data_json.values():
+                        # If all fields are filled, we can exit early
+                        break
+                except json.JSONDecodeError as e:
+                    logger.error(f"Could not decode literature data output: {result}")
+                    raise e
+                
     cdf.set_literature_data(literature_data_json)
     
 

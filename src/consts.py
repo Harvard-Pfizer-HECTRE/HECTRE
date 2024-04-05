@@ -49,6 +49,8 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     # Get rid of unknown unicodes last
     "": "",
 }
+PAGE_START_INDICATOR: str = "\nStart of Page {0}\n"
+PAGE_END_INDICATOR: str = "\nEnd of Page {0}\n"
 
 
 # LLM related constants

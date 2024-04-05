@@ -32,6 +32,7 @@ class Hectre(BaseModel):
     config: Any = None
     definitions: Any = None
     llm: Any = None
+    whole_paper: bool = False
 
 
     def __init__(self, **kwargs):
@@ -42,6 +43,11 @@ class Hectre(BaseModel):
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
             raise HectreException("Could not find LLMName in configuration!")
+        try:
+            whole_paper = self.config["LLM"]["WholePaper"]
+        except KeyError:
+            raise HectreException("Could not find WholePaper in configuration!")
+        self.whole_paper = whole_paper
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
