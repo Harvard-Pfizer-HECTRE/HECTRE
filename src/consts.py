@@ -38,6 +38,7 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     "ﬂ": "fl",
     "–": "-",
     "’": "'",
+    "‘": "'",
     # May depend on paper
     " €ı": "i",
     "c/C223": "ç",

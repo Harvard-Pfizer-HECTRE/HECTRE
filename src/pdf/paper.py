@@ -67,3 +67,25 @@ class Paper(BaseModel):
             ret += text
             ret += PAGE_END_INDICATOR.format(page_num + 1)
         return ret
+    
+
+    def get_all_clinical_text(self) -> str:
+        '''
+        Get all "clinical" text from the paper.
+        We can do this by isolating the pages with tables, but if only 2 or less
+        pages like that were detected, just pass in the whole paper.
+        '''
+        ret = ""
+        pages_count = 0
+        for page_num in range(self.get_num_pages()):
+            page: Page = self.get_page(page_num)
+            if not page.get_has_table():
+                continue
+            pages_count += 1
+            text = page.get_text()
+            ret += PAGE_START_INDICATOR.format(page_num + 1)
+            ret += text
+            ret += PAGE_END_INDICATOR.format(page_num + 1)
+        if pages_count > 2:
+            return ret
+        return self.get_all_text()

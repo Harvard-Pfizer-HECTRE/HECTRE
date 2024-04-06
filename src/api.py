@@ -66,7 +66,9 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
     paper_id = paper.get_id()
     outcomes = picos.outcomes
     text = paper.get_all_text()
-    text_context = f"text"
+    text_context = "text"
+    clinical_text = paper.get_all_clinical_text()
+    clinical_text_context = f"text with clinical data"
 
     # Get all the treatment arms in the paper
     treatment_arms = hectre.query_treatment_arms(text=text, text_context=text_context)
@@ -134,7 +136,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                 outcome_dict = {"ENDPOINT": outcome}
                 # Loop through every stat group
                 for stat_group in stat_groups:
-                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=text, text_context=text_context)
+                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text, text_context=clinical_text_context)
                     # If we got any results, load it as JSON object, and update our JSON for this clinical data row
                     try:
                         clinical_data_json = json5.loads(result)
