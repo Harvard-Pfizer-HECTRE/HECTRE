@@ -18,23 +18,18 @@ def cdf():
 
 @cli.command()
 def lit_data():
-    ld: LiteratureData = LiteratureData()
+    ld: CDFData = CDFData()
     click.echo(ld.model_dump())
 
 @cli.command()
-def getfielddefs():
-    get_field_defs()
-    #click.echo(ld.model_dump())
-
-@cli.command()
 def test_alias():
-    d = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    d = CDFData(**{"ARM.ROUTE": "route 66"})
     print(d)
 
 @cli.command()
 def test_cdf():
-    lit = LiteratureData(**{"AU": "JFN:MM"})
-    clin = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    lit = CDFData(**{"AU": "JFN:MM"})
+    clin = CDFData(**{"ARM.ROUTE": "route 66"})
     cdf = CDF()
     cdf.literature_data = lit
     cdf.clinical_data = [clin]
@@ -42,8 +37,8 @@ def test_cdf():
 
 @cli.command()
 def test_add_to_cdf():
-    lit = LiteratureData(**{"AU": "JFN:MM"})
-    clin = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    lit = CDFData(**{"AU": "JFN:MM"})
+    clin = CDFData(**{"ARM.ROUTE": "route 66"})
     cdf = CDF()
     cdf.literature_data = lit
     cdf.clinical_data = [clin]
@@ -52,8 +47,8 @@ def test_add_to_cdf():
 
 @cli.command()
 def test_cdf_to_df():
-    lit = LiteratureData(**{"AU": "JFN:MM"})
-    clin = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    lit = CDFData(**{"AU": "JFN:MM"})
+    clin = CDFData(**{"ARM.ROUTE": "route 66"})
     cdf = CDF()
     cdf.literature_data = lit
     cdf.clinical_data = [clin]
@@ -62,8 +57,8 @@ def test_cdf_to_df():
 
 @cli.command()
 def test_cdf_to_csv():
-    lit = LiteratureData(**{"AU": "JFN:MM"})
-    clin = ClinicalData(**{"ARM.ROUTE": "route 66"})
+    lit = CDFData(**{"AU": "JFN:MM"})
+    clin = CDFData(**{"ARM.ROUTE": "route 66"})
     cdf = CDF()
     cdf.literature_data = lit
     cdf.clinical_data = [clin]
@@ -73,10 +68,10 @@ def test_cdf_to_csv():
 
 @cli.command()
 def test_from_json():
-    lit = LiteratureData(**{"AU": "JFN:MM"})
+    lit = CDFData(**{"AU": "JFN:MM"})
     c1 = '{"BSL.LCI": 8.7}'
     c2 = '{"CHBSL.VARU": "SD"}'
-    clin = ClinicalData.from_json(c1, c2)
+    clin = CDFData.from_json(c1, c2)
     cdf = CDF()
     cdf.literature_data = lit
     cdf.clinical_data = [clin]

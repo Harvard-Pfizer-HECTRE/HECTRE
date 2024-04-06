@@ -33,7 +33,6 @@ class Hectre(BaseModel):
     config: Any = None
     definitions: Any = None
     llm: Any = None
-    whole_paper: bool = False
 
 
     def __init__(self, **kwargs):
@@ -44,11 +43,6 @@ class Hectre(BaseModel):
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
             raise HectreException("Could not find LLMName in configuration!")
-        try:
-            whole_paper = self.config["LLM"]["WholePaper"]
-        except KeyError:
-            raise HectreException("Could not find WholePaper in configuration!")
-        self.whole_paper = whole_paper
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
@@ -312,20 +306,6 @@ class Hectre(BaseModel):
         return self.invoke_prompt_on_text(name="statistical analysis groups", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
     
 
-    def query_per_treatment_arm_per_time_data(self, text: str, headers: List[str], treatment_arm: str, time_value: str, text_context: str) -> str:
-        '''
-        Get all the per-treatment arm and per-time data.
-        '''
-        name = f"per-arm and per-time data for arm {treatment_arm} and time {time_value}"
-        clinical_json = self.get_json_template_string_for_data_extraction(headers)
-        extra_vars = {
-            "Treatment_Arm": treatment_arm,
-            "Time_Value": time_value,
-            "Template": clinical_json,
-        }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArmPerTime", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
-
-
     def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
@@ -333,7 +313,7 @@ class Hectre(BaseModel):
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
         stat_group_text = ""
         for key, val in stat_group.items():
-            if NO_DATA in val:
+            if NO_DATA in val or "STATANAL.IMP.METHOD" == key:
                 continue
             header_dict = self.definitions.get_field_by_name(key)
             header_label = header_dict['Field Label']

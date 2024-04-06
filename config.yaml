@@ -32,8 +32,6 @@ LLM:
   TopTokens: 1
   # Maximum tokens in the output
   MaxGenerationLength: 2000
-  # Send the whole paper in rather than do it by page (more accurate, but only works on Claude 3)
-  WholePaper: True
 
 
 Prompt Engineering:
