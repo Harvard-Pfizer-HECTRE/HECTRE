@@ -71,7 +71,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
     clinical_text_context = f"text with clinical data"
 
     # Get all the treatment arms in the paper
-    treatment_arms = hectre.query_treatment_arms(text=text, text_context=text_context)
+    treatment_arms = hectre.query_treatment_arms(text=clinical_text, text_context=clinical_text_context)
 
     if not treatment_arms:
         logger.error(f"Could not find any treatment arms for paper {paper_id}!")
@@ -81,7 +81,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
         return
 
     # Get all the nominal time values
-    time_values = hectre.query_time_values(text=text, text_context=text_context)
+    time_values = hectre.query_time_values(text=clinical_text, text_context=clinical_text_context)
 
     if not time_values:
         logger.error(f"Could not find any time values for paper {paper_id}!")
