@@ -1,67 +1,32 @@
 
 import logging
 import json
-from typing import Optional
+from typing import List, Optional
 
 from .bedrock import BedrockLlm
 
 logger = logging.getLogger(__name__)
 
-class Llama2(BedrockLlm):
+
+class AnthropicLlm(BedrockLlm):
     '''
-    This is the Meta Llama 2 model.
-    https://aws.amazon.com/bedrock/pricing/
+    This is the Anthropic LLM.
     '''
 
     MODEL_ID: Optional[str] = None
+    ANTHROPIC_VERSION: str = "bedrock-2023-05-31"
 
     INPUT_TOKEN_PRICE_PER_1K: float = 0
     OUTPUT_TOKEN_PRICE_PER_1K: float = 0
 
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    max_gen_len: Optional[float] = None
+    PARAMETERS: List[str] = [
+        "max_tokens",
+        "temperature",
+    ]
 
     total_input_tokens: Optional[int] = 0
     total_output_tokens: Optional[int] = 0
 
-    def __init__(self):
-        super().__init__()
-        self.set_default_parameters()
-
-    def set_default_parameters(self):
-        '''
-        Sets the default parameters. The config file will override this.
-        '''
-        # Use a lower value to decrease randomness in the response.
-        # The default is 0.5.
-        self.temperature = 0.3
-        # Use a lower value to ignore less probable options. Set to 0 or 1.0 to disable.
-        # The default is 0.9.
-        self.top_p = 0.5
-        # Specify the maximum number of tokens to use in the generated response. The model truncates the response once the generated text exceeds max_gen_len.
-        # The default is 512.
-        self.max_gen_len = 512
-
-    def set_parameters(self, temperature=None, top_p=None, max_gen_len=None):
-        '''
-        Sets custom parameters.
-
-        Parameters:
-            temperature (float)
-            top_p (float)
-            max_gen_len (int)
-        '''
-        # Set custom paramaters if you want to, prior to calling invoke()
-        if temperature is not None:
-            logger.debug(f"Set model temperature={temperature}")
-            self.temperature = temperature
-        if top_p is not None:
-            logger.debug(f"Set model top_p={top_p}")
-            self.top_p = top_p
-        if max_gen_len is not None:
-            logger.debug(f"Set model max_gen_len={max_gen_len}")
-            self.max_gen_len = max_gen_len
 
     def set_parameters_from_config(self, config):
         '''
@@ -72,9 +37,8 @@ class Llama2(BedrockLlm):
         '''
         try:
             llm_section = config["LLM"]
-            temperature = float(llm_section["Temperature"])
-            top_p = float(llm_section["NucleusSampling"])
-            max_gen_len = int(llm_section["MaxGenerationLength"])
+            temperature = int(llm_section["Temperature"])
+            max_tokens = int(llm_section["MaxGenerationLength"])
         except KeyError as e:
             logger.error("Section or value is missing in configuration! Make sure you didn't delete anything important!")
             raise e
@@ -82,7 +46,8 @@ class Llama2(BedrockLlm):
             logger.error("Invalid value in configuration!")
             raise e
         
-        self.set_parameters(temperature, top_p, max_gen_len)
+        self.set_parameters(temperature=temperature, max_tokens=max_tokens)
+
 
     def get_invoke_body(self, prompt):
         '''
@@ -94,14 +59,39 @@ class Llama2(BedrockLlm):
         Returns:
             str
         '''
+        user: bool = True
+        messages = []
+        for element in prompt:
+            if user:
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": element,
+                        }
+                    ]
+                })
+            else:
+                messages.append({
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": element,
+                        }
+                    ]
+                })
+            user = not user
         return json.dumps(
             {
-                "prompt": prompt,
+                "anthropic_version": self.ANTHROPIC_VERSION,
+                "max_tokens": self.max_tokens,
                 "temperature": self.temperature,
-                "top_p": self.top_p,
-                "max_gen_len": self.max_gen_len,
+                "messages": messages,
             }
         )
+    
     
     def process_response(self, response):
         '''
@@ -115,9 +105,9 @@ class Llama2(BedrockLlm):
             str
         '''
         body = json.loads(response["body"].read())
-        completion = body["generation"]
-        prompt_token_count = body["prompt_token_count"]
-        generation_token_count = body["generation_token_count"]
+        completion = body["content"][0]["text"]
+        prompt_token_count = body["usage"]["input_tokens"]
+        generation_token_count = body["usage"]["output_tokens"]
         stop_reason = body["stop_reason"]
         logger.debug(f"Prompt tokens: {prompt_token_count + generation_token_count} (Input: {prompt_token_count}, Output: {generation_token_count}). Stop reason: {stop_reason}")
         self.total_input_tokens += prompt_token_count

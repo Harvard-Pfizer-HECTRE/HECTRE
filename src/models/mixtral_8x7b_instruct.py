@@ -1,7 +1,7 @@
 
-from .mistral import Mistral
+from .mistral import MistralLlm
 
-class Mixtral8x7bInstruct(Mistral):
+class Mixtral8x7bInstruct(MistralLlm):
     '''
     This is the Mixtral (not a misspelling) 8x7B Instruct model with 32k max tokens.
     https://aws.amazon.com/bedrock/pricing/

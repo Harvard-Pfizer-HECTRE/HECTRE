@@ -8,13 +8,14 @@ from typing import Any, Dict, List, Optional
 
 from ..consts import (
     GREEN,
+    LITERATURE_DATA_HEADERS,
     NO_DATA,
     RESET,
     SILENCED_LOGGING_MODULES,
+    STAT_GROUP_HEADERS,
     VAR_DICT
 )
 from ..ontology.definitions import Definitions
-from ..pdf.page import Page
 from ..models.consts import NAME_TO_MODEL_CLASS
 from .config import Config
 
@@ -32,6 +33,7 @@ class Hectre(BaseModel):
     config: Any = None
     definitions: Any = None
     llm: Any = None
+    whole_paper: bool = False
 
 
     def __init__(self, **kwargs):
@@ -42,6 +44,11 @@ class Hectre(BaseModel):
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
             raise HectreException("Could not find LLMName in configuration!")
+        try:
+            whole_paper = self.config["LLM"]["WholePaper"]
+        except KeyError:
+            raise HectreException("Could not find WholePaper in configuration!")
+        self.whole_paper = whole_paper
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
@@ -91,12 +98,12 @@ class Hectre(BaseModel):
             raise HectreException(f"{llm_name} is not a supported LLM type!")
 
 
-    def invoke_model(self, prompt: str) -> str:
+    def invoke_model(self, prompt: List[str]) -> str:
         '''
         Call the LLM to get an output.
 
         Parameters:
-            prompt (str)
+            prompt (List[str])
 
         Returns:
             str
@@ -127,26 +134,35 @@ class Hectre(BaseModel):
         Don't call this by itself, this is used by some nested methods.
         '''
         prompt = self.config["Prompt Engineering"]["Prelude"] + "\n"
-        prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
-        prompt += question + "\n"
-        prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
-        prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+        if self.llm.USER_ASSISTANT_MODEL:
+            prompt += question + "\n" + self.config["Prompt Engineering"]["Prefix"]
+        else:
+            prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
+            prompt += question + "\n"
+            prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
+            prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
         return prompt
 
 
-    def update_prompt(self, prompt: str, response: str, question: str):
+    def update_prompt(self, prior_content: List[str], response: str, question: str) -> List[str]:
         '''
         Update the prompt with the response and the new question.
         Use this for follow-up questions and multi-shot prompting.
         Don't call this by itself, this is used by some nested methods.
         '''
-        prompt = prompt[:-(len(self.config["Prompt Engineering"]["Prefix"]) + len(self.config["Prompt Engineering"]["HectreRole"]) + 4)]
-        prompt += "\n" + self.config["Prompt Engineering"]["HectreRole"] + ": "
-        prompt += response + "\n"
-        prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
-        prompt += question + "\n"
-        prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
-        prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+        if self.llm.USER_ASSISTANT_MODEL:
+            prompt = prior_content.copy()
+            prompt.append(response)
+            prompt.append(question)
+        else:
+            prompt = prior_content[0][:-(len(self.config["Prompt Engineering"]["Prefix"]) + len(self.config["Prompt Engineering"]["HectreRole"]) + 4)]
+            prompt += "\n" + self.config["Prompt Engineering"]["HectreRole"] + ": "
+            prompt += response + "\n"
+            prompt += self.config["Prompt Engineering"]["UserRole"] + ": "
+            prompt += question + "\n"
+            prompt += self.config["Prompt Engineering"]["Prefix"] + "\n"
+            prompt += self.config["Prompt Engineering"]["HectreRole"] + ": "
+            prompt = [prompt]
         return prompt
 
 
@@ -194,7 +210,7 @@ class Hectre(BaseModel):
         extra_vars = extra_vars or {}
         prompt_num = 1
         prompt_key = f"{prompt_name}1"
-        prior_content = ""
+        prior_content = []
         response = ""
         # Iterate on each prompt
         while prompt_key in self.config["Prompt Engineering"]:
@@ -208,12 +224,11 @@ class Hectre(BaseModel):
 
             # Now we have the prompt, now either create prompt from scratch or extend a previous conversation
             if not prior_content:
-                prompt = self.build_new_prompt(prompt)
+                prompt_in = [self.build_new_prompt(prompt)]
             else:
-                prompt = self.update_prompt(prompt=prior_content, response=response, question=prompt)
-
-            response = self.invoke_model(prompt)
-            prior_content = prompt
+                prompt_in = self.update_prompt(prior_content=prior_content, response=response, question=prompt)
+            response = self.invoke_model(prompt_in)
+            prior_content = prompt_in
 
             prompt_num += 1
             prompt_key = f"{prompt_name}{prompt_num}"
@@ -239,12 +254,16 @@ class Hectre(BaseModel):
         return clinical_json
 
 
-    def query_literature_data(self, header: str, text: str, text_context: str) -> Optional[str]:
+    def query_literature_data(self, text: str, text_context: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get the literature data from the page using the LLM.
         '''
-        header_dict = self.definitions.get_field_by_name(header)
-        return self.invoke_prompt_on_text(name=header_dict['Field Label'], prompt_name="PromptLiterature", text=text, text_context=text_context, header=header)
+        name = "literature data"
+        clinical_json = self.get_json_template_string_for_data_extraction(LITERATURE_DATA_HEADERS)
+        extra_vars = {
+            "Template": clinical_json,
+        }
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptLiterature", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
 
 
     def query_treatment_arms(self, text: str, text_context: str) -> List[str]:
@@ -282,6 +301,17 @@ class Hectre(BaseModel):
         return list(set(ret))
     
 
+    def query_stat_groups(self, text: str, text_context: str) -> str:
+        '''
+        Get all the statistical analysis groups, as a list of dictionaries.
+        '''
+        clinical_json = self.get_json_template_string_for_data_extraction(STAT_GROUP_HEADERS)
+        extra_vars = {
+            "Template": clinical_json,
+        }
+        return self.invoke_prompt_on_text(name="statistical analysis groups", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+    
+
     def query_per_treatment_arm_per_time_data(self, text: str, headers: List[str], treatment_arm: str, time_value: str, text_context: str) -> str:
         '''
         Get all the per-treatment arm and per-time data.
@@ -296,16 +326,25 @@ class Hectre(BaseModel):
         return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArmPerTime", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
 
 
-    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, text: str, text_context: str) -> str:
+    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
-        name = f"clinical data for {outcome} with {treatment_arm} for {time_value}"
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
+        stat_group_text = ""
+        for key, val in stat_group.items():
+            if NO_DATA in val:
+                continue
+            header_dict = self.definitions.get_field_by_name(key)
+            header_label = header_dict['Field Label']
+            stat_group_text += f"{header_label}: {val}, "
+        stat_group_text = stat_group_text.strip().strip(",")
+        name = f"clinical data for {outcome} with {treatment_arm} for {time_value} and {stat_group_text}"
         extra_vars = {
             "Outcome": outcome,
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
+            "Stat_Group": stat_group_text,
             "Template": clinical_json,
         }
         return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)

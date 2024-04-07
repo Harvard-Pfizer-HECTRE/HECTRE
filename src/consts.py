@@ -3,9 +3,11 @@ from typing import Dict, List
 # Put any constants used by the tool here.
 # Don't import any heavy dependencies, this file should be pure.
 
+
 # Account related constants
 AWS_PROFILE: str = "capstone"
 AWS_REGION: str = "us-east-1"
+
 
 # Logging constants
 RESET: str = "\x1b[0m"
@@ -23,6 +25,11 @@ SILENCED_LOGGING_MODULES: List[str] = [
     "pdfminer",
 ]
 
+LLM_BEGIN_PROMPT_LOGGING_INDICATOR = "BEGIN PROMPT\n"
+LLM_END_PROMPT_LOGGING_INDICATOR = "\nEND PROMPT"
+LLM_BEGIN_RESPONSE_LOGGING_INDICATOR = "BEGIN RESPONSE\n"
+LLM_END_RESPONSE_LOGGING_INDICATOR = "\nEND RESPONSE"
+
 
 # Extraction related constants
 UNICODE_REPLACE_MAP: Dict[str, str] = {
@@ -33,15 +40,17 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     "’": "'",
     # May depend on paper
     " €ı": "i",
-    "c/C223": "c",
-    "c /C223": "c",
+    "c/C223": "ç",
+    "c /C223": "ç",
     "CAF /C19E": "CAFÉ",
-    "L €ub": "Lub",
+    "L €ub": "Lüb",
     "/C1": ".",
     "/C0": "-",
     # Get rid of unknown unicodes last
     "": "",
 }
+PAGE_START_INDICATOR: str = "\nStart of Page {0}\n"
+PAGE_END_INDICATOR: str = "\nEnd of Page {0}\n"
 
 
 # LLM related constants
@@ -82,13 +91,16 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
 ]
 
 PER_TREATMENT_ARM_PER_TIME_HEADERS: List[str] = [
-    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
 ]
 
-CLINICAL_DATA_HEADERS: List[str] = [
+STAT_GROUP_HEADERS: List[str] = [
     "STATANAL.POP",
     "STATANAL.METHOD",
     "STATANAL.IMP.METHOD",
+]
+
+CLINICAL_DATA_HEADERS: List[str] = [
+    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
     "N.ARM.EVENT.SUBJ",
     # Baseline characteristics
     "BSL.STAT",

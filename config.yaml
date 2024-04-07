@@ -18,11 +18,12 @@ LLM:
 
   # The LLM to actually use
   # Available choices are:
+  #     Claude3Haiku
   #     Llama213bChat
   #     Llama270bChat
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
-  LLMName: Mixtral8x7bInstruct
+  LLMName: Claude3Haiku
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
@@ -30,7 +31,9 @@ LLM:
   # Top tokens to consider when selecting next token (top_k). Llama 2 doesn't use this.
   TopTokens: 1
   # Maximum tokens in the output
-  MaxGenerationLength: 1000
+  MaxGenerationLength: 2000
+  # Send the whole paper in rather than do it by page (more accurate, but only works on Claude 3)
+  WholePaper: True
 
 
 Prompt Engineering:
@@ -46,9 +49,9 @@ Prompt Engineering:
   # You can have just one prompt, or multiple follow-up prompts.
 
   # This is included only at the very start of the prompt chain (need to encase in quotes to not interpret the square brackets as a list)
-  Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. The "Answer" only consists of accurate data that is found in the document provided by "Question." The "Answer" is precise, succinct, and accurate.]'
+  Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. Respond only with accurate data that is found in the document provided in the paper. Be precise, succinct, and accurate.]'
   # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
-  Prefix: '[The "Answer" extracts ONLY from the clinical trial page(s) above. It responds with just the answer without any additional words or explanations, and only retrieve the sure values found on the page! This is the last question.]'
+  Prefix: '[Extract ONLY from the clinical trial page(s) above. Respond with just the answer without any additional words or explanations, and only retrieve the sure values found on the page!]'
   # This is the role of the LLM
   HectreRole: Answer
   # This is the role of the user
@@ -58,7 +61,9 @@ Prompt Engineering:
   PromptLiterature1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find the {Field_Label}; here is a description of the field: {Field_Description}. Respond with "{No_Data}" if it cannot be found. 
+    I want to find data in JSON format; here is a template JSON to fill in (enclose values in quotes):
+    {Template}
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON.
   #PromptLiterature2: |-
   #  Ok, now tell me just the answer with no other words, or with "{No_Data}" if it cannot be found.
 
@@ -66,7 +71,7 @@ Prompt Engineering:
   PromptTreatmentArms1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons. If the treatment arms cannot be deduced from this page, please respond with "{No_Data}".
+    Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no other words. If the treatment arms cannot be deduced from the context, please respond with "{No_Data}".
 
   # Prompts for extracting data per treatment arm
   PromptPerTreatmentArm1: |-
@@ -80,20 +85,20 @@ Prompt Engineering:
   PromptTimeValues1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has data. Please respond with just the time values, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Please respond with just the time values with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
-  # Prompts for extracting data per treatment arm and per time
-  PromptPerTreatmentArmPerTime1: |-
+  # Prompts for extracting all the unique stat analysis groups
+  PromptStatGroups1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Find data in JSON for {Treatment_Arm} at time {Time_Value}; here is a template JSON to fill in (enclose values in quotes):
+    Find all of the statistical analysis groups, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
     {Template}
-    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.
+    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the list of dictionaries JSON with no other words.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}; here is a template JSON to fill in (enclose values in quotes):
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}, with {Stat_Group}. Here is a template JSON to fill in (enclose values in quotes):
     {Template}
     If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.

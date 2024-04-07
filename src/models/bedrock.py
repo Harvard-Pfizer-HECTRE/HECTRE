@@ -1,15 +1,23 @@
 
 import logging
 import sys
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 
-from ..consts import AWS_PROFILE, AWS_REGION
+from ..consts import (
+    AWS_PROFILE,
+    AWS_REGION,
+    LLM_BEGIN_PROMPT_LOGGING_INDICATOR,
+    LLM_BEGIN_RESPONSE_LOGGING_INDICATOR,
+    LLM_END_PROMPT_LOGGING_INDICATOR,
+    LLM_END_RESPONSE_LOGGING_INDICATOR,
+)
 from .llm import Llm
 
 logger = logging.getLogger(__name__)
+
 
 class BedrockLlm(Llm):
     '''
@@ -23,6 +31,7 @@ class BedrockLlm(Llm):
 
     client: Any = None
 
+
     def __init__(self):
         super().__init__()
 
@@ -35,13 +44,16 @@ class BedrockLlm(Llm):
             logger.error('Error getting Amazon Bedrock client, have you put your credentials in "~/.aws/credentials" and "~/.aws/config" yet? Use profile name "capstone".')
             raise e
         
+
     def get_invoke_body(self, prompt: str) -> Any:
         return prompt
     
+
     def process_response(self, response: Any) -> str:
         return response
 
-    def invoke(self, prompt: str) -> str:
+
+    def invoke(self, prompt: List[str]) -> str:
         '''
         Invokes the model, and returns a response.
 
@@ -56,14 +68,15 @@ class BedrockLlm(Llm):
 
             body = self.get_invoke_body(prompt)
             logger.debug(f"Invoking model with request size of {sys.getsizeof(body)} bytes")
-            logger.debug(f"BEGIN PROMPT\n{prompt}\nEND PROMPT")
+            logged_prompt = '\n'.join(prompt)
+            logger.debug(f"{LLM_BEGIN_PROMPT_LOGGING_INDICATOR}{logged_prompt}{LLM_END_PROMPT_LOGGING_INDICATOR}")
 
             response = self.client.invoke_model(
                 modelId=self.MODEL_ID, body=body,
             )
 
             processed_response = self.process_response(response)
-            logger.debug(f"BEGIN RESPONSE\n{processed_response}\nEND RESPONSE")
+            logger.debug(f"{LLM_BEGIN_RESPONSE_LOGGING_INDICATOR}{processed_response}{LLM_END_RESPONSE_LOGGING_INDICATOR}")
             return processed_response
 
         except ClientError:
