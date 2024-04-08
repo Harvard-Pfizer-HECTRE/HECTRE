@@ -44,9 +44,9 @@ class PdfParser(Parser):
         try:
             with open(self.file_path, 'rb') as file:
                 with pdfplumber.open(self.file_path) as pdfplumber_file:
-                    pdf_file_reader = PyPDF2.PdfFileReader(file)
+                    pdf_file_reader = PyPDF2.PdfReader(file, strict=True)
                     # get the number of pages in the PDF
-                    num_pages = pdf_file_reader.numPages
+                    num_pages = len(pdf_file_reader.pages)
                     logger.info(f"Found {num_pages} pages in the PDF")
 
                     # extract the text and tables of every page

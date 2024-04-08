@@ -1,6 +1,15 @@
-from pydantic import BaseModel
+import logging
 
-from ..consts import UNICODE_REPLACE_MAP
+from pydantic import BaseModel
+from typing import Optional, Set
+
+from ..consts import (
+    ALLOWED_UNICODE_CHARS,
+    UNICODE_REPLACE_MAP
+)
+
+logger = logging.getLogger(__name__)
+
 
 class Page(BaseModel):
     '''
@@ -10,13 +19,22 @@ class Page(BaseModel):
     number: int
     text: str
     has_table: bool = False
+    unknown_unicode_chars: Optional[Set[str]] = None
 
-    def __init__(self, number: int, text: str, has_table: bool = False) -> None:
-        super().__init__(number=number, text=text, has_table=has_table)
+
+    def __init__(self, number: int, text: str, has_table: bool = False, unknown_unicode_chars: Optional[Set[str]] = None) -> None:
+        super().__init__(number=number, text=text, has_table=has_table, unknown_unicode_chars=unknown_unicode_chars)
+        self.unknown_unicode_chars = set()
 
         # Replace some of the unicode text
         for unicode, replacement in UNICODE_REPLACE_MAP.items():
             text = text.replace(unicode, replacement)
+
+        # Warn on any unknown unicode characters
+        for char in text:
+            if ord(char) > 127 and char not in ALLOWED_UNICODE_CHARS:
+                logger.debug(f"Detected unknown unicode character: {char}")
+                self.unknown_unicode_chars.add(char)
 
         self.text = text
 
