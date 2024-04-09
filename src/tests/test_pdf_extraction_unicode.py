@@ -1,11 +1,11 @@
 import os
 import re
 
-from src.consts import (
+from consts import (
     TEST_DATA_SUBFOLDER,
     TEST_DATA_SUFFIX,
 )
-from src.input_parsers.pdf_parser import PdfParser
+from input_parsers.pdf_parser import PdfParser
 
 
 def pdf_unicode_check(file_path):
@@ -17,7 +17,7 @@ def pdf_unicode_check(file_path):
             assert not re.search("/C[0-9]", line) and not re.search("/H[0-9]", line), f"Found unknown character(s) on line: {line} (paper: {file_path})"
 
 
-def test_pdf_unicode_check():
+def pdf_should_not_contain_unknown_unicode():
     '''
     Checks if the file processed by PDF extractor does not have
     any lingering unknown unicode characters.

@@ -7,10 +7,10 @@ import PyPDF2
 from typing import Any, List, Optional
 import urllib3
 
-from .parser import Parser
-from ..pdf.page import Page
-from ..pdf.paper import Paper
-from ..pdf.table import Table
+from input_parsers.parser import Parser
+from pdf.page import Page
+from pdf.paper import Paper
+from pdf.table import Table
 
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ import logging
 from pydantic import BaseModel
 from typing import Optional, Set
 
-from ..consts import (
+from consts import (
     ALLOWED_UNICODE_CHARS,
     UNICODE_REPLACE_MAP
 )

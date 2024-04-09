@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 from typing import List
 
-from ..consts import (
+from consts import (
     PAGE_END_INDICATOR,
     PAGE_START_INDICATOR,
 )
-from .page import Page
-from .table import Table
+from pdf.page import Page
+from pdf.table import Table
 
 
 class Paper(BaseModel):
