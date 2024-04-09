@@ -10,7 +10,7 @@ from typing import Any, List, Dict, Optional
 import json
 import pandas as pd
 
-from ..consts import HEADER_ORDER, NO_DATA
+from consts import HEADER_ORDER, NO_DATA
 
 # Create fields dynamically for LiteratureData and Result models based on definitions.json
 # Create method of CDF to create dataframe from LiteratureData and Results
