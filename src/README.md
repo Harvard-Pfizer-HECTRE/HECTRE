@@ -2,11 +2,11 @@
 
 ## Quickstart on Using the APIs
 
-You can provide a local path of a PDF or URL to a PDF, as well as endpoints separated by semi-colon, to the `/src/extract_single_file.py` script to perform data extraction. Output will be in `/output/<date and time>.csv`.
+You can provide a local path of a PDF or URL to a PDF, as well as endpoints separated by semi-colon, to the `/src/extract.py` script to perform data extraction. Output will be in `/output/<date and time>.csv`.
 1. Make sure to have installed Python with at least version 3.8.
 2. Make sure AWS credentials are in you root directory under .aws folder. (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials")
 3. Set the credential profile name to be "capstone". (ex: typically there is `[default]` or `[user1]`, set the AWS credentials to be `[capstone]`)
-4. You can run the `/src/extract_single_file.py` with `python -m src.extract_single_file <path or URL> <endpoints separated by semi-colon>`.
+4. You can run the `/src/extract.py` with `python -m src.extract <path or URL> <endpoints separated by semi-colon>`.
 
 ## Dev Local Env Notes
 
