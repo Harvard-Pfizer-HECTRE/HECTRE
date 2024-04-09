@@ -8,6 +8,8 @@ import click
 This generates the definitions.json in the root of the repo.
 The CSV passed in is from the Harvard MBMA Data Definition file provided by Pfizer.
 Likely we won't have to run it again, but who knows?
+
+Disclaimer: don't run this again, since we've made many manual edits to the definitions.json file.
 '''
 
 @click.command()

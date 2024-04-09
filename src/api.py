@@ -2,13 +2,12 @@ import logging
 
 import json
 import json5
+from typing import Optional
 
 from .cdf.cdf import CDF, CDFData
 from .consts import (
     CLINICAL_DATA_HEADERS,
-    NO_DATA,
     PER_TREATMENT_ARM_HEADERS,
-    PER_TREATMENT_ARM_PER_TIME_HEADERS,
 )
 from .pdf.page import Page
 from .pdf.paper import Paper
@@ -153,14 +152,10 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
 def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
     '''
     Main entry function that initiates the extraction process.
-    TODO: Finish this function up
 
     Parameters:
         paper (Paper)
         picos (Picos)
-
-    Returns:
-        No output. This function will take a while, so we will store the output elsewhere.
     '''
     cdf = CDF()
     extract_literature_data_whole_paper(paper, picos, cdf)
@@ -168,7 +163,7 @@ def extract_data_from_objects(paper: Paper, picos: Picos) -> CDF:
     return cdf
 
 
-def extract_data(file_path: str = None, url: str = None, picos_string: str = None) -> CDF:
+def extract_data(file_path: str = None, url: str = None, picos_string: str = None) -> Optional[CDF]:
     '''
     Overarching function to turn a file path and a PICOS string into a CDF object.
     '''
@@ -176,4 +171,6 @@ def extract_data(file_path: str = None, url: str = None, picos_string: str = Non
     paper = pdf_parser.parse()
     picos_parser = PicosParser(picos_string=picos_string)
     picos = picos_parser.parse()
-    return extract_data_from_objects(paper, picos)
+    if paper is not None and picos is not None:
+        return extract_data_from_objects(paper, picos)
+    return None
