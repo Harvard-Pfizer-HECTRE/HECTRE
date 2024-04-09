@@ -8,6 +8,7 @@ from ..consts import (
 from .page import Page
 from .table import Table
 
+
 class Paper(BaseModel):
     '''
     This is the class for the clinical trial paper that has been parsed by the PDF parser.
@@ -22,6 +23,7 @@ class Paper(BaseModel):
     pages: List[Page]
     tables: List[Table]
 
+
     def get_id(self) -> int:
         '''
         Each paper needs a unique ID to identify itself.
@@ -30,23 +32,34 @@ class Paper(BaseModel):
         # TODO
         return 0
 
+
     def get_num_pages(self) -> int:
         '''
         Get the total number of pages in this paper.
         '''
         return len(self.pages)
 
+
     def get_page(self, page_num: int) -> Page:
         '''
         Get a specific page in this paper.
         '''
         return self.pages[page_num]
+    
+
+    def get_pages(self) -> List[Page]:
+        '''
+        Get all pages in the paper.
+        '''
+        return self.pages
+
 
     def get_num_tables(self) -> int:
         '''
         Get the total number of tables in this paper.
         '''
         return len(self.tables)
+
 
     def get_table(self, table_num: int) -> Table:
         '''
@@ -67,3 +80,25 @@ class Paper(BaseModel):
             ret += text
             ret += PAGE_END_INDICATOR.format(page_num + 1)
         return ret
+    
+
+    def get_all_clinical_text(self) -> str:
+        '''
+        Get all "clinical" text from the paper.
+        We can do this by isolating the pages with tables, but if only 2 or less
+        pages like that were detected, just pass in the whole paper.
+        '''
+        ret = ""
+        pages_count = 0
+        for page_num in range(self.get_num_pages()):
+            page: Page = self.get_page(page_num)
+            if not page.get_has_table():
+                continue
+            pages_count += 1
+            text = page.get_text()
+            ret += PAGE_START_INDICATOR.format(page_num + 1)
+            ret += text
+            ret += PAGE_END_INDICATOR.format(page_num + 1)
+        if pages_count > 2:
+            return ret
+        return self.get_all_text()
