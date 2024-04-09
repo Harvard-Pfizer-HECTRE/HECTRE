@@ -3,13 +3,16 @@ from typing import Dict, List
 # Put any constants used by the tool here.
 # Don't import any heavy dependencies, this file should be pure.
 
-
+# ------------------------------
 # Account related constants
+# ------------------------------
 AWS_PROFILE: str = "capstone"
 AWS_REGION: str = "us-east-1"
 
 
+# ------------------------------
 # Logging constants
+# ------------------------------
 RESET: str = "\x1b[0m"
 RED: str = "\x1b[31;20m"
 BOLD_RED: str = "\x1b[31;1m"
@@ -31,30 +34,133 @@ LLM_BEGIN_RESPONSE_LOGGING_INDICATOR = "BEGIN RESPONSE\n"
 LLM_END_RESPONSE_LOGGING_INDICATOR = "\nEND RESPONSE"
 
 
+# ------------------------------
 # Extraction related constants
+# ------------------------------
+ALLOWED_UNICODE_CHARS: List[str] = [
+    "©",
+    "®",
+    "™",
+    # Operators
+    "≤",
+    "≥",
+    "±",
+    "Δ",
+    # Some footnote denoters
+    "†",
+    "‡",
+    "§",
+    "¶",
+    "⋅",
+    "•", # These should be used for bullet points ONLY
+    "●", # Not sure about this one... it was used as a divider
+    # Some accented characters
+    "á",
+    "à",
+    "ä",
+    "ß",
+    "é",
+    "É",
+    "ç",
+    "ï",
+    "í",
+    "Ł",
+    "ñ",
+    "Ö",
+    "ó",
+    "ö",
+    "Ø",
+    "ø",
+    "ü",
+    # Math characters
+    "Φ",
+    "β",
+    "μ",
+    "π",
+    "λ",
+    "¼",
+    "°",
+]
+
 UNICODE_REPLACE_MAP: Dict[str, str] = {
     # Should always replace
+    u'\xa0': "",
     "ﬁ": "fi",
     "ﬂ": "fl",
     "–": "-",
+    "—": "-",
+    "−": "-",
+    "‑": "-",
+    "‐": "-",  # Yes these five all all dashes
     "’": "'",
     "‘": "'",
+    "“": '"',
+    "”": '"',
+    "·": ".",
+    "∗": "*",
+    "ª": "©",
+    "∆": "Δ",
+    "∼": "~",
+    "α": "a",
+    "µ": "μ",
+    "×": "x",
+    "γ": "y",
     # May depend on paper
-    " €ı": "i",
-    "c/C223": "ç",
+    " €a": "ä",
+    "c ¸": "ç",
+    " ´e": "é",
+    " €ı": "ï",
+    " ¨ı": "ï",
+    " €O": "Ö",
+    " €o": "ö",
+    "¨o": "ö",
+    "o ´": "ó",
+    " €u": "ü",
+    "€u": "ü",
+    " /H9004": "Δ",
+    "/H9251/": "a",  # Yes, just going to replace with "a" here instead of alpha
+    "/H9252": "β",
+    "/H11001": "+",
+    "/H11002": "-",
+    "H11005": "=",
+    " /H11006": "±",
+    "/H11006": "±",
+    "/H11011": "~",
+    "/H11021": "<",
+    "/H11022": ">",
+    "/H11349": "≤",
+    "/H11350": "≥",
+    "/H18528": "⋅",
+    "/H20648": "",  # This is a double vertical line, probably can just remove it
+    "/H20851": "[",
+    "/H20852": "]",
+    "/C223": "©",
+    "/C211": "©",
     "c /C223": "ç",
-    "CAF /C19E": "CAFÉ",
-    "L €ub": "Lüb",
+    "/C224": "‡",
+    " /C226": "®",
+    "/C226": "®",
+    "/C20": "≤",
+    "/C21": "≥",
+    " /C19E": "É",
+    " /C6": "±",
+    "/C6": "±",
+    "/C3": "*",
+    " /C1": ".",
     "/C1": ".",
+    " /C0": "-",
     "/C0": "-",
     # Get rid of unknown unicodes last
     "": "",
 }
+
 PAGE_START_INDICATOR: str = "\nStart of Page {0}\n"
 PAGE_END_INDICATOR: str = "\nEnd of Page {0}\n"
 
 
+# ------------------------------
 # LLM related constants
+# ------------------------------
 LITERATURE_DATA_HEADERS: List[str] = [
     # "DSID", # This is set by Pfizer, we don't care about this one
     "AU",
@@ -139,7 +245,10 @@ CLINICAL_DATA_HEADERS: List[str] = [
 SHORT_NAME_HEADER: str = "Field Name"
 READABLE_NAME_HEADER: str = "Field Label"
 
+
+# ------------------------------
 # Prompting related constants
+# ------------------------------
 NO_DATA: str = "NO_DATA"
 
 VAR_DICT: Dict[str, str] = {
@@ -225,3 +334,10 @@ HEADER_ORDER = [
     "ARM.AGE",
     "ARM.AGEU",
 ]
+
+
+# ------------------------------
+# Testing related constants
+# ------------------------------
+TEST_DATA_SUBFOLDER = "test_data"
+TEST_DATA_SUFFIX = ".pdfdata"
