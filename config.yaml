@@ -32,8 +32,6 @@ LLM:
   TopTokens: 1
   # Maximum tokens in the output
   MaxGenerationLength: 2000
-  # Send the whole paper in rather than do it by page (more accurate, but only works on Claude 3)
-  WholePaper: True
 
 
 Prompt Engineering:
@@ -85,7 +83,7 @@ Prompt Engineering:
   PromptTimeValues1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Please respond with just the time values with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Baseline would be considered nominal time 0. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
   # Prompts for extracting all the unique stat analysis groups
   PromptStatGroups1: |-
