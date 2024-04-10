@@ -257,6 +257,12 @@ VAR_DICT: Dict[str, str] = {
     "No_Data": NO_DATA,
 }
 
+OUTCOME_TYPE: Dict[int, str] = {
+    0: "",  # Unknown
+    1: "binary outcome (should only have values in RSP, not BSL, CHBSL, or PCHBSL) ",  # Binary outcome
+    2: "",  # Continuous outcome
+}
+
 # Order of the headers in CSV
 HEADER_ORDER = [
     "DSID",

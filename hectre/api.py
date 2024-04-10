@@ -86,16 +86,6 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
     if not time_values:
         logger.error(f"Could not find any time values for paper {paper_id}!")
         return
-    
-    # Get all the statistical analysis groups
-    stat_groups_res = hectre.query_stat_groups(text=text, text_context=text_context)
-
-    try:
-        stat_groups = json5.loads(stat_groups_res)
-    except json.JSONDecodeError as e:
-        logger.error(f"Could not decode statistical analysis groups data output: {result}")
-        # This stat groups is broken
-        return
 
     placebo_arm_found: bool = False
     current_arm_counter: int = 1
@@ -128,15 +118,30 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
         # Add the entries
         arm_data_dict.update({key: val for key, val in per_treatment_arm_data_json.items() if key in PER_TREATMENT_ARM_HEADERS})
 
-        # Loop through every time value
-        for time_value in time_values:
-            time_data_dict = {'ARM.TIME1': time_value, "ARM_TIME1U": ""}
-            # Loop through every outcome
-            for outcome in outcomes:
-                outcome_dict = {"ENDPOINT": outcome}
+        # Loop through every outcome
+        for outcome in outcomes:
+            outcome_dict = {"ENDPOINT": outcome}
+
+            # Get the outcome type
+            outcome_type = hectre.query_outcome_type(outcome=outcome)
+
+            # Get all the statistical analysis groups for this outcome
+            stat_groups_res = hectre.query_stat_groups(outcome=outcome, text=text, text_context=text_context)
+
+            try:
+                stat_groups = json5.loads(stat_groups_res)
+            except json.JSONDecodeError as e:
+                logger.error(f"Could not decode statistical analysis groups data output: {result}")
+                # This stat groups is broken
+                return
+
+            # Loop through every time value
+            for time_value in time_values:
+                time_data_dict = {'ARM.TIME1': time_value, "ARM_TIME1U": ""}
+    
                 # Loop through every stat group
                 for stat_group in stat_groups:
-                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text, text_context=clinical_text_context)
+                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text, text_context=clinical_text_context)
                     # If we got any results, load it as JSON object, and update our JSON for this clinical data row
                     try:
                         clinical_data_json = json5.loads(result)
