@@ -18,4 +18,4 @@ name = "hectre-be-app"
 version = "0.1.0"
 description = ""
 authors = ["Manny Kwaning <ema526@g.harvard.edu>"]
-readme = "hectre-be-app/README.md"
+readme = "backend/README.md"
