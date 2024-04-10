@@ -19,6 +19,7 @@ LLM:
   # The LLM to actually use
   # Available choices are:
   #     Claude3Haiku
+  #     Claude3Sonnet
   #     Llama213bChat
   #     Llama270bChat
   #     Mistral7bInstruct
