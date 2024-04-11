@@ -65,7 +65,7 @@ Prompt Engineering:
 
   # Prompts for extracting literature data
   PromptLiterature1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     I want to find data in JSON format; here is a template JSON to fill in (enclose values in quotes):
     {Template}
@@ -75,13 +75,13 @@ Prompt Engineering:
 
   # Prompts for extracting treatment arms
   PromptTreatmentArms1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     Please identify and list all the treatment arms mentioned in the paper. Treatment arms are typically described as interventions, drugs, doses, or combinations thereof. Respond with just the treatment arms, separated by semi-colons, with no other words. If the treatment arms cannot be deduced from the context, please respond with "{No_Data}".
 
   # Prompts for extracting data per treatment arm
   PromptPerTreatmentArm1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     Find data in JSON for {Treatment_Arm}; here is a template JSON to fill in (enclose values in quotes):
     {Template}
@@ -89,13 +89,13 @@ Prompt Engineering:
 
   # Prompts for extracting the nominal time values
   PromptTimeValues1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data for treatment arm {Treatment_Arm} and outcome {Outcome}. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
   # Prompts for extracting all the unique stat analysis groups
   PromptStatGroups1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     Find all of the unique statistical analysis groups for the outcome {Outcome}, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
     {Template}
@@ -107,7 +107,7 @@ Prompt Engineering:
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
-    Below is {Text_Context} from a clinical trial paper:
+    Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}{Outcome}, with {Stat_Group}. Adhere strictly to these treatment arms, time, endpoints, and statistical analysis! Here is a template JSON to fill in (enclose values in quotes):
     {Template}

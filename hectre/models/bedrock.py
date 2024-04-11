@@ -4,7 +4,7 @@ import sys
 from typing import Any, List, Optional
 
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ProfileNotFound
 
 from hectre.consts import (
     AWS_PROFILE,
@@ -40,6 +40,14 @@ class BedrockLlm(Llm):
         try:
             bedrock_session = boto3.Session(profile_name=self.CREDENTIAL_PROFILE)
             self.client = bedrock_session.client(service_name=self.SERVICE, region_name=self.REGION)
+        except ProfileNotFound:
+            try:
+                logger.error(f"Could not find profile {self.CREDENTIAL_PROFILE}, fallback to default...")
+                bedrock_session = boto3.Session()
+                self.client = bedrock_session.client(service_name=self.SERVICE, region_name=self.REGION)
+            except ClientError as e:
+                logger.error('Error getting Amazon Bedrock client, have you put your credentials in "~/.aws/credentials" and "~/.aws/config" yet?')
+                raise e
         except ClientError as e:
             logger.error('Error getting Amazon Bedrock client, have you put your credentials in "~/.aws/credentials" and "~/.aws/config" yet? Use profile name "capstone".')
             raise e

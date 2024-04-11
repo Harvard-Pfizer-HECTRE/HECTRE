@@ -42,8 +42,7 @@ def extract_literature_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) ->
     Modifies the CDF in-place.
     '''
     text = paper.get_all_text()
-    text_context = "text"
-    result = hectre.query_literature_data(text=text, text_context=text_context)
+    result = hectre.query_literature_data(text=text)
     if result:
         try:
             literature_data_json = json5.loads(result)
@@ -66,25 +65,16 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
     paper_id = paper.get_id()
     outcomes = picos.outcomes
     text = paper.get_all_text()
-    text_context = "text"
     clinical_text = paper.get_all_clinical_text()
-    clinical_text_context = f"text with clinical data"
 
     # Get all the treatment arms in the paper
-    treatment_arms = hectre.query_treatment_arms(text=clinical_text, text_context=clinical_text_context)
+    treatment_arms = hectre.query_treatment_arms(text=clinical_text)
 
     if not treatment_arms:
         logger.error(f"Could not find any treatment arms for paper {paper_id}!")
         # Technically we won't have any rows if there are no treatment arms, but we
         # don't want to throw either because we may be processing multiple papers.
         # This means extracting from this paper has essentially failed.
-        return
-
-    # Get all the nominal time values
-    time_values = hectre.query_time_values(text=clinical_text, text_context=clinical_text_context)
-
-    if not time_values:
-        logger.error(f"Could not find any time values for paper {paper_id}!")
         return
 
     placebo_arm_found: bool = False
@@ -102,7 +92,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
         arm_data_dict = {"ARM.NUM": current_arm_num}
 
         # First let's populate some information pertaining to each treatment arm
-        result = hectre.query_per_treatment_arm_data(text=text, headers=PER_TREATMENT_ARM_HEADERS, treatment_arm=treatment_arm, text_context=text_context)
+        result = hectre.query_per_treatment_arm_data(text=text, headers=PER_TREATMENT_ARM_HEADERS, treatment_arm=treatment_arm)
         # If we got any results, load it as JSON object, and update our JSON for this clinical data row
         try:
             per_treatment_arm_data_json = json5.loads(result)
@@ -126,7 +116,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             outcome_type = hectre.query_outcome_type(outcome=outcome)
 
             # Get all the statistical analysis groups for this outcome
-            stat_groups_res = hectre.query_stat_groups(outcome=outcome, text=text, text_context=text_context)
+            stat_groups_res = hectre.query_stat_groups(outcome=outcome, text=text)
 
             try:
                 stat_groups = json5.loads(stat_groups_res)
@@ -134,6 +124,13 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                 logger.error(f"Could not decode statistical analysis groups data output: {stat_groups_res}")
                 # This stat groups is broken
                 continue
+
+            # Get all the nominal time values
+            time_values = hectre.query_time_values(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
+
+            if not time_values:
+                logger.error(f"Could not find any time values for paper {paper_id}!")
+                return
 
             # Loop through every time value
             for time_value in time_values:
@@ -147,7 +144,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
     
                 # Loop through every stat group
                 for stat_group in stat_groups:
-                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text, text_context=clinical_text_context)
+                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text)
                     # If we got any results, load it as JSON object, and update our JSON for this clinical data row
                     try:
                         clinical_data_json = json5.loads(result)

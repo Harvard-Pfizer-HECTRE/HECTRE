@@ -181,6 +181,8 @@ class Hectre(BaseModel):
         for key, val in extra_dict.items():
             if "{" + key + "}" in prompt:
                 format_dict[key] = val
+            else:
+                logger.warn(f"Found unused extra prompt formatter: {key}")
         # Now do the string format
         try:
             prompt = prompt.format(**format_dict)
@@ -190,7 +192,15 @@ class Hectre(BaseModel):
         return prompt
 
 
-    def invoke_prompt_on_text(self, name: str, prompt_name: str, text: str, text_context: str, header: Optional[str] = None, extra_vars: Optional[Dict[str, str]] = None, keep_no_data_response: bool = False) -> str:
+    def invoke_prompt_on_text(
+            self,
+            name: str,
+            prompt_name: str,
+            text: str,
+            header: Optional[str] = None,
+            extra_vars: Optional[Dict[str, str]] = None,
+            keep_no_data_response: bool = False
+        ) -> str:
         '''
         Wrapper to ask LLM about a specific thing (name) with a prompt in the YAML (prompt_name), on text that corresponds to a header (header).
 
@@ -198,10 +208,9 @@ class Hectre(BaseModel):
             name (str): the name of the field, e.g. "authors", "treatment arms"
             prompt_name (str): the prompt to be used from the config.yaml file, e.g. "PromptLiterature", "PromptTreatmentArms"
             text (str): the text to query from, could be table, page, multiple pages adjoined, etc.
-            text_context (str): the context of the text, e.g. "page 5", "table 2"
             header (str): the related header in the CDF (if any)
         '''
-        logger.info(f"Trying to fetch {name} from {text_context}...")
+        logger.info(f"Trying to fetch {name}...")
         header_dict = self.definitions.get_field_by_name(header) if header else {}
         extra_vars = extra_vars or {}
         prompt_num = 1
@@ -211,10 +220,9 @@ class Hectre(BaseModel):
         # Iterate on each prompt
         while prompt_key in self.config["Prompt Engineering"]:
             prompt = self.config["Prompt Engineering"][prompt_key]
-            extra_dict = {
-                "Text_Context": text_context,
-                "Text": text,
-            }
+            extra_dict = {}
+            if text:
+                extra_dict["Text"] = text
             extra_dict.update(extra_vars)
             prompt = self.format_prompt(prompt, header_dict=header_dict, extra_dict=extra_dict)
 
@@ -250,7 +258,7 @@ class Hectre(BaseModel):
         return clinical_json
 
 
-    def query_literature_data(self, text: str, text_context: str) -> Optional[str]:
+    def query_literature_data(self, text: str) -> Optional[str]:
         '''
         Construct the prompt(s) to get the literature data from the page using the LLM.
         '''
@@ -259,21 +267,21 @@ class Hectre(BaseModel):
         extra_vars = {
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptLiterature", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptLiterature", text=text, extra_vars=extra_vars, keep_no_data_response=True)
 
 
-    def query_treatment_arms(self, text: str, text_context: str) -> List[str]:
+    def query_treatment_arms(self, text: str) -> List[str]:
         '''
         Get all the treatment arms, if they can be found on the page, as a list of strings.
         '''
-        response = self.invoke_prompt_on_text(name="treatment arms", prompt_name="PromptTreatmentArms", text=text, text_context=text_context)
+        response = self.invoke_prompt_on_text(name="treatment arms", prompt_name="PromptTreatmentArms", text=text)
         if not response:
             return []
         ret = [arm.strip() for arm in response.split(';')]
         return list(set(ret))
 
 
-    def query_per_treatment_arm_data(self, text: str, headers: List[str], treatment_arm: str, text_context: str) -> str:
+    def query_per_treatment_arm_data(self, text: str, headers: List[str], treatment_arm: str) -> str:
         '''
         Get all the per-treatment arm data.
         '''
@@ -283,21 +291,25 @@ class Hectre(BaseModel):
             "Treatment_Arm": treatment_arm,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArm", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptPerTreatmentArm", text=text, extra_vars=extra_vars, keep_no_data_response=True)
 
 
-    def query_time_values(self, text: str, text_context: str) -> List[str]:
+    def query_time_values(self, text: str, treatment_arm: str, outcome: str) -> List[str]:
         '''
         Get all the nominal time values, if they can be found on the page, as a list of strings.
         '''
-        response = self.invoke_prompt_on_text(name="time values", prompt_name="PromptTimeValues", text=text, text_context=text_context)
+        extra_vars = {
+            "Treatment_Arm": treatment_arm,
+            "Outcome": outcome,
+        }
+        response = self.invoke_prompt_on_text(name=f"time values for arm {treatment_arm} and outcome {outcome}", prompt_name="PromptTimeValues", text=text, extra_vars=extra_vars)
         if not response:
             return []
         ret = list(filter(None, [arm.strip() for arm in response.split(';')]))
         return list(set(ret))
     
 
-    def query_stat_groups(self, outcome: str, text: str, text_context: str) -> str:
+    def query_stat_groups(self, text: str, outcome: str) -> str:
         '''
         Get all the statistical analysis groups, as a list of dictionaries.
         '''
@@ -306,7 +318,7 @@ class Hectre(BaseModel):
             "Outcome": outcome,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=f"statistical analysis groups for {outcome}", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+        return self.invoke_prompt_on_text(name=f"statistical analysis groups for {outcome}", prompt_name="PromptStatGroups", text=text, extra_vars=extra_vars, keep_no_data_response=True)
     
 
     def query_outcome_type(self, outcome: str) -> str:
@@ -316,7 +328,7 @@ class Hectre(BaseModel):
         extra_vars = {
             "Outcome": outcome,
         }
-        ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", text_context="LLM", extra_vars=extra_vars)
+        ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", extra_vars=extra_vars)
         try:
             outcome_type_int = int(ret)
         except ValueError:
@@ -336,10 +348,19 @@ class Hectre(BaseModel):
             "Value": time_value,
             "Template": self.get_json_template_string_for_data_extraction(TIME_VALUE_HEADERS)
         }
-        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", text_context="LLM", extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", extra_vars=extra_vars)
 
 
-    def query_clinical_data(self, headers: List[str], outcome: str, outcome_type: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
+    def query_clinical_data(
+            self,
+            text: str,
+            headers: List[str],
+            outcome: str,
+            outcome_type: str,
+            treatment_arm: str,
+            time_value: str,
+            stat_group: Dict[str, str]
+        ) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
@@ -361,4 +382,4 @@ class Hectre(BaseModel):
             "Stat_Group": stat_group_text,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, extra_vars=extra_vars, keep_no_data_response=True)
