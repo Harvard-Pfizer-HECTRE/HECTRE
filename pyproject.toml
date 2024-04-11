@@ -9,9 +9,6 @@ requires-python = ">=3.8"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-testpaths = [
-]
-python_functions = "*should*"
 
 [tool.poetry]
 name = "hectre-be-app"

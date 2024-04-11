@@ -220,9 +220,9 @@ class Hectre(BaseModel):
         # Iterate on each prompt
         while prompt_key in self.config["Prompt Engineering"]:
             prompt = self.config["Prompt Engineering"][prompt_key]
-            extra_dict = {
-                "Text": text,
-            }
+            extra_dict = {}
+            if text:
+                extra_dict["Text"] = text
             extra_dict.update(extra_vars)
             prompt = self.format_prompt(prompt, header_dict=header_dict, extra_dict=extra_dict)
 
