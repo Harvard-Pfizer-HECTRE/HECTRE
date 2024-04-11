@@ -197,7 +197,9 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
     "ARM.AGEU",
 ]
 
-PER_TREATMENT_ARM_PER_TIME_HEADERS: List[str] = [
+TIME_VALUE_HEADERS: List[str] = [
+    "ARM.TIME1",
+    "ARM.TIME1U",
 ]
 
 STAT_GROUP_HEADERS: List[str] = [

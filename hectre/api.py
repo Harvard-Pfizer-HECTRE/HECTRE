@@ -131,13 +131,19 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             try:
                 stat_groups = json5.loads(stat_groups_res)
             except json.JSONDecodeError as e:
-                logger.error(f"Could not decode statistical analysis groups data output: {result}")
+                logger.error(f"Could not decode statistical analysis groups data output: {stat_groups_res}")
                 # This stat groups is broken
-                return
+                continue
 
             # Loop through every time value
             for time_value in time_values:
-                time_data_dict = {'ARM.TIME1': time_value, "ARM_TIME1U": ""}
+                time_data_dict_str = hectre.query_time_dict_from_value(time_value=time_value)
+                try:
+                    time_data_dict = json5.loads(time_data_dict_str)
+                except json.JSONDecodeError as e:
+                    logger.error(f"Could not decode time data format output: {time_data_dict_str}")
+                    # Something went wrong here
+                    continue
     
                 # Loop through every stat group
                 for stat_group in stat_groups:

@@ -14,6 +14,7 @@ from hectre.consts import (
     RESET,
     SILENCED_LOGGING_MODULES,
     STAT_GROUP_HEADERS,
+    TIME_VALUE_HEADERS,
     VAR_DICT
 )
 from hectre.lib.config import Config
@@ -315,7 +316,7 @@ class Hectre(BaseModel):
         extra_vars = {
             "Outcome": outcome,
         }
-        ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", text_context="", extra_vars=extra_vars)
+        ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", text_context="LLM", extra_vars=extra_vars)
         try:
             outcome_type_int = int(ret)
         except ValueError:
@@ -325,6 +326,17 @@ class Hectre(BaseModel):
             logger.error(f"Unknown outcome type: {ret}")
             outcome_type_int = 0
         return OUTCOME_TYPE[outcome_type_int]
+    
+
+    def query_time_dict_from_value(self, time_value: str) -> str:
+        '''
+        Ask the LLM to dissect the time value into the actual value and the unit.
+        '''
+        extra_vars = {
+            "Value": time_value,
+            "Template": self.get_json_template_string_for_data_extraction(TIME_VALUE_HEADERS)
+        }
+        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", text_context="LLM", extra_vars=extra_vars)
 
 
     def query_clinical_data(self, headers: List[str], outcome: str, outcome_type: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:

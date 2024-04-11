@@ -25,6 +25,7 @@ LLM:
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
   LLMName: Claude3Haiku
+  # Claude 3 models seem not to care much about these parameters.
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
@@ -55,6 +56,12 @@ Prompt Engineering:
   HectreRole: Answer
   # This is the role of the user (this is not used in User-Assistant models like Claude 3)
   UserRole: Question
+
+  # Generic prompt to format data into a template (only used for time values)
+  PromptGenericDataFormat1: |-
+    Please format "{Value}" into the following JSON template:
+    {Template}
+    If any fields are not applicable, write "{No_Data}"; enclose all values in quotes. Please respond with just the JSON.
 
   # Prompts for extracting literature data
   PromptLiterature1: |-
