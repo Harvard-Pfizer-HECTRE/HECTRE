@@ -10,9 +10,11 @@ from hectre.consts import (
     GREEN,
     LITERATURE_DATA_HEADERS,
     NO_DATA,
+    OUTCOME_TYPE,
     RESET,
     SILENCED_LOGGING_MODULES,
     STAT_GROUP_HEADERS,
+    TIME_VALUE_HEADERS,
     VAR_DICT
 )
 from hectre.lib.config import Config
@@ -291,37 +293,69 @@ class Hectre(BaseModel):
         response = self.invoke_prompt_on_text(name="time values", prompt_name="PromptTimeValues", text=text, text_context=text_context)
         if not response:
             return []
-        ret = [arm.strip() for arm in response.split(';')]
+        ret = list(filter(None, [arm.strip() for arm in response.split(';')]))
         return list(set(ret))
     
 
-    def query_stat_groups(self, text: str, text_context: str) -> str:
+    def query_stat_groups(self, outcome: str, text: str, text_context: str) -> str:
         '''
         Get all the statistical analysis groups, as a list of dictionaries.
         '''
         clinical_json = self.get_json_template_string_for_data_extraction(STAT_GROUP_HEADERS)
         extra_vars = {
+            "Outcome": outcome,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name="statistical analysis groups", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
+        return self.invoke_prompt_on_text(name=f"statistical analysis groups for {outcome}", prompt_name="PromptStatGroups", text=text, text_context=text_context, extra_vars=extra_vars, keep_no_data_response=True)
     
 
-    def query_clinical_data(self, headers: List[str], outcome: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
+    def query_outcome_type(self, outcome: str) -> str:
+        '''
+        Ask about the type that the outcome is, so we can better determine what types of data we should be getting.
+        '''
+        extra_vars = {
+            "Outcome": outcome,
+        }
+        ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", text_context="LLM", extra_vars=extra_vars)
+        try:
+            outcome_type_int = int(ret)
+        except ValueError:
+            logger.error(f"Could not determine outcome type from response: {ret}")
+            outcome_type_int = 0
+        if outcome_type_int not in OUTCOME_TYPE:
+            logger.error(f"Unknown outcome type: {ret}")
+            outcome_type_int = 0
+        return OUTCOME_TYPE[outcome_type_int]
+    
+
+    def query_time_dict_from_value(self, time_value: str) -> str:
+        '''
+        Ask the LLM to dissect the time value into the actual value and the unit.
+        '''
+        extra_vars = {
+            "Value": time_value,
+            "Template": self.get_json_template_string_for_data_extraction(TIME_VALUE_HEADERS)
+        }
+        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", text_context="LLM", extra_vars=extra_vars)
+
+
+    def query_clinical_data(self, headers: List[str], outcome: str, outcome_type: str, treatment_arm: str, time_value: str, stat_group: Dict[str, str], text: str, text_context: str) -> str:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
         stat_group_text = ""
         for key, val in stat_group.items():
-            if NO_DATA in val or "STATANAL.IMP.METHOD" == key:
+            if NO_DATA in val:
                 continue
             header_dict = self.definitions.get_field_by_name(key)
             header_label = header_dict['Field Label']
-            stat_group_text += f"{header_label}: {val}, "
+            stat_group_text += f"{header_label.lower()}: {val}, "
         stat_group_text = stat_group_text.strip().strip(",")
         name = f"clinical data for {outcome} with {treatment_arm} for {time_value} and {stat_group_text}"
         extra_vars = {
             "Outcome": outcome,
+            "Outcome_Type": outcome_type,
             "Treatment_Arm": treatment_arm,
             "Time_Value": time_value,
             "Stat_Group": stat_group_text,

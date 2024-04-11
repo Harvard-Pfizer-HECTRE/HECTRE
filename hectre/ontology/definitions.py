@@ -24,7 +24,7 @@ class Definitions(BaseModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.definitions_path = os.path.join(os.path.dirname(__file__), "../../definitions.json")
+        self.definitions_path = os.path.join(os.path.dirname(__file__), "../definitions.json")
         self.definitions_dict_by_short_name = {}
         self.definitions_dict_by_readable_name = {}
         

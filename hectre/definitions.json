@@ -340,7 +340,7 @@
         "Field Label": "Change from baseline statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean",
-        "Field Description": "e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean",
+        "Field Description": "Note: If there are percent changes from baseline, use PCHBSL.* instead. e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean",
         "Sample Data": "Mean, median, \u2026"
     },
     {

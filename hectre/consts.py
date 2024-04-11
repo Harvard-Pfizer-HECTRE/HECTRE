@@ -197,7 +197,9 @@ PER_TREATMENT_ARM_HEADERS: List[str] = [
     "ARM.AGEU",
 ]
 
-PER_TREATMENT_ARM_PER_TIME_HEADERS: List[str] = [
+TIME_VALUE_HEADERS: List[str] = [
+    "ARM.TIME1",
+    "ARM.TIME1U",
 ]
 
 STAT_GROUP_HEADERS: List[str] = [
@@ -255,6 +257,12 @@ VAR_DICT: Dict[str, str] = {
     "Text_Start_Indicator": "[Clinical Trial Text Begins]\n",
     "Text_End_Indicator": "\n[Clinical Trial Text Ends]",
     "No_Data": NO_DATA,
+}
+
+OUTCOME_TYPE: Dict[int, str] = {
+    0: "",  # Unknown
+    1: "binary outcome (should only have values in RSP, not BSL, CHBSL, or PCHBSL) ",  # Binary outcome
+    2: "",  # Continuous outcome
 }
 
 # Order of the headers in CSV

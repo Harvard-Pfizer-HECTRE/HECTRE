@@ -2,6 +2,12 @@
 setup:
 	python -m pip install -r requirements.txt
 
+# For Windows, there is one package difference...
+setup-windows:
+	python -m pip install -r requirements.txt
+	python -m pip uninstall -y python-magic
+	python -m pip install python-magic-bin==0.4.14
+
 test:
 	python -m pytest
 

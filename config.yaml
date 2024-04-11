@@ -19,11 +19,13 @@ LLM:
   # The LLM to actually use
   # Available choices are:
   #     Claude3Haiku
+  #     Claude3Sonnet
   #     Llama213bChat
   #     Llama270bChat
   #     Mistral7bInstruct
   #     Mixtral8x7bInstruct
   LLMName: Claude3Haiku
+  # Claude 3 models seem not to care much about these parameters.
   # Lower temperature to make the models not go crazy
   Temperature: 0
   # Lower nucleus sampling (top_p) to not get varying results
@@ -50,10 +52,16 @@ Prompt Engineering:
   Prelude: '[The following is a question and answer pair to extract information from a clinical trial paper. Respond only with accurate data that is found in the document provided in the paper. Be precise, succinct, and accurate.]'
   # This is included at the start of every question (not necessarily needed) (two single quotes is an empty string)
   Prefix: '[Extract ONLY from the clinical trial page(s) above. Respond with just the answer without any additional words or explanations, and only retrieve the sure values found on the page!]'
-  # This is the role of the LLM
+  # This is the role of the LLM (this is not used in User-Assistant models like Claude 3)
   HectreRole: Answer
-  # This is the role of the user
+  # This is the role of the user (this is not used in User-Assistant models like Claude 3)
   UserRole: Question
+
+  # Generic prompt to format data into a template (only used for time values)
+  PromptGenericDataFormat1: |-
+    Please format "{Value}" into the following JSON template:
+    {Template}
+    If any fields are not applicable, write "{No_Data}"; enclose all values in quotes. Please respond with just the JSON.
 
   # Prompts for extracting literature data
   PromptLiterature1: |-
@@ -77,26 +85,30 @@ Prompt Engineering:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
     Find data in JSON for {Treatment_Arm}; here is a template JSON to fill in (enclose values in quotes):
     {Template}
-    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON.
+    If any fields cannot be found, fill in that entry with "{No_Data}". Please respond with just the JSON.
 
   # Prompts for extracting the nominal time values
   PromptTimeValues1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Baseline would be considered nominal time 0. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
   # Prompts for extracting all the unique stat analysis groups
   PromptStatGroups1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Find all of the statistical analysis groups, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
+    Find all of the unique statistical analysis groups for the outcome {Outcome}, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
     {Template}
-    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the list of dictionaries JSON with no other words.
+    If any fields cannot be found, fill in that entry with "{No_Data}". Please respond with just the list of dictionaries JSON with no other words.
+
+  # Ask the LLM about the type of this outcome
+  PromptOutcomeType1: |-
+    For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with 1, if it is a continuous endpoint (has value that changes over time) respond with 2, and if neither then respond with 0. Reply with only the answer with no other punctuations or texts.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
     Below is {Text_Context} from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}, with {Stat_Group}. Here is a template JSON to fill in (enclose values in quotes):
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}{Outcome}, with {Stat_Group}. Adhere strictly to these treatment arms, time, endpoints, and statistical analysis! Here is a template JSON to fill in (enclose values in quotes):
     {Template}
-    If any fields cannot be extracted, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.
+    If any fields cannot be found, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.
