@@ -50,3 +50,6 @@ make be-dev # run uvicorn with restart
 make be-create-items # create items for illustration purposes
 make be-get-items # retrieve items for illustration purposes
 ```
+
+FastApi will be running on http://127.0.0.1:8000/docs#/
+
