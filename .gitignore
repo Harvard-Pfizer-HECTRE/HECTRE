@@ -164,6 +164,9 @@ hectre-be-app/poetry.lock
 hectre-be-app/.vscode/settings.json
 hectre-be-app/app.db
 
+# DB files from back-end
+*.db
+
 # PDF files for testing
 *.pdf
 
