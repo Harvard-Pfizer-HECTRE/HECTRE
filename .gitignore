@@ -1,5 +1,5 @@
 # venv dir
-henv
+*_env*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
