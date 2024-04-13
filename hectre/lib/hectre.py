@@ -32,9 +32,10 @@ class Hectre(BaseModel):
     HECTRE is able to either invoke the model, get literature data from a page,
     or clinical data from a page or table.
     '''
-    config: Any = None
-    definitions: Any = None
-    llm: Any = None
+    config: Optional[Any] = None
+    definitions: Optional[Any] = None
+    llm: Optional[Any] = None
+    llm_name: Optional[str] = None
 
 
     def __init__(self, **kwargs):
@@ -81,6 +82,13 @@ class Hectre(BaseModel):
         rootLogger.setLevel("DEBUG")
 
 
+    def get_llm_name(self) -> str:
+        '''
+        Get the currently used LLM by name.
+        '''
+        return self.llm_name
+
+
     def set_llm(self, llm_name: str) -> None:
         '''
         Set the LLM to be used by HECTRE.
@@ -90,6 +98,7 @@ class Hectre(BaseModel):
         '''
         try:
             self.llm = NAME_TO_MODEL_CLASS[llm_name]()
+            self.llm_name = llm_name
         except KeyError:
             raise HectreException(f"{llm_name} is not a supported LLM type!")
 

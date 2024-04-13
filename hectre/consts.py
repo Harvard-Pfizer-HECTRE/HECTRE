@@ -349,3 +349,9 @@ HEADER_ORDER = [
 # ------------------------------
 TEST_DATA_SUBFOLDER = "test_data"
 TEST_DATA_SUFFIX = ".pdfdata"
+
+# Which papers we are doing extraction tests on
+# Key is DSID, value are the outcomes
+TEST_EXTRACTION_DSID = [
+    ("305", "EASI 50;EASI 75;EASI 90"),
+]
