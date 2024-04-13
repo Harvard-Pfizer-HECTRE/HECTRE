@@ -1,0 +1,82 @@
+@startuml picos Parser
+class PdfParserException {
+}
+
+abstract class Parser {
+  +parse(): Any
+}
+
+class PdfParser extends Parser {
+  -file_path: str
+  +__init__(file_path: str = None, url: str = None): None
+  +parse(): Paper
+}
+
+class PicosParser extends Parser {
+  -picos_string: str
+  +parse(): Picos
+}
+
+class LiteratureData {
+}
+
+class ClinicalData {
+}
+
+class CDF {
+  -literature_data: LiteratureData
+  -clinical_data: List<ClinicalData>
+  +set_literature_data(values: Dict): None
+  +add_clinical_data(values: Json[Dict]): None
+  +to_df(): pd.DataFrame
+}
+
+LiteratureData -- CDF: has >
+ClinicalData "*" -- CDF: has >
+
+class Config {
+  -config: dict
+  +__init__(): None
+  +__getitem__(item: Any): Any
+  +get_config(): None
+}
+
+class HectreException {
+}
+
+class Hectre {
+  -config: Any
+  -definitions: Any
+  -llm: Any
+  +__init__(**kwargs): None
+  +set_up_logging(): None
+  +set_llm(llm_name: str): None
+}
+HectreException -- Hectre: throws >
+
+class ClientError {
+}
+
+class Bedrock {
+  -MODEL_ID: Optional[str]
+  -CREDENTIAL_PROFILE: str
+  -SERVICE: str
+  -REGION: str
+  -client: Any
+  +__init__(): None
+  +get_invoke_body(prompt: str): Any
+  +process_response(response: Any): str
+}
+ClientError -- Bedrock: throws >
+
+class DefinitionsException {
+}
+
+class Definitions {
+  -definitions_dict_by_short_name: Dict[str, str]
+  -definitions_dict_by_readable_name: Dict[str, str]
+  +get_field_by_name(name: str): Dict[str, str]
+  +get_field_by_label(name: str): Dict[str, str]
+}
+DefinitionsException -- Definitions: throws >
+@enduml
