@@ -14,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 
 router = APIRouter(
     prefix="/files",
-    tags=["items"],
+    tags=["Uploads"],
     responses={404: {"description": "Not found"}},
 )
 
