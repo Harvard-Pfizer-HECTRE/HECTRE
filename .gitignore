@@ -1,6 +1,3 @@
-# venv dir
-*_env*
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -129,6 +126,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*_env*
+henv
 
 # Spyder project settings
 .spyderproject
@@ -169,6 +168,9 @@ hectre-be-app/app.db
 
 # PDF files for testing
 *.pdf
+
+# PNG files
+.png
 
 # Log files
 logs/

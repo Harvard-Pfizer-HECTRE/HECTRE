@@ -148,7 +148,7 @@
         "Field Label": "Study arm treatment name",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Actual treatment name, typically reporting the generic drug name. Use United state adopted name (USAN). Multiple entries are entered delimited in order by semi-colons",
+        "Field Description": "Actual treatment name, typically reporting the generic drug name. Use United state adopted name (USAN). Multiple entries are entered delimited in order by semi-colons. This should be just the drug name, no dosage or regimen",
         "Sample Data": "arm.trt1;arm.trt2;arm.trt3  # no missing entries\n;arm.trt2;arm.trt3                # missing entry # 1\narm.trt1;;arm.trt3                  # missing entry # 2\narm.trt1;arm.trt2;                  # missing entry # 3"
     },
     {
@@ -396,7 +396,7 @@
         "Field Label": "Response statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean\nRatio\nPercent",
-        "Field Description": "Statistic used to aggregate response value",
+        "Field Description": "Statistic used to aggregate response value. e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean, Ratio, Percent",
         "Sample Data": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean\nRatio\nPercent"
     },
     {
