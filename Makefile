@@ -17,7 +17,7 @@ extract:
 
 # Back-end components
 be-dev:
-	poetry run uvicorn backend.main:app --reload
+	poetry run uvicorn backend.main:app --port=5000 --reload
 
 be-create-items:
 	curl -X POST localhost:8000/foo/item/   --data '{"description":"some item description", "public":false}' && echo

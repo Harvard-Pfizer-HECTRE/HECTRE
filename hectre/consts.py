@@ -265,6 +265,11 @@ OUTCOME_TYPE: Dict[int, str] = {
     2: "",  # Continuous outcome
 }
 
+
+# ------------------------------
+# CDF related constants
+# ------------------------------
+
 # Order of the headers in CSV
 HEADER_ORDER = [
     "DSID",
@@ -343,6 +348,10 @@ HEADER_ORDER = [
     "ARM.AGEU",
 ]
 
+# Columns to ignore when comparing two CDFs.
+CDF_COMPARE_COLS_IGNORE = ["DSID", "ARM.NUM"]
+
+CDF_COMPOUND_KEY_COLS = ["ARM.TRT", "ARM.DOSE", "ARM.REG", "ENDPOINT"]
 
 # ------------------------------
 # Testing related constants
