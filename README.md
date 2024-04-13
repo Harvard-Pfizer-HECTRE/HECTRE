@@ -5,16 +5,12 @@ Clinical trial paper data extraction, Harvard Extension collaboration with Pfize
 ## Setup
 The tools you'll need are:
 - GNU Make (https://www.gnu.org/software/make/) (Additional effort may be needed to install on Windows)
-- Python (version >= 3.8)
+- Python (version >= 3.9)
 - AWS credentials to use Amazon Bedrock LLM API (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials", the credentials need to be under your root directory in `.aws` folder, with profile name "[capstone]")
 
 Then, run the following to install all other requirements:
 ```bash
 make setup
-```
-*For Windows users:* there is a separate setup command for Windows environment.
-```bash
-make setup-windows
 ```
 
 ## Perform Extraction on the Command Line
