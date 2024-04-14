@@ -99,7 +99,7 @@ class CDF(BaseModel):
         test_lit_data = test_cdf.loc[0,LITERATURE_DATA_HEADERS]
         test_clin_data = test_cdf.drop(columns=LITERATURE_DATA_HEADERS)
         results = {
-            "test_clin_data": test_cdf,
+            "test_clin_data": test_clin_data,
             "test_lit_data": test_lit_data
         }
         return results
