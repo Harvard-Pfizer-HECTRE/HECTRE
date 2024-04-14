@@ -95,6 +95,9 @@ class CDF(BaseModel):
     def compare(self, test_cdf: pd.DataFrame, control_cdf: pd.DataFrame):
         # Suppress performance warning, our volume is low so this will not affect us.
         warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+        # Cast test and control DataFrame column types to str so we can compare values directly.
+        test_cdf = test_cdf.astype(str).replace('nan', '')
+        control_cdf = control_cdf.astype(str).replace('nan', '')
         ck_cols = CDF_COMPOUND_KEY_COLS
         ex_cols = CDF_COMPARE_COLS_IGNORE
         # Make sure they have the same columns.
@@ -114,38 +117,40 @@ class CDF(BaseModel):
             "test_lit_data": test_lit_data,
             "control_clin_data": control_clin_data,
             "control_lit_data": control_lit_data,
-            "comp_summary": clin_results['comp_summary'],
-            "comp_eq_matrix": clin_results['comp_equality_matrix']
+            "comp_rows": clin_results['comp_rows'],
+            "comp_values": clin_results['comp_values']
         }
         return results
     
     def compare_clinical_data(self, test_df: pd.DataFrame, control_df: pd.DataFrame):
         # Create a DataFrame to hold comparison summary.
-        comp_summary = pd.DataFrame(columns=['Exists in Control', 'Equals Control', 'Unique in Test', 'Unique in Control'], index=test_df.index)
+        comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=test_df.index)
         # Create a DataFrame to hold cell-by-cell equality matrix.
-        eq_df = pd.DataFrame(columns=test_df.columns, index=test_df.index)
-        for i_test_df, row in test_df.iterrows():
-            control_rows = control_df[control_df.index.isin([i_test_df])]
-            test_rows = test_df[test_df.index.isin([i_test_df])]
+        comp_values = pd.DataFrame(columns=test_df.columns, index=test_df.index)
+        for i_control_df, row in control_df.iterrows():
+            test_rows = test_df[test_df.index.isin([i_control_df])]
+            control_rows = control_df[control_df.index.isin([i_control_df])]
             row_results = {
-                'Exists in Control': False,
-                'Equals Control': False,
+                'Exists in Test': False,
+                'Equals Test': False,
                 'Unique in Test': False,
                 'Unique in Control': False
             }
-            if not control_rows.empty:
-                row_results['Exists in Control'] = True
-                if control_rows.shape[0] == 1:
-                    row_results['Unique in Control'] = True
-                for index_s, val in control_rows.iloc[0].items():
-                    eq_df.loc[i_test_df, index_s] = (val == row[index_s])
-                row_results['Equals Control'] = eq_df.loc[i_test_df].all()
-            if test_rows.shape[0] == 1:
-                row_results['Unique in Test'] = True
-            comp_summary.loc[i_test_df] = row_results
+            if not test_rows.empty:
+                row_results['Exists in Test'] = True
+                if test_rows.shape[0] == 1:
+                    row_results['Unique in Test'] = True
+                for index_s, val_s in test_rows.iloc[0].items():
+                    comp_values.loc[i_control_df, index_s] = (val_s == row[index_s])
+                row_results['Equals Test'] = comp_values.loc[i_control_df].all()
+                # Drop already matched rows. Note: if there are multiple rows in the test cdf that match a given row in the control cdf
+                # this comparison will always use the first match for the comparison. The rest will be dropped from the test cdf. A
+                # possible optimization is to compare against the match with the highest accuracy if there's multiple matches in the test cdf.
+            row_results['Unique in Control'] = (control_rows.shape[0] == 1)
+            comp_rows.loc[i_control_df] = row_results
         results = {
-            'comp_equality_matrix': eq_df,
-            'comp_summary': comp_summary
+            'comp_rows': comp_rows,
+            'comp_values': comp_values
         }
         return results
 

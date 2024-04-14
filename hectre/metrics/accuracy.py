@@ -27,8 +27,14 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     # Create a FAKE DataFrame from the control CDF CSV.
     fake_control_cdf = pd.read_csv(path_to_fake_control_cdf.resolve());
     accuracy = test_cdf.compare(control_cdf, fake_control_cdf)
-    print(accuracy['comp_summary'])
-    # print(accuracy['control_clin_data'].index)
+    print('ACCURACY OF CLINICAL DATA ROWS (indexed by control compound primary key):')
+    for i, row in accuracy['comp_rows'].iterrows():
+        print(i)
+        print(row.to_string())
+    print('ACCURACY OF CLINICAL DATA COLUMNS (indexed by column name):')
+    for col in accuracy['comp_values'].columns:
+        pct = (accuracy['comp_values'][col].sum() / accuracy['comp_values'].shape[0]) * 100
+        print(f'{col}: ', f'{pct:.2f}')
 
 if __name__ == '__main__':
     cdf_accuracy()
