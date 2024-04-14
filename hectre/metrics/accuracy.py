@@ -13,24 +13,24 @@ from hectre.consts import HEADER_ORDER
 def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     path_to_test_pdf = Path(path_to_pdf)
     path_to_control_cdf = Path(path_to_cdf)
-    path_to_fake_control_cdf = Path("hectre/tests/test_data/cdfs/fake_305_deBruin_2018.csv")
-    # test_cdf: Optional[CDF] = extract_data(file_path=path_to_test_pdf.resolve(), picos_string=picos_string)
+    # path_to_fake_control_cdf = Path("hectre/tests/test_data/cdfs/fake_305_deBruin_2018.csv")
+    test_cdf: Optional[CDF] = extract_data(file_path=path_to_test_pdf.resolve(), picos_string=picos_string)
     ### FAKE TEST CDF
-    fake_test_cdf_r1 = CDFData(**{key:"zero" for key in HEADER_ORDER if key != 'DSID'})
-    test_cdf = CDF()
-    test_cdf.add_clinical_data(fake_test_cdf_r1)
-    test_cdf.set_literature_data(fake_test_cdf_r1)
+    # fake_test_cdf_r1 = CDFData(**{key:"zero" for key in HEADER_ORDER if key != 'DSID'})
+    # test_cdf = CDF()
+    # test_cdf.add_clinical_data(fake_test_cdf_r1)
+    # test_cdf.set_literature_data(fake_test_cdf_r1)
     if not test_cdf:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')
     # Create a DataFrame from the control CDF CSV.
     control_cdf = pd.read_csv(path_to_control_cdf.resolve())
-    # Create a FAKE DataFrame from the control CDF CSV.
-    fake_control_cdf = pd.read_csv(path_to_fake_control_cdf.resolve());
-    accuracy = test_cdf.compare(control_cdf, fake_control_cdf)
+    # Run the comparison.
+    accuracy = test_cdf.compare(test_cdf.to_df(), control_cdf)
     print()
     print('ACCURACY OF LITERATURE DATA VALUES (indexed by column name):')
     print()
-    print('Test lit data matches control lit data: ', accuracy['comp_rows_lit'])
+    lit_acc_pct = (accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size) * 100
+    print('Test lit data accuracy: ', f'{lit_acc_pct:.2f}')
     print()
     for col in accuracy['comp_values_lit'].index:
         print(f'{col}: ',  accuracy['comp_values_lit'][col])
@@ -47,6 +47,12 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     for col in accuracy['comp_values_clin'].columns:
         pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0]) * 100
         print(f'{col}: ', f'{pct:.2f}')
+    print()
+    print('ROW 1 of TEST DATA vs ROW 1 of CONTROL DATA')
+    test_r1 = pd.concat([accuracy['test_lit_data'], accuracy['test_clin_data'].iloc[0]])
+    control_r1 = pd.concat([accuracy['control_lit_data'], accuracy['control_clin_data'].iloc[0]])
+    df_r1 = pd.DataFrame(data={'Test': test_r1.to_list(), 'Control': control_r1.to_list()}, index=test_r1.index, columns=['Test', 'Control'])
+    print(df_r1)
     print()
 
 if __name__ == '__main__':
