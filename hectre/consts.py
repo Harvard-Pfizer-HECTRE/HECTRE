@@ -351,7 +351,7 @@ HEADER_ORDER = [
 # Columns to ignore when comparing two CDFs.
 CDF_COMPARE_COLS_IGNORE = ["DSID", "ARM.NUM"]
 
-CDF_COMPOUND_KEY_COLS = ["ARM.TRT", "ARM.DOSE", "ARM.REG", "ENDPOINT"]
+CDF_COMPOUND_KEY_COLS = ["ARM.TRT", "ARM.DOSE", "ARM.REGIMEN", "ENDPOINT"]
 
 # ------------------------------
 # Testing related constants

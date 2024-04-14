@@ -21,7 +21,7 @@ measure-ad-accuracy:
 	python -m hectre.metrics.accuracy \
 		"hectre/tests/test_data/305_deBruin_2018.pdfdata" \
 		"EASI-50;EASI-75;EASI-90" \
-		"hectre/tests/test_data/cdfs/305_deBruin_2018.cdf"
+		"hectre/tests/test_data/cdfs/305_deBruin_2018.csv"
 
 # HECTRE
 extract:
