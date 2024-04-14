@@ -26,6 +26,7 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     control_cdf = pd.read_csv(path_to_control_cdf.resolve())
     # Run the comparison.
     accuracy = test_cdf.compare(test_cdf.to_df(), control_cdf)
+    print(f'MEASURING ACCURACY OF HECTRE EXTRACTION OF {path_to_pdf}:')
     print()
     print('ACCURACY OF LITERATURE DATA VALUES (indexed by column name):')
     print()

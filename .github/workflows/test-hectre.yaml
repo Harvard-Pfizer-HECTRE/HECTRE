@@ -31,3 +31,5 @@ jobs:
         run: make setup
       - name: Run PyTest
         run: make test
+      - name: Measure AD Extraction Accuracy (control=305_deBruin_2018.pdf)
+        run: make measure-ad-accuracy
