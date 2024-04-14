@@ -112,13 +112,16 @@ class CDF(BaseModel):
         control_clin_data = control_cdf.drop(columns=LITERATURE_DATA_HEADERS)
         control_clin_data.set_index(ck_cols,inplace=True)
         clin_results = self.compare_clinical_data(test_clin_data, control_clin_data)
+        lit_results = self.compare_literature_data(test_lit_data, control_lit_data)
         results = {
             "test_clin_data": test_clin_data,
             "test_lit_data": test_lit_data,
             "control_clin_data": control_clin_data,
             "control_lit_data": control_lit_data,
-            "comp_rows": clin_results['comp_rows'],
-            "comp_values": clin_results['comp_values']
+            "comp_rows_clin": clin_results['comp_rows'],
+            "comp_values_clin": clin_results['comp_values'],
+            "comp_rows_lit": lit_results['comp_rows'],
+            "comp_values_lit": lit_results['comp_values']
         }
         return results
     
@@ -126,7 +129,7 @@ class CDF(BaseModel):
         # Create a DataFrame to hold comparison summary.
         comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=test_df.index)
         # Create a DataFrame to hold cell-by-cell equality matrix.
-        comp_values = pd.DataFrame(columns=test_df.columns, index=test_df.index)
+        comp_values = pd.DataFrame(columns=test_df.columns, index=test_df.index, dtype='boolean')
         for i_control_df, row in control_df.iterrows():
             test_rows = test_df[test_df.index.isin([i_control_df])]
             control_rows = control_df[control_df.index.isin([i_control_df])]
@@ -153,6 +156,19 @@ class CDF(BaseModel):
             'comp_values': comp_values
         }
         return results
+    
+    def compare_literature_data(self, test_s: pd.Series, control_s: pd.Series):
+        # Create a DataFrame to hold cell-by-cell equality matrix.
+        comp_values = pd.Series(index=test_s.index, dtype='boolean')
+        for index_s, val_s in test_s.items():
+            comp_values.loc[index_s] = (val_s == control_s[index_s])
+        comp_rows = comp_values.all()
+        results = {
+            'comp_rows': comp_rows,
+            'comp_values': comp_values
+        }
+        return results
+
 
 
 
