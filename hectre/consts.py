@@ -219,6 +219,13 @@ CLINICAL_DATA_HEADERS: List[str] = [
     "BSL.VARU",
     "BSL.LCI",
     "BSL.UCI",
+    # Percent change from baseline
+    "PCHBSL.STAT",
+    "PCHBSL.VAL",
+    "PCHBSL.VAR",
+    "PCHBSL.VARU",
+    "PCHBSL.LCI",
+    "PCHBSL.UCI",
     # Change from baseline
     "CHBSL.STAT",
     "CHBSL.VAL",
@@ -235,13 +242,6 @@ CLINICAL_DATA_HEADERS: List[str] = [
     "RSP.VARU",
     "RSP.LCI",
     "RSP.UCI",
-    # Percent change from baseline
-    "PCHBSL.STAT",
-    "PCHBSL.VAL",
-    "PCHBSL.VAR",
-    "PCHBSL.VARU",
-    "PCHBSL.LCI",
-    "PCHBSL.UCI",
 ]
 
 SHORT_NAME_HEADER: str = "Field Name"

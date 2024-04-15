@@ -318,12 +318,13 @@ class Hectre(BaseModel):
         return list(set(ret))
     
 
-    def query_stat_groups(self, text: str, outcome: str) -> str:
+    def query_stat_groups(self, text: str, treatment_arm: str, outcome: str) -> str:
         '''
         Get all the statistical analysis groups, as a list of dictionaries.
         '''
         clinical_json = self.get_json_template_string_for_data_extraction(STAT_GROUP_HEADERS)
         extra_vars = {
+            "Treatment_Arm": treatment_arm,
             "Outcome": outcome,
             "Template": clinical_json,
         }
@@ -357,7 +358,7 @@ class Hectre(BaseModel):
             "Value": time_value,
             "Template": self.get_json_template_string_for_data_extraction(TIME_VALUE_HEADERS)
         }
-        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", extra_vars=extra_vars, keep_no_data_response=True)
 
 
     def query_clinical_data(
