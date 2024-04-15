@@ -25,6 +25,6 @@ files_client = FileS3Client(region_name=REGION_NAME)
 
 @router.post("/upload_files/")
 async def upload_files(files: List[UploadFile]):
-    upload_success = files_client.upload_files_to_s3(files)
+    upload_success = files_client.upload_files(files)
 
     return ResponseHandler.handle_upload_response(upload_success)

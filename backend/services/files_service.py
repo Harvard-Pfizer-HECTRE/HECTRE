@@ -31,7 +31,7 @@ class FileS3Client:
             return False
         return True
 
-    def upload_files_to_s3(self, files: List[UploadFile]) -> bool:
+    def upload_files(self, files: List[UploadFile]) -> bool:
         """Uploads multiple files to S3 bucket"""
         pool = ThreadPool(len(files))
 
@@ -51,7 +51,7 @@ class FileS3Client:
         """List all S3 buckets"""
         return [bucket.name for bucket in self.s3.buckets.all()]
 
-    async def s3_download(self, key: str):
+    async def download_file(self, key: str):
         """Downloads a file from S3 bucket"""
         try:
             return (

@@ -42,8 +42,8 @@ def test_created_bucket(s3_client, create_empty_bucket):
     assert buckets == [TEST_S3_BUCKET]
 
 
-# Test upload_files_to_s3
-def test_upload_files_to_s3(mock_files):
-    """Test upload_files_to_s3 method 😀"""
-    upload_success = file_client.upload_files_to_s3(mock_files)
+# Test upload_files
+def test_upload_files(mock_files):
+    """Test upload_files method 😀"""
+    upload_success = file_client.upload_files(mock_files)
     assert upload_success == True
