@@ -9,8 +9,10 @@ from consts import REGION_NAME
 @pytest.fixture
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
-    os.getenv("AWS_ACCESS_KEY_ID")
-    os.getenv("AWS_SECRET_ACCESS_KEY")
+    return {
+        "aws_access_key_id": "testing",
+        "aws_secret_access_key": "testing",
+    }
 
 
 @pytest.fixture
