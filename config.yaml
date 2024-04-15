@@ -20,7 +20,7 @@ Pdf:
   #     PdfPlumberPypdf2PdfParser
   #     PdfPlumberPypdfium2PdfParser
   #     PymupdfPdfParser
-  PdfParser: PdfPlumberPypdfium2PdfParser
+  PdfParser: PdfPlumberPypdf2PdfParser
 
 
 LLM:
