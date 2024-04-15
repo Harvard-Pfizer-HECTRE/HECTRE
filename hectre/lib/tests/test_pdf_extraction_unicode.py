@@ -22,7 +22,7 @@ def test_pdf_should_not_contain_unknown_unicode():
     Checks if the file processed by PDF extractor does not have
     any lingering unknown unicode characters.
     '''
-    directory = os.path.join(os.path.dirname(__file__), TEST_DATA_SUBFOLDER)
+    directory = os.path.join(os.path.dirname(__file__), "../../tests", TEST_DATA_SUBFOLDER)
     for filename in os.listdir(directory):
         if filename.endswith(TEST_DATA_SUFFIX):
             file_path = os.path.join(directory, filename)
