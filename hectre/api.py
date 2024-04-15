@@ -185,8 +185,7 @@ def extract_data(file_path: str = None, url: str = None, picos_string: str = Non
     '''
     Overarching function to turn a file path and a PICOS string into a CDF object.
     '''
-    pdf_parser = PdfParser(file_path=file_path, url=url)
-    paper = pdf_parser.parse()
+    paper = hectre.parse_pdf(file_path=file_path, url=url)
     picos_parser = PicosParser(picos_string=picos_string)
     picos = picos_parser.parse()
     if paper is not None and picos is not None:

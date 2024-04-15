@@ -17,9 +17,11 @@ from hectre.consts import (
     TIME_VALUE_HEADERS,
     VAR_DICT
 )
+from hectre.input_parsers.consts import NAME_TO_PDF_PARSER
 from hectre.lib.config import Config
 from hectre.models.consts import NAME_TO_MODEL_CLASS
 from hectre.ontology.definitions import Definitions
+from hectre.pdf.paper import Paper
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +38,7 @@ class Hectre(BaseModel):
     definitions: Optional[Any] = None
     llm: Optional[Any] = None
     llm_name: Optional[str] = None
+    pdf_parser: Optional[str] = None
 
 
     def __init__(self, **kwargs):
@@ -46,6 +49,10 @@ class Hectre(BaseModel):
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
             raise HectreException("Could not find LLMName in configuration!")
+        try:
+            self.pdf_parser = self.config["Pdf"]["PdfParser"]
+        except KeyError:
+            raise HectreException("Could not find PdfParser in configuration!")
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
@@ -114,6 +121,14 @@ class Hectre(BaseModel):
             str
         '''
         return self.llm.invoke(prompt)
+    
+
+    def parse_pdf(self, file_path: Optional[str] = None, url: Optional[str] = None) -> Optional[Paper]:
+        '''
+        Parse a PDF using the configured parser.
+        '''
+        parser = NAME_TO_PDF_PARSER[self.pdf_parser](file_path=file_path, url=url)
+        return parser.parse()
     
 
     def combine_dicts(self, dict1: Dict[str, str], dict2: Dict[str, str]) -> Dict[str, str]:

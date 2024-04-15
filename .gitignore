@@ -169,9 +169,6 @@ hectre-be-app/app.db
 # PDF files for testing
 *.pdf
 
-# PNG files
-.png
-
 # Log files
 logs/
 

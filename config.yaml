@@ -13,6 +13,16 @@ General:
   FileLoggingLevel: DEBUG
 
 
+Pdf:
+  # This section is about PDF extraction
+
+  # The available PDF parsers that are programmed are:
+  #     PdfPlumberPypdf2PdfParser
+  #     PdfPlumberPypdfium2PdfParser
+  #     PymupdfPdfParser
+  PdfParser: PdfPlumberPypdfium2PdfParser
+
+
 LLM:
   # This section has to do with the LLM model used and the parameters set to the model.
 
