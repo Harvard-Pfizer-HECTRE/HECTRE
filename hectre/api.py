@@ -117,7 +117,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             outcome_type = hectre.query_outcome_type(outcome=outcome)
 
             # Get all the statistical analysis groups for this outcome
-            stat_groups_res = hectre.query_stat_groups(treatment_arm=treatment_arm, outcome=outcome, text=text)
+            stat_groups_res = hectre.query_stat_groups(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
 
             try:
                 stat_groups = json5.loads(stat_groups_res)
@@ -130,7 +130,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             time_values = hectre.query_time_values(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
 
             if not time_values:
-                logger.error(f"Could not find any time values for treatment arm {treatment_arm} and outcome {outcome}")
+                logger.warn(f"Could not find any time values for treatment arm {treatment_arm} and outcome {outcome}")
                 continue
 
             # Loop through every time value
