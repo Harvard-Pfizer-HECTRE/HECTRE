@@ -7,6 +7,7 @@ from typing import Optional
 from hectre.cdf.cdf import CDF, CDFData
 from hectre.consts import (
     CLINICAL_DATA_HEADERS,
+    NO_DATA,
     PER_TREATMENT_ARM_HEADERS,
 )
 from hectre.pdf.paper import Paper
@@ -116,7 +117,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             outcome_type = hectre.query_outcome_type(outcome=outcome)
 
             # Get all the statistical analysis groups for this outcome
-            stat_groups_res = hectre.query_stat_groups(outcome=outcome, text=text)
+            stat_groups_res = hectre.query_stat_groups(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
 
             try:
                 stat_groups = json5.loads(stat_groups_res)
@@ -129,8 +130,8 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             time_values = hectre.query_time_values(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
 
             if not time_values:
-                logger.error(f"Could not find any time values for paper {paper_id}!")
-                return
+                logger.warn(f"Could not find any time values for treatment arm {treatment_arm} and outcome {outcome}")
+                continue
 
             # Loop through every time value
             for time_value in time_values:
@@ -141,9 +142,17 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                     logger.error(f"Could not decode time data format output: {time_data_dict_str}")
                     # Something went wrong here
                     continue
+
+                # Treat NO_DATA as 0
+                if NO_DATA in time_data_dict["ARM.TIME1"]:
+                    time_data_dict["ARM.TIME1"] = "0"
     
                 # Loop through every stat group
                 for stat_group in stat_groups:
+                    # For some reason, empty stat groups can happen
+                    if all(NO_DATA in val for val in stat_group.values()):
+                        continue
+
                     result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text)
                     # If we got any results, load it as JSON object, and update our JSON for this clinical data row
                     try:
@@ -176,8 +185,7 @@ def extract_data(file_path: str = None, url: str = None, picos_string: str = Non
     '''
     Overarching function to turn a file path and a PICOS string into a CDF object.
     '''
-    pdf_parser = PdfParser(file_path=file_path, url=url)
-    paper = pdf_parser.parse()
+    paper = hectre.parse_pdf(file_path=file_path, url=url)
     picos_parser = PicosParser(picos_string=picos_string)
     picos = picos_parser.parse()
     if paper is not None and picos is not None:

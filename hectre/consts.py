@@ -110,6 +110,7 @@ UNICODE_REPLACE_MAP: Dict[str, str] = {
     "c ¸": "ç",
     " ´e": "é",
     " €ı": "ï",
+    "€ı": "ï",
     " ¨ı": "ï",
     " €O": "Ö",
     " €o": "ö",
@@ -219,6 +220,13 @@ CLINICAL_DATA_HEADERS: List[str] = [
     "BSL.VARU",
     "BSL.LCI",
     "BSL.UCI",
+    # Percent change from baseline
+    "PCHBSL.STAT",
+    "PCHBSL.VAL",
+    "PCHBSL.VAR",
+    "PCHBSL.VARU",
+    "PCHBSL.LCI",
+    "PCHBSL.UCI",
     # Change from baseline
     "CHBSL.STAT",
     "CHBSL.VAL",
@@ -235,13 +243,6 @@ CLINICAL_DATA_HEADERS: List[str] = [
     "RSP.VARU",
     "RSP.LCI",
     "RSP.UCI",
-    # Percent change from baseline
-    "PCHBSL.STAT",
-    "PCHBSL.VAL",
-    "PCHBSL.VAR",
-    "PCHBSL.VARU",
-    "PCHBSL.LCI",
-    "PCHBSL.UCI",
 ]
 
 SHORT_NAME_HEADER: str = "Field Name"
@@ -358,3 +359,9 @@ CDF_COMPOUND_KEY_COLS = ["ARM.TRT", "ARM.DOSE", "ARM.REGIMEN", "ENDPOINT"]
 # ------------------------------
 TEST_DATA_SUBFOLDER = "test_data"
 TEST_DATA_SUFFIX = ".pdfdata"
+
+# Which papers we are doing extraction tests on
+# Key is DSID, value are the outcomes
+TEST_EXTRACTION_DSID = [
+    ("305", "EASI 50;EASI 75;EASI 90"),
+]

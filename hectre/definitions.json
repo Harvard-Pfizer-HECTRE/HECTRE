@@ -68,7 +68,7 @@
         "Field Label": "Publication abstract",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Short abstract of the clinical trial",
+        "Field Description": "Short abstract of the paper",
         "Sample Data": "LI: Lonarid, an association of analgesic and antipyrethic drugs, was administered\u2026\nIR: Background: The sponsor has submitted two randomized, double-blind, multicenter, placebo controlled trials\u2026\n\nQuotation Marks (Single and Double) and Commas must be excluded from the abstract. While this implies an edit to most abstract texts, it's required for this format. "
     },
     {
@@ -148,7 +148,7 @@
         "Field Label": "Study arm treatment name",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Actual treatment name, typically reporting the generic drug name. Use United state adopted name (USAN). Multiple entries are entered delimited in order by semi-colons",
+        "Field Description": "Actual treatment name, typically reporting the generic drug name. Use United state adopted name (USAN). Multiple entries are entered delimited in order by semi-colons. This should be just the drug name, no dosage or regimen",
         "Sample Data": "arm.trt1;arm.trt2;arm.trt3  # no missing entries\n;arm.trt2;arm.trt3                # missing entry # 1\narm.trt1;;arm.trt3                  # missing entry # 2\narm.trt1;arm.trt2;                  # missing entry # 3"
     },
     {
@@ -236,7 +236,7 @@
         "Field Label": "Statistical analysis population",
         "Field Type": "Predefined",
         "Valid Entries": "ITT\nmITT\nFAS\nPP\nSA\nCO",
-        "Field Description": "ITT - Intention to Treat, mITT - modified ITT, FAS - full analysis set, PP - per protocol, SA - safety anlaysis population, CO - completers only",
+        "Field Description": "Select from: ITT, mITT, FAS, PP, SA, or CO. ITT - Intention to Treat, mITT - modified ITT, FAS - full analysis set, PP - per protocol, SA - safety anlaysis population, CO - completers only",
         "Sample Data": ""
     },
     {
@@ -244,7 +244,7 @@
         "Field Label": "Statistical analysis method",
         "Field Type": "Predefined",
         "Valid Entries": "(Indication specific terms may be specified by the Pfizer Disease Area or Indication team. )\n\nLSMeans\nKM\nUNIVARIATE\nMULTIVARIATE\nANCOVA\nANOVA\nBinary Logistic Regression\nBonferroni Correction Test\nBonferroni Holm Adjustment\nBonferroni Test\nBonferronis Correction Test\nChisquare Test\nCox Proportional Hazards Model\nCox Proportional Hazards Regression Model\nCox Regression Model\nDunnetts Test\nFishers Exact Test\nFriedman Repeated Measures Analysis Of Variance\nFriedman Test\nFriedmann Rank Sum Test\nGeneralized Estimated Equation Method\nKolmogorov-Smirnov Test\nKruskal Wallis Test\nLinear Mixed Model Analysis\nLinear Regression Model\nLog Rank Test\nLog Rank Test\nLog Rank Test Stratified\nLogistic Regression Model\nMann Whitney Rank Sum Test\nMann Whitney Test\nMann Whitney U Test\nMANOVA\nMixed Effects Regression Modeling\nMixed Linear Model\nMixed Linear Model Analysis Of Covariance\nMixed Model\nMMRM\nMultiple Linear Regression\nMultivariate Cox Proportional Hazards\nMultivariate Cox Regression Analysis\nNewman Keuls Test\nOne Way RM ANOVA\nPaired T Test\nPosthoc Sensitivity Analysis\nRegression Analysis\nRepeated Measurements Linear Model\nRepeated Measures\nRM ANCOVA\nRM ANOVA\nRM MANOVA\nSample T Test\nShapiro Wilk Test\nSigned Rank Test\nSpearman Rank Correlation Analysis\nStudent T Test\nT Test\nTukey Kramer Test\nUnivariate Analysis\nUnivariate Cox Proportional Hazards\nUnpaired T Test\nWeighted Regression Analysis\nWilcoxon Mann Whitney Test\nWilcoxon M+P112atched Paired Test\nWilcoxon Matched Pairs Signed Ranks Test\nWilcoxon Rank Sum Test\nWilcoxon Signed Rank Paired Statistical Test\nWilcoxon Signed Rank Sum Test\nWilcoxon Signed Rank Test\nWilcoxon Test\nWillam Test",
-        "Field Description": "Details the stats analysis method. e.g. Least Square Means, Kaplan Meier",
+        "Field Description": "Details the stats analysis method. e.g. Least Square Means, Kaplan Meier, ANCOVA",
         "Sample Data": ""
     },
     {
@@ -252,7 +252,7 @@
         "Field Label": "Imputation method of values in observation",
         "Field Type": "Predefined",
         "Valid Entries": "NRI\nLOCF\nBOCF\nOC\nMMRM\n(additional terms to be vetted by Pfizer as encountered by data curation team)",
-        "Field Description": "Methdology used in the statistical analysis to impute missing data. e.g. NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures, (Blank/Missing/Empty if no imputation reported)",
+        "Field Description": "Methdology used in the statistical analysis to impute missing data. Select from: NRI, LOCF, BOCF, OC, MMRM. NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures. Possibly no imputation reported.",
         "Sample Data": ""
     },
     {
@@ -281,10 +281,10 @@
     },
     {
         "Field Name": "BSL.STAT",
-        "Field Label": "Baseline response statistics",
+        "Field Label": "Statistic used for baseline response",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean",
-        "Field Description": "e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean",
+        "Field Description": "Select from: Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean",
         "Sample Data": "Mean, median, events no. at study entry, "
     },
     {
@@ -340,7 +340,7 @@
         "Field Label": "Change from baseline statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean",
-        "Field Description": "Note: If there are percent changes from baseline, use PCHBSL.* instead. e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean",
+        "Field Description": "Note: If there are percent changes from baseline, just use PCHBSL.* instead. Select from: Mean, Median, LS Mean, Pooled Mean, Pooled Median, Pooled LS Mean",
         "Sample Data": "Mean, median, \u2026"
     },
     {
@@ -396,7 +396,7 @@
         "Field Label": "Response statistics",
         "Field Type": "Predefined",
         "Valid Entries": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean\nRatio\nPercent",
-        "Field Description": "Statistic used to aggregate response value",
+        "Field Description": "Statistic used to aggregate response value. e.g. Mean, Median, LSMean, Pooled.Mean, Pooled.Median, Pooled.LSMean, Ratio, Percent",
         "Sample Data": "Mean\nMedian\nLSMean\nPooled.Mean\nPooled.Median\nPooled.LSMean\nRatio\nPercent"
     },
     {

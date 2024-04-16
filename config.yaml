@@ -13,6 +13,16 @@ General:
   FileLoggingLevel: DEBUG
 
 
+Pdf:
+  # This section is about PDF extraction
+
+  # The available PDF parsers that are programmed are:
+  #     PdfPlumberPypdf2PdfParser
+  #     PdfPlumberPypdfium2PdfParser
+  #     PymupdfPdfParser
+  PdfParser: PdfPlumberPypdf2PdfParser
+
+
 LLM:
   # This section has to do with the LLM model used and the parameters set to the model.
 
@@ -97,7 +107,7 @@ Prompt Engineering:
   PromptStatGroups1: |-
     Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    Find all of the unique statistical analysis groups for the outcome {Outcome}, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
+    Find all of the unique statistical analysis groups for the outcome {Outcome} and treatment arm {Treatment_Arm} that have clinical data that can be extracted, in the form of a list of dictionaries; here is a template JSON to fill in for one element in the output list (enclose values in quotes):
     {Template}
     If any fields cannot be found, fill in that entry with "{No_Data}". Please respond with just the list of dictionaries JSON with no other words.
 

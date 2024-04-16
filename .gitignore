@@ -126,6 +126,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+*_env*
+henv
 hectre_env
 
 # Spyder project settings

@@ -17,9 +17,11 @@ from hectre.consts import (
     TIME_VALUE_HEADERS,
     VAR_DICT
 )
+from hectre.input_parsers.consts import NAME_TO_PDF_PARSER
 from hectre.lib.config import Config
 from hectre.models.consts import NAME_TO_MODEL_CLASS
 from hectre.ontology.definitions import Definitions
+from hectre.pdf.paper import Paper
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +34,11 @@ class Hectre(BaseModel):
     HECTRE is able to either invoke the model, get literature data from a page,
     or clinical data from a page or table.
     '''
-    config: Any = None
-    definitions: Any = None
-    llm: Any = None
+    config: Optional[Any] = None
+    definitions: Optional[Any] = None
+    llm: Optional[Any] = None
+    llm_name: Optional[str] = None
+    pdf_parser: Optional[str] = None
 
 
     def __init__(self, **kwargs):
@@ -45,6 +49,10 @@ class Hectre(BaseModel):
             llm_name = self.config["LLM"]["LLMName"]
         except KeyError:
             raise HectreException("Could not find LLMName in configuration!")
+        try:
+            self.pdf_parser = self.config["Pdf"]["PdfParser"]
+        except KeyError:
+            raise HectreException("Could not find PdfParser in configuration!")
         self.set_llm(llm_name)
         self.llm.set_parameters_from_config(self.config)
         self.definitions = Definitions()
@@ -81,6 +89,13 @@ class Hectre(BaseModel):
         rootLogger.setLevel("DEBUG")
 
 
+    def get_llm_name(self) -> str:
+        '''
+        Get the currently used LLM by name.
+        '''
+        return self.llm_name
+
+
     def set_llm(self, llm_name: str) -> None:
         '''
         Set the LLM to be used by HECTRE.
@@ -90,6 +105,7 @@ class Hectre(BaseModel):
         '''
         try:
             self.llm = NAME_TO_MODEL_CLASS[llm_name]()
+            self.llm_name = llm_name
         except KeyError:
             raise HectreException(f"{llm_name} is not a supported LLM type!")
 
@@ -105,6 +121,14 @@ class Hectre(BaseModel):
             str
         '''
         return self.llm.invoke(prompt)
+    
+
+    def parse_pdf(self, file_path: Optional[str] = None, url: Optional[str] = None) -> Optional[Paper]:
+        '''
+        Parse a PDF using the configured parser.
+        '''
+        parser = NAME_TO_PDF_PARSER[self.pdf_parser](file_path=file_path, url=url)
+        return parser.parse()
     
 
     def combine_dicts(self, dict1: Dict[str, str], dict2: Dict[str, str]) -> Dict[str, str]:
@@ -309,12 +333,13 @@ class Hectre(BaseModel):
         return list(set(ret))
     
 
-    def query_stat_groups(self, text: str, outcome: str) -> str:
+    def query_stat_groups(self, text: str, treatment_arm: str, outcome: str) -> str:
         '''
         Get all the statistical analysis groups, as a list of dictionaries.
         '''
         clinical_json = self.get_json_template_string_for_data_extraction(STAT_GROUP_HEADERS)
         extra_vars = {
+            "Treatment_Arm": treatment_arm,
             "Outcome": outcome,
             "Template": clinical_json,
         }
@@ -348,7 +373,7 @@ class Hectre(BaseModel):
             "Value": time_value,
             "Template": self.get_json_template_string_for_data_extraction(TIME_VALUE_HEADERS)
         }
-        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", extra_vars=extra_vars)
+        return self.invoke_prompt_on_text(name=f"value and units from time value \"{time_value}\"", prompt_name="PromptGenericDataFormat", text="", extra_vars=extra_vars, keep_no_data_response=True)
 
 
     def query_clinical_data(
