@@ -20,22 +20,22 @@ make extract path=[FILE OR FOLDER OR URL] picos=[ENDPOINTS SEPARATED BY SEMICOLO
 
 Simple example:
 ```bash
-make extract file=79_Rosenstock_2013.pdf picos=HbA1c
+make extract file="79_Rosenstock_2013.pdf" picos="HbA1c"
 ```
 
 Passing in many different outcomes:
 ```bash
-make extract file=305_deBruin_2018.pdf picos="EASI-50;EASI-75;EASI-90;EASI;SCORAD"
+make extract file="305_deBruin_2018.pdf" picos="EASI 50;EASI 75;EASI 90;EASI;SCORAD"
 ```
 
 Extracting from every PDF in a folder, with the same outcome(s):
 ```bash
-make extract file="folder/pdfs/" picos=HbA1c
+make extract file="folder/pdfs/" picos="HbA1c"
 ```
 
 Extracting from an URL:
 ```bash
-make extract file="https://academic.oup.com/bjd/article-pdf/178/5/1083/47956799/bjd1083.pdf" picos=EASI-75
+make extract file="https://academic.oup.com/bjd/article-pdf/178/5/1083/47956799/bjd1083.pdf" picos="EASI 75"
 ```
 
 Outputs will be saved in `/output/*.csv`.
