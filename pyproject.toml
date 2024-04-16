@@ -14,5 +14,11 @@ minversion = "7.0"
 name = "hectre-be-app"
 version = "0.1.0"
 description = ""
-authors = ["Manny Kwaning <ema526@g.harvard.edu>"]
+authors = [
+    "Manny Kwaning <ema526@g.harvard.edu>",
+    "Carl Zhao <zhz073@g.harvard.edu>",
+    "James Nicholson <jnicholson@hsph.harvard.edu>",
+    "Kartik Srikumar <kartik.srikumar@gmail.com>",
+    "Veronika Post <vep676@g.harvard.edu>"
+]
 readme = "backend/README.md"
