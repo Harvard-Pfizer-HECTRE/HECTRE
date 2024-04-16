@@ -19,7 +19,7 @@ measure-ad-accuracy:
 
 # HECTRE
 extract:
-	python -m hectre.extract $(file) $(picos)
+	python -m hectre.extract "$(file)" "$(picos)"
 
 # Back-end components
 be-dev:

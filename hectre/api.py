@@ -130,8 +130,8 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             time_values = hectre.query_time_values(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
 
             if not time_values:
-                logger.error(f"Could not find any time values for paper {paper_id}!")
-                return
+                logger.error(f"Could not find any time values for treatment arm {treatment_arm} and outcome {outcome}")
+                continue
 
             # Loop through every time value
             for time_value in time_values:
