@@ -68,7 +68,7 @@
         "Field Label": "Publication abstract",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Short abstract of the paper",
+        "Field Description": "Abstract of the paper, taken directly from the text",
         "Sample Data": "LI: Lonarid, an association of analgesic and antipyrethic drugs, was administered\u2026\nIR: Background: The sponsor has submitted two randomized, double-blind, multicenter, placebo controlled trials\u2026\n\nQuotation Marks (Single and Double) and Commas must be excluded from the abstract. While this implies an edit to most abstract texts, it's required for this format. "
     },
     {
