@@ -119,7 +119,7 @@ class CDF(BaseModel):
         # Make sure they have the same columns.
         cols_eq = set(test_cdf.columns) == set(control_cdf.columns)
         if not cols_eq:
-            cols = f'Test CDF Columns:\n{test_cdf.columns}\n\nConrol CDF Columns:\n{control_cdf.columns}\n\n'
+            cols = f'Test CDF Columns:\n{test_cdf.columns}\n\nControl CDF Columns:\n{control_cdf.columns}\n\n'
             raise RuntimeError(f'The columns in the test and control CDFs are not the same\n\n{cols}')
         test_lit_data = test_cdf.loc[0,LITERATURE_DATA_HEADERS]
         test_clin_data = test_cdf.drop(columns=LITERATURE_DATA_HEADERS)
