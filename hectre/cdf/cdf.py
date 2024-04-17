@@ -1,25 +1,23 @@
 """A model for working with CDF data.
 """
+
 from __future__ import annotations
-
+import json, warnings, os
 from collections import OrderedDict
-import os
-
-from pydantic import BaseModel, Json
 from typing import Any, List, Dict, Optional
-import json
-import pandas as pd
-import warnings
+
 from thefuzz import fuzz
+from pydantic import BaseModel, Json
 import numpy as np
+import pandas as pd
 
 from hectre.consts import (
-    HEADER_ORDER,
-    NO_DATA,
     CDF_COMPARE_COLS_IGNORE,
     CDF_COMPOUND_KEY_COLS,
-    LITERATURE_DATA_HEADERS
-    )
+    HEADER_ORDER,
+    LITERATURE_DATA_HEADERS,
+    NO_DATA
+)
 
 # Create fields dynamically for LiteratureData and Result models based on definitions.json
 # Create method of CDF to create dataframe from LiteratureData and Results
