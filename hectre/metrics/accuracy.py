@@ -62,8 +62,8 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
         pd.set_option('display.max_rows', df_r1.shape[0])
         print(df_r1)
     else:
+        print('None of the test and control compound primary keys matched')
         print()
-    print('None of the test and control compound primary keys matched')
 
 if __name__ == '__main__':
     cdf_accuracy()
