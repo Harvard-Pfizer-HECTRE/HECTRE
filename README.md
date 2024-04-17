@@ -6,7 +6,7 @@ Clinical trial paper data extraction, Harvard Extension collaboration with Pfize
 The tools you'll need are:
 - GNU Make (https://www.gnu.org/software/make/) (Additional effort may be needed to install on Windows)
 - Python (version >= 3.9)
-- AWS credentials to use Amazon Bedrock LLM API (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials", the credentials need to be under your root directory in `.aws` folder, with profile name "[capstone]")
+- AWS credentials to use Amazon Bedrock LLM API (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials", the credentials need to be under your root directory in `.aws` folder)
 
 Then, run the following to install all other requirements:
 ```bash
@@ -39,6 +39,12 @@ make extract file="https://academic.oup.com/bjd/article-pdf/178/5/1083/47956799/
 ```
 
 Outputs will be saved in `/output/*.csv`.
+
+## Make Changes to Field Definitions
+TODO
+
+## Make Changes to Prompting Methodology
+TODO
 
 ## Deploy the Web Backend
 ```bash
