@@ -18,10 +18,11 @@ Pdf:
 
   # The available PDF parsers that are programmed are:
   #     LlmPypdf2PdfParser
+  #     PdfPlumberLlmPypdf2PdfParser
   #     PdfPlumberPypdf2PdfParser
   #     PdfPlumberPypdfium2PdfParser
   #     PymupdfPdfParser
-  PdfParser: PdfPlumberPypdf2PdfParser
+  PdfParser: PdfPlumberLlmPypdf2PdfParser
 
 
 LLM:
