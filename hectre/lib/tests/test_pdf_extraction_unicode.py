@@ -1,16 +1,16 @@
 import os
 import re
 
-import pytest
-
 from hectre.consts import (
     TEST_DATA_SUBFOLDER,
     TEST_DATA_SUFFIX,
 )
+from hectre.input_parsers.pdfplumber_pypdf2_pdf_parser import PdfPlumberPypdf2PdfParser
 
 
 def pdf_unicode_check(file_path):
-    paper = pytest.hectre.parse_pdf(file_path=file_path, url=None)
+    # Hardcode the parser here as we don't want to call the LLM for a test
+    paper = PdfPlumberPypdf2PdfParser(file_path=file_path, url=None).parse()
     for page in paper.get_pages():
         assert not page.unknown_unicode_chars, f"Found unknown unicode character(s): {page.unknown_unicode_chars} (paper: {file_path}) (content: {page.get_text()})"
         for line in page.get_text().split("\n"):
