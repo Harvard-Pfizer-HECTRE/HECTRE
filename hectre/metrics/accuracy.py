@@ -28,10 +28,16 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     accuracy = test_cdf.compare(test_cdf.to_df(), control_cdf)
     print(f'MEASURING ACCURACY OF HECTRE EXTRACTION OF {path_to_pdf}:')
     print()
+    print('CONTROL PRIMARY KEYS')
+    print(accuracy['control_clin_data'].index)
+    print()
+    print('TEST PRIMARY KEYS')
+    print(accuracy['test_clin_data'].index)
+    print()
     print('ACCURACY OF LITERATURE DATA VALUES (indexed by column name):')
     print()
-    lit_acc_pct = (accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size) * 100
-    print('Test lit data accuracy: ', f'{lit_acc_pct:.2f}')
+    lit_acc_pct = accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size
+    print('Average string similarity (percent similar): ', f'{lit_acc_pct:.2f}')
     print()
     for col in accuracy['comp_values_lit'].index:
         print(f'{col}: ',  accuracy['comp_values_lit'][col])
