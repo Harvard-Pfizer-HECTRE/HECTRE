@@ -21,6 +21,7 @@ from hectre.input_parsers.consts import NAME_TO_PDF_PARSER
 from hectre.lib.config import Config
 from hectre.models.consts import NAME_TO_MODEL_CLASS
 from hectre.ontology.definitions import Definitions
+from hectre.pdf.page import Page
 from hectre.pdf.paper import Paper
 
 logger = logging.getLogger(__name__)
@@ -127,7 +128,7 @@ class Hectre(BaseModel):
         '''
         Parse a PDF using the configured parser.
         '''
-        parser = NAME_TO_PDF_PARSER[self.pdf_parser](file_path=file_path, url=url)
+        parser = NAME_TO_PDF_PARSER[self.pdf_parser](file_path=file_path, url=url, hectre=self)
         return parser.parse()
     
 
@@ -280,6 +281,20 @@ class Hectre(BaseModel):
             clinical_json += f'  "{header_name}": "",  # {header_label}. {header_description}\n'
         clinical_json += "}"
         return clinical_json
+    
+
+    def get_has_table_in_page(self, page: Page) -> bool:
+        name = f"if there is table on page {page.get_number() + 1}"
+        text = page.get_text()
+        # Try three times if LLM doesn't give 0 or 1
+        for _ in range(3):
+            result = self.invoke_prompt_on_text(name=name, prompt_name="PromptTableOnPage", text=text)
+            if "YES" in result:
+                return True
+            elif "NO" in result:
+                return False
+        # Prefer false-positive
+        return True
 
 
     def query_literature_data(self, text: str) -> Optional[str]:

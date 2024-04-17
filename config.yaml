@@ -17,10 +17,11 @@ Pdf:
   # This section is about PDF extraction
 
   # The available PDF parsers that are programmed are:
+  #     LlmPypdf2PdfParser
   #     PdfPlumberPypdf2PdfParser
   #     PdfPlumberPypdfium2PdfParser
   #     PymupdfPdfParser
-  PdfParser: PdfPlumberPypdf2PdfParser
+  PdfParser: LlmPypdf2PdfParser
 
 
 LLM:
@@ -72,6 +73,12 @@ Prompt Engineering:
     Please format "{Value}" into the following JSON template:
     {Template}
     If any fields are not applicable, write "{No_Data}"; enclose all values in quotes. Please respond with just the JSON.
+
+  # Prompt used to check if there is table on page
+  PromptTableOnPage1: |-
+    Below is a page from a clinical trial paper parsed from PDF:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    If there seems to be any number of tables with clinical data on this page, answer exactly with "YES"; otherwise answer exactly with "NO".
 
   # Prompts for extracting literature data
   PromptLiterature1: |-

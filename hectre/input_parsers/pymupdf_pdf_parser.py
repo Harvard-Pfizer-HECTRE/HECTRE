@@ -12,10 +12,6 @@ from hectre.pdf.table import Table
 logger = logging.getLogger(__name__)
 
 
-class PdfParserException(Exception):
-    pass
-
-
 class PymupdfPdfParser(PdfParser):
     '''
     This parser uses PyMuPDF to detect tables and extract text.

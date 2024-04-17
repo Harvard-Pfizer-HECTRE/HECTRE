@@ -13,10 +13,6 @@ from hectre.pdf.table import Table
 logger = logging.getLogger(__name__)
 
 
-class PdfParserException(Exception):
-    pass
-
-
 class PdfPlumberPypdfium2PdfParser(PdfParser):
     '''
     This parser uses PdfPlumber to detect tables,
@@ -46,7 +42,6 @@ class PdfPlumberPypdfium2PdfParser(PdfParser):
                     pageObj = pdf_file_reader[page_index]
                     # create Page object and append to list
                     page: Page = Page(number=page_index, text=pageObj.get_textpage().get_text_bounded())
-                    pages.append(page)
 
                     # Try to find tables if any
                     pdfplumber_page = pdfplumber_file.pages[page_index]
@@ -55,6 +50,8 @@ class PdfPlumberPypdfium2PdfParser(PdfParser):
                         logger.debug(f"Got table(s) on page {page_index + 1}")
                         pages_with_tables += 1
                         page.set_has_table(True)
+                        
+                    pages.append(page)
         except Exception as e:
             logger.error(f"Got exception in PDF parsing: {e}")
             return None
