@@ -21,7 +21,7 @@ Pdf:
   #     PdfPlumberPypdf2PdfParser
   #     PdfPlumberPypdfium2PdfParser
   #     PymupdfPdfParser
-  PdfParser: LlmPypdf2PdfParser
+  PdfParser: PdfPlumberPypdf2PdfParser
 
 
 LLM:
@@ -120,7 +120,7 @@ Prompt Engineering:
 
   # Ask the LLM about the type of this outcome
   PromptOutcomeType1: |-
-    For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with 1, if it is a continuous endpoint (has value that changes over time) respond with 2, and if neither then respond with 0. Reply with only the answer with no other punctuations or texts.
+    For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with "BINARY", if it is a continuous endpoint (has value that changes over time) respond with "CONTINUOUS", and if neither then respond with "OTHER". Reply with only the answer with no other punctuations or texts.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-

@@ -10,6 +10,7 @@ from hectre.consts import (
     GREEN,
     LITERATURE_DATA_HEADERS,
     NO_DATA,
+    NON_BINARY_OUTCOME_DATA_HEADERS,
     OUTCOME_TYPE,
     RESET,
     SILENCED_LOGGING_MODULES,
@@ -369,15 +370,26 @@ class Hectre(BaseModel):
             "Outcome": outcome,
         }
         ret = self.invoke_prompt_on_text(name=f"{outcome} type", prompt_name="PromptOutcomeType", text="", extra_vars=extra_vars)
-        try:
-            outcome_type_int = int(ret)
-        except ValueError:
+        if "BINARY" in ret:
+            outcome_type_int = 1
+        elif "CONTINUOUS" in ret:
+            outcome_type_int = 2
+        elif "OTHER" in ret:
+            outcome_type_int = 0
+        else:
             logger.error(f"Could not determine outcome type from response: {ret}")
             outcome_type_int = 0
-        if outcome_type_int not in OUTCOME_TYPE:
-            logger.error(f"Unknown outcome type: {ret}")
-            outcome_type_int = 0
         return OUTCOME_TYPE[outcome_type_int]
+    
+
+    def filter_binary_outcome_clinical_data(self, clinical_data: Dict[str, str]) -> Dict[str, str]:
+        '''
+        For binary outcomes, filter out data such that only RSP values remain.
+        '''
+        for key in clinical_data:
+            if key in NON_BINARY_OUTCOME_DATA_HEADERS:
+                clinical_data[key] = ""
+        return clinical_data
     
 
     def query_time_dict_from_value(self, time_value: str) -> str:

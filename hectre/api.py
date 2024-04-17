@@ -117,7 +117,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
             outcome_type = hectre.query_outcome_type(outcome=outcome)
 
             # Get all the statistical analysis groups for this outcome
-            stat_groups_res = hectre.query_stat_groups(treatment_arm=treatment_arm, outcome=outcome, text=clinical_text)
+            stat_groups_res = hectre.query_stat_groups(treatment_arm=treatment_arm, outcome=outcome, text=text)
 
             try:
                 stat_groups = json5.loads(stat_groups_res)
@@ -157,6 +157,8 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                     # If we got any results, load it as JSON object, and update our JSON for this clinical data row
                     try:
                         clinical_data_json = json5.loads(result)
+                        if "binary" in outcome_type:
+                            clinical_data_json = hectre.filter_binary_outcome_clinical_data(clinical_data_json)
                     except json.JSONDecodeError as e:
                         logger.error(f"Could not decode clinical data output: {result}")
                         # We keep going
