@@ -49,12 +49,21 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
         pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0]) * 100
         print(f'{col}: ', f'{pct:.2f}')
     print()
-    print('ROW 1 of TEST DATA vs ROW 1 of CONTROL DATA')
-    test_r1 = pd.concat([accuracy['test_lit_data'], accuracy['test_clin_data'].iloc[0]])
-    control_r1 = pd.concat([accuracy['control_lit_data'], accuracy['control_clin_data'].iloc[0]])
-    df_r1 = pd.DataFrame(data={'Test': test_r1.to_list(), 'Control': control_r1.to_list()}, index=test_r1.index, columns=['Test', 'Control'])
-    print(df_r1)
+    print('ROW 1 OF THE MATCHED CDFs: TEST vs. CONTROL')
     print()
+    test_control_clin_join = accuracy['control_clin_data'].merge(accuracy['test_clin_data'], left_index=True, right_index=True)
+    # If test and control have at least one matching row, display an example.
+    if test_control_clin_join.shape[0] > 0:
+        # Index of first row in the joined df. Should exist in test and control.
+        matched_compound_key = test_control_clin_join.index[0]
+        test_r1 = pd.concat([accuracy['test_lit_data'], accuracy['test_clin_data'].loc[matched_compound_key]])
+        control_r1 = pd.concat([accuracy['control_lit_data'], accuracy['control_clin_data'].loc[matched_compound_key]])
+        df_r1 = pd.DataFrame(data={'Test': test_r1.to_list(), 'Control': control_r1.to_list()}, index=test_r1.index, columns=['Test', 'Control'])
+        pd.set_option('display.max_rows', df_r1.shape[0])
+        print(df_r1)
+    else:
+        print()
+    print('None of the test and control compound primary keys matched')
 
 if __name__ == '__main__':
     cdf_accuracy()
