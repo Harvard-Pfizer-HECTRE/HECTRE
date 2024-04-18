@@ -209,9 +209,7 @@ STAT_GROUP_HEADERS: List[str] = [
     "STATANAL.IMP.METHOD",
 ]
 
-CLINICAL_DATA_HEADERS: List[str] = [
-    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
-    "N.ARM.EVENT.SUBJ",
+NON_BINARY_OUTCOME_DATA_HEADERS: List[str] = [
     # Baseline characteristics
     "BSL.STAT",
     "BSL.VAL",
@@ -235,6 +233,12 @@ CLINICAL_DATA_HEADERS: List[str] = [
     "CHBSL.VARU",
     "CHBSL.LCI",
     "CHBSL.UCI",
+]
+
+CLINICAL_DATA_HEADERS: List[str] = [
+    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
+    "N.ARM.EVENT.SUBJ",
+] + NON_BINARY_OUTCOME_DATA_HEADERS + [
     # Response
     "RSP.STAT",
     "RSP.VAL",

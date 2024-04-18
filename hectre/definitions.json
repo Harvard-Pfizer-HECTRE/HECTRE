@@ -68,7 +68,7 @@
         "Field Label": "Publication abstract",
         "Field Type": "Character",
         "Valid Entries": "",
-        "Field Description": "Short abstract of the paper",
+        "Field Description": "Abstract of the paper, taken directly from the text",
         "Sample Data": "LI: Lonarid, an association of analgesic and antipyrethic drugs, was administered\u2026\nIR: Background: The sponsor has submitted two randomized, double-blind, multicenter, placebo controlled trials\u2026\n\nQuotation Marks (Single and Double) and Commas must be excluded from the abstract. While this implies an edit to most abstract texts, it's required for this format. "
     },
     {
@@ -236,7 +236,7 @@
         "Field Label": "Statistical analysis population",
         "Field Type": "Predefined",
         "Valid Entries": "ITT\nmITT\nFAS\nPP\nSA\nCO",
-        "Field Description": "Select from: ITT, mITT, FAS, PP, SA, or CO. ITT - Intention to Treat, mITT - modified ITT, FAS - full analysis set, PP - per protocol, SA - safety anlaysis population, CO - completers only",
+        "Field Description": "Select ONLY from: ITT, mITT, FAS, PP, SA, CO, or Treated. ITT - Intention to Treat, mITT - modified ITT, FAS - full analysis set, PP - per protocol, SA - safety analysis population, CO - completers only",
         "Sample Data": ""
     },
     {
@@ -249,10 +249,10 @@
     },
     {
         "Field Name": "STATANAL.IMP.METHOD",
-        "Field Label": "Imputation method of values in observation",
+        "Field Label": "Methdology used in the statistical analysis to impute missing data",
         "Field Type": "Predefined",
         "Valid Entries": "NRI\nLOCF\nBOCF\nOC\nMMRM\n(additional terms to be vetted by Pfizer as encountered by data curation team)",
-        "Field Description": "Methdology used in the statistical analysis to impute missing data. Select from: NRI, LOCF, BOCF, OC, MMRM. NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures. Possibly no imputation reported.",
+        "Field Description": "Select ONLY from: MI, MCMC, NRI, LOCF, BOCF, OC, MMRM, or NO_DATA. NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures. Possibly no imputation reported.",
         "Sample Data": ""
     },
     {

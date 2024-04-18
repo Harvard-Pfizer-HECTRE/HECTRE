@@ -2,15 +2,11 @@ import atexit
 import io
 import logging
 
-import pdfplumber
-import PyPDF2
-from typing import Any, List, Optional
+from typing import Any, Optional
 import urllib3
 
 from hectre.input_parsers.parser import Parser
-from hectre.pdf.page import Page
 from hectre.pdf.paper import Paper
-from hectre.pdf.table import Table
 
 
 logger = logging.getLogger(__name__)
@@ -27,15 +23,16 @@ class PdfParser(Parser):
     '''
     file_path: Optional[str] = None
     url: Optional[str] = None
-    llm: Optional[Any] = None
+    hectre: Optional[Any] = None
 
     file: Optional[Any] = None
 
 
-    def __init__(self, file_path: Optional[str] = None, url: Optional[str] = None, llm: Optional[Any] = None):
+    def __init__(self, file_path: Optional[str] = None, url: Optional[str] = None, hectre: Optional[Any] = None):
         super().__init__()
-
         atexit.register(self.__cleanUp__)
+
+        self.hectre = hectre
         if url is not None:
             try:
                 retry = urllib3.Retry(5)

@@ -13,12 +13,11 @@ from hectre.pdf.table import Table
 logger = logging.getLogger(__name__)
 
 
-class PdfPlumberPypdf2PdfParser(PdfParser):
+class PdfPlumberLlmPypdf2PdfParser(PdfParser):
     '''
     This parser uses PdfPlumber to detect tables,
+    but use LLM as back-up if it cannot detect at least 2 pages with tables,
     and PyPdf2 to read text from pages.
-
-    This is the original parser of choice.
     '''
 
     def parse(self) -> Optional[Paper]:
@@ -52,6 +51,19 @@ class PdfPlumberPypdf2PdfParser(PdfParser):
                         page.set_has_table(True)
                         
                     pages.append(page)
+
+                # If we can't find more than 2 pages with tables, re-do with LLM
+                if pages_with_tables < 3:
+                    logger.info("Fall back to using LLM to detect tables")
+                    pages_with_tables = 0
+                    for page_index in range(num_pages):
+                        page = pages[page_index]
+                        page.set_has_table(False)
+                        result = self.hectre.get_has_table_in_page(page)
+                        if result:
+                            logger.debug(f"Got table(s) on page {page_index + 1}")
+                            pages_with_tables += 1
+                            page.set_has_table(True)
         except Exception as e:
             logger.error(f"Got exception in PDF parsing: {e}")
             return None

@@ -17,10 +17,12 @@ Pdf:
   # This section is about PDF extraction
 
   # The available PDF parsers that are programmed are:
+  #     LlmPypdf2PdfParser
+  #     PdfPlumberLlmPypdf2PdfParser
   #     PdfPlumberPypdf2PdfParser
   #     PdfPlumberPypdfium2PdfParser
   #     PymupdfPdfParser
-  PdfParser: PdfPlumberPypdf2PdfParser
+  PdfParser: PdfPlumberLlmPypdf2PdfParser
 
 
 LLM:
@@ -73,6 +75,12 @@ Prompt Engineering:
     {Template}
     If any fields are not applicable, write "{No_Data}"; enclose all values in quotes. Please respond with just the JSON.
 
+  # Prompt used to check if there is table on page
+  PromptTableOnPage1: |-
+    Below is a page from a clinical trial paper parsed from PDF:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    If there seems to be any number of tables with clinical data on this page, answer exactly with "YES"; otherwise answer exactly with "NO".
+
   # Prompts for extracting literature data
   PromptLiterature1: |-
     Below is PDF text from a clinical trial paper:
@@ -113,7 +121,7 @@ Prompt Engineering:
 
   # Ask the LLM about the type of this outcome
   PromptOutcomeType1: |-
-    For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with 1, if it is a continuous endpoint (has value that changes over time) respond with 2, and if neither then respond with 0. Reply with only the answer with no other punctuations or texts.
+    For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with "BINARY", if it is a continuous endpoint (has value that changes over time) respond with "CONTINUOUS", and if neither then respond with "OTHER". Reply with only the answer with no other punctuations or texts.
 
   # Prompts for extracting clinical data information
   PromptClinical1: |-
