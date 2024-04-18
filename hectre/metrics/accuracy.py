@@ -13,13 +13,7 @@ from hectre.consts import HEADER_ORDER
 def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     path_to_test_pdf = Path(path_to_pdf)
     path_to_control_cdf = Path(path_to_cdf)
-    # path_to_fake_control_cdf = Path("hectre/tests/test_data/cdfs/fake_305_deBruin_2018.csv")
     test_cdf: Optional[CDF] = extract_data(file_path=path_to_test_pdf.resolve(), picos_string=picos_string)
-    ### FAKE TEST CDF
-    # fake_test_cdf_r1 = CDFData(**{key:"zero" for key in HEADER_ORDER if key != 'DSID'})
-    # test_cdf = CDF()
-    # test_cdf.add_clinical_data(fake_test_cdf_r1)
-    # test_cdf.set_literature_data(fake_test_cdf_r1)
     if not test_cdf:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')
     # Create a DataFrame from the control CDF CSV.
@@ -28,10 +22,16 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     accuracy = test_cdf.compare(test_cdf.to_df(), control_cdf)
     print(f'MEASURING ACCURACY OF HECTRE EXTRACTION OF {path_to_pdf}:')
     print()
+    print('CONTROL PRIMARY KEYS')
+    print(accuracy['control_clin_data'].index)
+    print()
+    print('TEST PRIMARY KEYS')
+    print(accuracy['test_clin_data'].index)
+    print()
     print('ACCURACY OF LITERATURE DATA VALUES (indexed by column name):')
     print()
-    lit_acc_pct = (accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size) * 100
-    print('Test lit data accuracy: ', f'{lit_acc_pct:.2f}')
+    lit_acc_pct = accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size
+    print('Average string similarity (percent similar): ', f'{lit_acc_pct:.2f}')
     print()
     for col in accuracy['comp_values_lit'].index:
         print(f'{col}: ',  accuracy['comp_values_lit'][col])
@@ -49,12 +49,21 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
         pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0]) * 100
         print(f'{col}: ', f'{pct:.2f}')
     print()
-    print('ROW 1 of TEST DATA vs ROW 1 of CONTROL DATA')
-    test_r1 = pd.concat([accuracy['test_lit_data'], accuracy['test_clin_data'].iloc[0]])
-    control_r1 = pd.concat([accuracy['control_lit_data'], accuracy['control_clin_data'].iloc[0]])
-    df_r1 = pd.DataFrame(data={'Test': test_r1.to_list(), 'Control': control_r1.to_list()}, index=test_r1.index, columns=['Test', 'Control'])
-    print(df_r1)
+    print('ROW 1 OF THE MATCHED CDFs: TEST vs. CONTROL')
     print()
+    test_control_clin_join = accuracy['control_clin_data'].merge(accuracy['test_clin_data'], left_index=True, right_index=True)
+    # If test and control have at least one matching row, display an example.
+    if test_control_clin_join.shape[0] > 0:
+        # Index of first row in the joined df. Should exist in test and control.
+        matched_compound_key = test_control_clin_join.index[0]
+        test_r1 = pd.concat([accuracy['test_lit_data'], accuracy['test_clin_data'].loc[matched_compound_key]])
+        control_r1 = pd.concat([accuracy['control_lit_data'], accuracy['control_clin_data'].loc[matched_compound_key]])
+        df_r1 = pd.DataFrame(data={'Test': test_r1.to_list(), 'Control': control_r1.to_list()}, index=test_r1.index, columns=['Test', 'Control'])
+        pd.set_option('display.max_rows', df_r1.shape[0])
+        print(df_r1)
+    else:
+        print('None of the test and control compound primary keys matched')
+        print()
 
 if __name__ == '__main__':
     cdf_accuracy()

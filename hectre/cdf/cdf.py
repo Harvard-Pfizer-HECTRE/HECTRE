@@ -1,23 +1,23 @@
 """A model for working with CDF data.
 """
+
 from __future__ import annotations
-
+import json, warnings, os
 from collections import OrderedDict
-import os
-
-from pydantic import BaseModel, Json
 from typing import Any, List, Dict, Optional
-import json
+
+from thefuzz import fuzz
+from pydantic import BaseModel, Json
+import numpy as np
 import pandas as pd
-import warnings
 
 from hectre.consts import (
-    HEADER_ORDER,
-    NO_DATA,
     CDF_COMPARE_COLS_IGNORE,
     CDF_COMPOUND_KEY_COLS,
-    LITERATURE_DATA_HEADERS
-    )
+    HEADER_ORDER,
+    LITERATURE_DATA_HEADERS,
+    NO_DATA
+)
 
 # Create fields dynamically for LiteratureData and Result models based on definitions.json
 # Create method of CDF to create dataframe from LiteratureData and Results
@@ -109,26 +109,35 @@ class CDF(BaseModel):
         warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
         # Cast test and control DataFrame column types to str so we can compare values directly.
         test_cdf = test_cdf.astype(str).replace('nan', '')
-        # Drop DSID columns if they exist.
-        if 'DSID' in test_cdf.columns:
-            test_cdf = test_cdf.astype(str).replace('nan', '').drop(columns=['DSID'])
         control_cdf = control_cdf.astype(str).replace('nan', '')
-        if 'DSID' in control_cdf.columns:
-            control_cdf = control_cdf.astype(str).replace('nan', '').drop(columns=['DSID'])
-        ck_cols = CDF_COMPOUND_KEY_COLS
-        ex_cols = CDF_COMPARE_COLS_IGNORE
+        # Drop ingnored columns if they exist.
+        for col in CDF_COMPARE_COLS_IGNORE:
+            if col in test_cdf.columns:
+                test_cdf = test_cdf.drop(columns=[col])
+            if col in control_cdf.columns:
+                control_cdf = control_cdf.astype(str).replace('nan', '').drop(columns=[col])
         # Make sure they have the same columns.
         cols_eq = set(test_cdf.columns) == set(control_cdf.columns)
         if not cols_eq:
-            cols = f'Test CDF Columns:\n{test_cdf.columns}\n\nConrol CDF Columns:\n{control_cdf.columns}\n\n'
+            cols = f'Test CDF Columns:\n{test_cdf.columns}\n\nControl CDF Columns:\n{control_cdf.columns}\n\n'
             raise RuntimeError(f'The columns in the test and control CDFs are not the same\n\n{cols}')
         test_lit_data = test_cdf.loc[0,LITERATURE_DATA_HEADERS]
         test_clin_data = test_cdf.drop(columns=LITERATURE_DATA_HEADERS)
-        test_clin_data.set_index(ck_cols,inplace=True)
+        # DF of just compound keys.
+        test_clin_data_index_vals = test_clin_data[CDF_COMPOUND_KEY_COLS]
+        # Transform compound keys to lowercase, remove whitespace, replace hyphens.
+        test_clin_data_index_vals = test_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
+        # We need a list of compound key columns as lists.
+        test_clin_data.set_index([np.array(l) for l in test_clin_data_index_vals.T.values],inplace=True)
         # Confrol CDF (considered 100% accurate)
         control_lit_data = control_cdf.loc[0,LITERATURE_DATA_HEADERS]
         control_clin_data = control_cdf.drop(columns=LITERATURE_DATA_HEADERS)
-        control_clin_data.set_index(ck_cols,inplace=True)
+        # DF of just compound keys.
+        control_clin_data_index_vals = control_clin_data[CDF_COMPOUND_KEY_COLS]
+        # Transform compound keys to lowercase, remove whitespace, replace hyphens.
+        control_clin_data_index_vals = control_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
+        # We need a list of compound key columns as lists.
+        control_clin_data.set_index([np.array(l) for l in control_clin_data_index_vals.T.values],inplace=True)
         clin_results = self.compare_clinical_data(test_clin_data, control_clin_data)
         lit_results = self.compare_literature_data(test_lit_data, control_lit_data)
         results = {
@@ -157,8 +166,8 @@ class CDF(BaseModel):
         """
         # Create a DataFrame to hold comparison summary.
         comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=control_df.index, dtype='boolean')
-        # Create a DataFrame to hold cell-by-cell equality matrix.
-        comp_values = pd.DataFrame(columns=test_df.columns, index=test_df.index, dtype='boolean')
+        # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
+        comp_values = pd.DataFrame(False, columns=test_df.columns, index=test_df.index, dtype='boolean')
         for i_control_df, row in control_df.iterrows():
             test_rows = test_df[test_df.index.isin([i_control_df])]
             control_rows = control_df[control_df.index.isin([i_control_df])]
@@ -188,9 +197,9 @@ class CDF(BaseModel):
     
     def compare_literature_data(self, test_s: pd.Series, control_s: pd.Series):
         # Create a DataFrame to hold cell-by-cell equality matrix.
-        comp_values = pd.Series(index=test_s.index, dtype='boolean')
+        comp_values = pd.Series(index=test_s.index, dtype='Int64')
         for index_s, val_s in test_s.items():
-            comp_values.loc[index_s] = (val_s == control_s[index_s])
+            comp_values.loc[index_s] = fuzz.token_sort_ratio(val_s, control_s[index_s])
         comp_rows = comp_values.all()
         results = {
             'comp_rows': comp_rows,
