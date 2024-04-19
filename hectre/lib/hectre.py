@@ -208,7 +208,7 @@ class Hectre(BaseModel):
             if "{" + key + "}" in prompt:
                 format_dict[key] = val
             else:
-                logger.warn(f"Found unused extra prompt formatter: {key}")
+                logger.debug(f"Found unused extra prompt formatter: {key}")
         # Now do the string format
         try:
             prompt = prompt.format(**format_dict)
@@ -362,6 +362,23 @@ class Hectre(BaseModel):
         return self.invoke_prompt_on_text(name=f"statistical analysis groups for {outcome}", prompt_name="PromptStatGroups", text=text, extra_vars=extra_vars, keep_no_data_response=True)
     
 
+    def verify_time_value(self, time_value: str, outcome: str, treatment_arm: str, text: str) -> bool:
+        '''
+        Verify that we actually have clinical data in this time value.
+        '''
+        name = f"if there is clinical data for time {time_value} with outcome {outcome} and arm {treatment_arm}"
+        extra_vars = {
+            "Time_Value": time_value,
+            "Treatment_Arm": treatment_arm,
+            "Outcome": outcome,
+        }
+        ret = self.invoke_prompt_on_text(name=name, prompt_name="PromptVerifyTimeValue", text=text, extra_vars=extra_vars)
+        if "yes" in ret.lower():
+            return True
+        else:
+            return False
+    
+    
     def query_outcome_type(self, outcome: str) -> str:
         '''
         Ask about the type that the outcome is, so we can better determine what types of data we should be getting.

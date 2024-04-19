@@ -252,7 +252,7 @@
         "Field Label": "Methdology used in the statistical analysis to impute missing data",
         "Field Type": "Predefined",
         "Valid Entries": "NRI\nLOCF\nBOCF\nOC\nMMRM\n(additional terms to be vetted by Pfizer as encountered by data curation team)",
-        "Field Description": "Select ONLY from: MI, MCMC, NRI, LOCF, BOCF, OC, MMRM, or NO_DATA. NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures. Possibly no imputation reported.",
+        "Field Description": "Select ONLY from: MI, NRI, LOCF, BOCF, OC, MMRM, or NO_DATA. MI - multiple imputations, NRI - Non-responders imputation, LOCF - last observed carried forward, BOCF - Baseline Observation Carried Forward, OC - Observed cases (i.e. implicitly no imputation), MMRM - mixed-model repeated measures. Possibly no imputation reported.",
         "Sample Data": ""
     },
     {

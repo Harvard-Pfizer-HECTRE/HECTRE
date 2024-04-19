@@ -79,7 +79,7 @@ Prompt Engineering:
   PromptTableOnPage1: |-
     Below is a page from a clinical trial paper parsed from PDF:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    If there seems to be any number of tables with clinical data on this page, answer exactly with "YES"; otherwise answer exactly with "NO".
+    If there are any number of tables with clinical data on this page, answer exactly with "YES"; otherwise answer exactly with "NO".
 
   # Prompts for extracting literature data
   PromptLiterature1: |-
@@ -109,8 +109,18 @@ Prompt Engineering:
   PromptTimeValues1: |-
     Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values that the clinical trial measures at in the paper that has some baseline/response/change data for treatment arm {Treatment_Arm} and outcome {Outcome}. Please respond with just the time values each with units, with each separated by semi-colon with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values with units (e.g. weeks, days, etc.) that the clinical trial measures at in the paper that has clinical data for treatment arm {Treatment_Arm} and outcome {Outcome}. Please respond with just the time values each separated by semi-colon but each with units with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
+  # Prompt to verify that there is clinical data for a time value
+  PromptVerifyTimeValue1: |-
+    Below are some select PDF pages from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    Are there actually any clinical values at time {Time_Value} for outcome {Outcome} and treatment {Treatment_Arm}? And I mean specifically for that time value.
+  PromptVerifyTimeValue2: |-
+    Are you sure? Show me on which page and which table above that you got the value for time {Time_Value} for outcome {Outcome} and treatment {Treatment_Arm}. I only want data for time "{Time_Value}" and not any other time!
+  PromptVerifyTimeValue3: |-
+    Ok, now tell me with only YES or NO if there are the data I requested fulfiling the requirements.
+  
   # Prompts for extracting all the unique stat analysis groups
   PromptStatGroups1: |-
     Below is PDF text from a clinical trial paper:
