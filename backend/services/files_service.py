@@ -5,7 +5,7 @@ from typing import List
 import boto3
 from botocore.exceptions import ClientError
 from fastapi import UploadFile
-from ..consts import *
+from consts import *
 from multiprocessing.pool import ThreadPool
 
 
