@@ -3,6 +3,8 @@ import logging
 import os
 import sys
 
+import json
+import json5
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -10,8 +12,9 @@ from hectre.consts import (
     GREEN,
     LITERATURE_DATA_HEADERS,
     NO_DATA,
-    NON_BINARY_OUTCOME_DATA_HEADERS,
     OUTCOME_TYPE,
+    PER_TREATMENT_ARM_HEADERS,
+    QUERY_TO_PROMPT_AND_HEADERS_MAP,
     RESET,
     SILENCED_LOGGING_MODULES,
     STAT_GROUP_HEADERS,
@@ -321,11 +324,12 @@ class Hectre(BaseModel):
         return list(set(ret))
 
 
-    def query_per_treatment_arm_data(self, text: str, headers: List[str], treatment_arm: str) -> str:
+    def query_per_treatment_arm_data(self, text: str, treatment_arm: str) -> str:
         '''
         Get all the per-treatment arm data.
         '''
         name = f"per-arm data for {treatment_arm}"
+        headers = PER_TREATMENT_ARM_HEADERS
         clinical_json = self.get_json_template_string_for_data_extraction(headers)
         extra_vars = {
             "Treatment_Arm": treatment_arm,
@@ -345,8 +349,10 @@ class Hectre(BaseModel):
         response = self.invoke_prompt_on_text(name=f"time values for arm {treatment_arm} and outcome {outcome}", prompt_name="PromptTimeValues", text=text, extra_vars=extra_vars)
         if not response:
             return []
-        ret = list(filter(None, [arm.strip() for arm in response.split(';')]))
-        return list(set(ret))
+        ret = set(list(filter(None, [arm.strip() for arm in response.split(';')])))
+        # Make double sure that there are clinical data in this time value
+        filtered_ret = [time_value for time_value in ret if self.verify_time_value(time_value=time_value, outcome=outcome, treatment_arm=treatment_arm, text=text)]
+        return filtered_ret
     
 
     def query_stat_groups(self, text: str, treatment_arm: str, outcome: str) -> str:
@@ -399,16 +405,6 @@ class Hectre(BaseModel):
         return OUTCOME_TYPE[outcome_type_int]
     
 
-    def filter_binary_outcome_clinical_data(self, clinical_data: Dict[str, str]) -> Dict[str, str]:
-        '''
-        For binary outcomes, filter out data such that only RSP values remain.
-        '''
-        for key in clinical_data:
-            if key in NON_BINARY_OUTCOME_DATA_HEADERS:
-                clinical_data[key] = ""
-        return clinical_data
-    
-
     def query_time_dict_from_value(self, time_value: str) -> str:
         '''
         Ask the LLM to dissect the time value into the actual value and the unit.
@@ -421,19 +417,18 @@ class Hectre(BaseModel):
 
 
     def query_clinical_data(
-            self,
-            text: str,
-            headers: List[str],
-            outcome: str,
-            outcome_type: str,
-            treatment_arm: str,
-            time_value: str,
-            stat_group: Dict[str, str]
-        ) -> str:
+        self,
+        text: str,
+        outcome: str,
+        outcome_type: str,
+        treatment_arm: str,
+        time_value: str,
+        stat_group: Dict[str, str]
+    ) -> Dict[str, str]:
         '''
         Construct the prompt(s) to get some clinical data from the page using the LLM.
         '''
-        clinical_json = self.get_json_template_string_for_data_extraction(headers)
+        # First construct the stat group text to be fed into the LLM
         stat_group_text = ""
         for key, val in stat_group.items():
             if NO_DATA in val:
@@ -442,7 +437,43 @@ class Hectre(BaseModel):
             header_label = header_dict['Field Label']
             stat_group_text += f"{header_label.lower()}: {val}, "
         stat_group_text = stat_group_text.strip().strip(",")
+
+        # One thing we can do is conglomerate headers together, or prompt for each one
+        # From testing, it seems testing each one doesn't net much better results
+        conglomerated_headers = []
+
+        # Get each of population, baseline, response, change from response separately
+        for query, (prompt_name, headers) in QUERY_TO_PROMPT_AND_HEADERS_MAP.items():
+            # First some logic to see if we execute the query or not
+            # If query is empty, always execute the prompt
+            if query:
+                # If binary outcome, only care about baseline
+                if outcome_type == OUTCOME_TYPE[1] and query != "PromptHasResponse":
+                    logger.debug(f"Skipping {prompt_name} due to binary outcome {outcome}")
+                    continue
+            
+            conglomerated_headers.extend(headers)
+
+            """
+            # Now, we execute the query to see if we execute the prompt or not
+            name = f"if there is specific type of clinical data to use {prompt_name} for {outcome} with {treatment_arm} for {time_value} and {stat_group_text}"
+            extra_vars = {
+                "Outcome": outcome,
+                "Outcome_Type": outcome_type,
+                "Treatment_Arm": treatment_arm,
+                "Time_Value": time_value,
+                "Stat_Group": stat_group_text,
+            }
+            ret = self.invoke_prompt_on_text(name=name, prompt_name=query, text=text, extra_vars=extra_vars)
+            # If we don't get an explicit "yes", then go next
+            if not "yes" in ret.lower():
+                continue
+            
+            # Finally, execute the prompt
+            """
+
         name = f"clinical data for {outcome} with {treatment_arm} for {time_value} and {stat_group_text}"
+        clinical_json = self.get_json_template_string_for_data_extraction(conglomerated_headers)
         extra_vars = {
             "Outcome": outcome,
             "Outcome_Type": outcome_type,
@@ -451,4 +482,11 @@ class Hectre(BaseModel):
             "Stat_Group": stat_group_text,
             "Template": clinical_json,
         }
-        return self.invoke_prompt_on_text(name=name, prompt_name="PromptClinical", text=text, extra_vars=extra_vars, keep_no_data_response=True)
+        ret = self.invoke_prompt_on_text(name=name, prompt_name=prompt_name, text=text, extra_vars=extra_vars, keep_no_data_response=True)
+        try:
+            clinical_data_json = json5.loads(ret)
+            return clinical_data_json
+        except (json.JSONDecodeError, ValueError):
+            logger.warn(f"Could not decode clinical data output: {ret}")
+            # We keep going
+            return {}

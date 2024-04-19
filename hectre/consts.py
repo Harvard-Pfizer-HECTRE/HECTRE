@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 # Put any constants used by the tool here.
 # Don't import any heavy dependencies, this file should be pure.
@@ -209,7 +209,23 @@ STAT_GROUP_HEADERS: List[str] = [
     "STATANAL.IMP.METHOD",
 ]
 
-NON_BINARY_OUTCOME_DATA_HEADERS: List[str] = [
+CLINICAL_SUBJECTS_HEADERS: List[str] = [
+    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
+    "N.ARM.EVENT.SUBJ",
+]
+
+CLINICAL_RSP_HEADERS: List[str] = [
+    # Response
+    "RSP.STAT",
+    "RSP.VAL",
+    "RSP.VALU",
+    "RSP.VAR",
+    "RSP.VARU",
+    "RSP.LCI",
+    "RSP.UCI",
+]
+
+CLINICAL_BSL_HEADERS: List[str] = [
     # Baseline characteristics
     "BSL.STAT",
     "BSL.VAL",
@@ -218,13 +234,9 @@ NON_BINARY_OUTCOME_DATA_HEADERS: List[str] = [
     "BSL.VARU",
     "BSL.LCI",
     "BSL.UCI",
-    # Percent change from baseline
-    "PCHBSL.STAT",
-    "PCHBSL.VAL",
-    "PCHBSL.VAR",
-    "PCHBSL.VARU",
-    "PCHBSL.LCI",
-    "PCHBSL.UCI",
+]
+
+CLINICAL_CHBSL_HEADERS: List[str] = [
     # Change from baseline
     "CHBSL.STAT",
     "CHBSL.VAL",
@@ -235,18 +247,14 @@ NON_BINARY_OUTCOME_DATA_HEADERS: List[str] = [
     "CHBSL.UCI",
 ]
 
-CLINICAL_DATA_HEADERS: List[str] = [
-    "N.ARM.STATANAL", # Number of subjects at each treatment arm at each time
-    "N.ARM.EVENT.SUBJ",
-] + NON_BINARY_OUTCOME_DATA_HEADERS + [
-    # Response
-    "RSP.STAT",
-    "RSP.VAL",
-    "RSP.VALU",
-    "RSP.VAR",
-    "RSP.VARU",
-    "RSP.LCI",
-    "RSP.UCI",
+CLINICAL_PCHBSL_HEADERS: List[str] = [
+    # Percent change from baseline
+    "PCHBSL.STAT",
+    "PCHBSL.VAL",
+    "PCHBSL.VAR",
+    "PCHBSL.VARU",
+    "PCHBSL.LCI",
+    "PCHBSL.UCI",
 ]
 
 SHORT_NAME_HEADER: str = "Field Name"
@@ -265,9 +273,19 @@ VAR_DICT: Dict[str, str] = {
 }
 
 OUTCOME_TYPE: Dict[int, str] = {
-    0: "",  # Unknown
-    1: "binary outcome (should only have values in RSP, not BSL, CHBSL, or PCHBSL) ",  # Binary outcome
-    2: "",  # Continuous outcome
+    0: "OTHER",  # Unknown
+    1: "BINARY",  # Binary outcome
+    2: "CONTINUOUS",  # Continuous outcome
+}
+
+QUERY_TO_PROMPT_AND_HEADERS_MAP: Dict[str, Tuple[str, List[str]]] = {
+    # No query for clinical subjects, always needed
+    "": ("PromptClinical", CLINICAL_SUBJECTS_HEADERS),
+
+    "PromptHasBaseline": ("PromptClinical", CLINICAL_BSL_HEADERS),
+    "PromptHasResponse": ("PromptClinical", CLINICAL_RSP_HEADERS),
+    "PromptHasChangeBaseline": ("PromptClinical", CLINICAL_CHBSL_HEADERS),
+    "PromptHasPercentChangeBaseline": ("PromptClinical", CLINICAL_PCHBSL_HEADERS),
 }
 
 
@@ -319,35 +337,10 @@ HEADER_ORDER = [
     "ARM.TIME1U",
 
     "ENDPOINT",
-
-    "BSL.STAT",
-    "BSL.VAL",
-    "BSL.VALU",
-    "BSL.VAR",
-    "BSL.VARU",
-    "BSL.LCI",
-    "BSL.UCI",
-    "CHBSL.STAT",
-    "CHBSL.VAL",
-    "CHBSL.VALU",
-    "CHBSL.VAR",
-    "CHBSL.VARU",
-    "CHBSL.LCI",
-    "CHBSL.UCI",
-    "RSP.STAT",
-    "RSP.VAL",
-    "RSP.VALU",
-    "RSP.VAR",
-    "RSP.VARU",
-    "RSP.LCI",
-    "RSP.UCI",
-    "PCHBSL.STAT",
-    "PCHBSL.VAL",
-    "PCHBSL.VAR",
-    "PCHBSL.VARU",
-    "PCHBSL.LCI",
-    "PCHBSL.UCI",
-    
+] + CLINICAL_BSL_HEADERS + \
+    CLINICAL_CHBSL_HEADERS + \
+    CLINICAL_RSP_HEADERS + \
+    CLINICAL_PCHBSL_HEADERS + [
     "ARM.PCT.MALE",
     "ARM.AGE",
     "ARM.AGEU",
