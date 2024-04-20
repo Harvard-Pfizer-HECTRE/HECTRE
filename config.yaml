@@ -109,7 +109,7 @@ Prompt Engineering:
   PromptTimeValues1: |-
     Below is PDF text from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find all the time values with units (e.g. weeks, days, etc.) that the clinical trial measures at in the paper that has clinical data for treatment arm {Treatment_Arm} and outcome {Outcome}. Please respond with just the time values each separated by semi-colon but each with units with no other words, or with "{No_Data}" if they cannot be deduced from this page.
+    I want to find all the time values in the paper that has clinical data for treatment arm {Treatment_Arm} and outcome {Outcome}. Please respond with just the time values each with units, and separated by semi-colon, with no other words, or with "{No_Data}" if they cannot be deduced from this page.
 
   # Prompt to verify that there is clinical data for a time value
   PromptVerifyTimeValue1: |-
@@ -133,10 +133,42 @@ Prompt Engineering:
   PromptOutcomeType1: |-
     For the outcome endpoint {Outcome}, if this is a binary endpoint (either a population is or isn't) respond with "BINARY", if it is a continuous endpoint (has value that changes over time) respond with "CONTINUOUS", and if neither then respond with "OTHER". Reply with only the answer with no other punctuations or texts.
 
+  # (UNUSED) Ask if there are any baseline data
+  PromptHasBaseline1: |-
+    Below are some select PDF pages from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    For treatment arm {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}, with {Stat_Group}, are there any baseline clinical values?
+    I'm not asking about any other treatment arm, any other time, any other endpoint, or any other statistical analysis group. If there are any baseline clinical values that are found on some table in the pages, respond with "YES".
+    If there aren't, or asking for baseline clinical values don't make sense here, respond with "NO".
+
+  # (UNUSED) Ask if there are any response data
+  PromptHasResponse1: |-
+    Below are some select PDF pages from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    For treatment arm {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}, with {Stat_Group}, are there any response clinical values (value of the endpoint at the specified time)?
+    I'm not asking about any other treatment arm, any other time, any other endpoint, or any other statistical analysis group. If there are any response clinical values that are found on some table in the pages, respond with "YES".
+    If there aren't, or asking for response clinical values don't make sense here, respond with "NO".
+
+  # (UNUSED) Ask if there are any percent change from baseline data
+  PromptHasPercentChangeBaseline1: |-
+    Below are some select PDF pages from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    For treatment arm {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}, with {Stat_Group}, are there any percent change from baseline clinical values?
+    I'm not asking about any other treatment arm, any other time, any other endpoint, or any other statistical analysis group. If there are any percent change from baseline clinical values that are found on some table in the pages, respond with "YES".
+    If there aren't, or there are only non-percent change from baseline, or asking for percent change from baseline clinical values don't make sense here, respond with "NO".
+
+  # (UNUSED) Ask if there are any change from baseline data
+  PromptHasChangeBaseline1: |-
+    Below are some select PDF pages from a clinical trial paper:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    For treatment arm {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}, with {Stat_Group}, are there any non-percent change from baseline clinical values?
+    I'm not asking about any other treatment arm, any other time, any other endpoint, or any other statistical analysis group. If there are any change from baseline clinical values that are found on some table in the pages, respond with "YES".
+    If there aren't, or there are only percent change from baseline, or asking for change from baseline clinical values don't make sense here, respond with "NO". If there are change from baseline but it is only in percentage units, respond with "NO"!
+
   # Prompts for extracting clinical data information
   PromptClinical1: |-
-    Below is PDF text from a clinical trial paper:
+    Below are some select PDF pages from a clinical trial paper:
     {Text_Start_Indicator}{Text}{Text_End_Indicator}
-    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome_Type}{Outcome}, with {Stat_Group}. Adhere strictly to these treatment arms, time, endpoints, and statistical analysis! Here is a template JSON to fill in (enclose values in quotes):
+    I want to find some data in JSON for {Treatment_Arm} at time {Time_Value} for endpoint {Outcome}, with {Stat_Group}. Adhere strictly to these treatment arms, time, endpoints, and statistical analysis! Here is a template JSON to fill in (enclose values in quotes):
     {Template}
     If any fields cannot be found, fill in that entry with "{No_Data}". Please respond with just the JSON with no other words.

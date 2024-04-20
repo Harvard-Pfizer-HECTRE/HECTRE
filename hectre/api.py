@@ -6,7 +6,6 @@ from typing import Optional
 
 from hectre.cdf.cdf import CDF, CDFData
 from hectre.consts import (
-    CLINICAL_DATA_HEADERS,
     NO_DATA,
     PER_TREATMENT_ARM_HEADERS,
 )
@@ -92,7 +91,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
         arm_data_dict = {"ARM.NUM": current_arm_num}
 
         # First let's populate some information pertaining to each treatment arm
-        result = hectre.query_per_treatment_arm_data(text=text, headers=PER_TREATMENT_ARM_HEADERS, treatment_arm=treatment_arm)
+        result = hectre.query_per_treatment_arm_data(text=text, treatment_arm=treatment_arm)
         # If we got any results, load it as JSON object, and update our JSON for this clinical data row
         try:
             per_treatment_arm_data_json = json5.loads(result)
@@ -134,10 +133,6 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
 
             # Loop through every time value
             for time_value in time_values:
-                # Make double sure that there are clinical data in this time value
-                if not hectre.verify_time_value(time_value=time_value, outcome=outcome, treatment_arm=treatment_arm, text=clinical_text):
-                    continue
-
                 time_data_dict_str = hectre.query_time_dict_from_value(time_value=time_value)
                 try:
                     time_data_dict = json5.loads(time_data_dict_str)
@@ -156,16 +151,7 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                     if all(NO_DATA in val for val in stat_group.values()):
                         continue
 
-                    result = hectre.query_clinical_data(headers=CLINICAL_DATA_HEADERS, outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text)
-                    # If we got any results, load it as JSON object, and update our JSON for this clinical data row
-                    try:
-                        clinical_data_json = json5.loads(result)
-                        if "binary" in outcome_type:
-                            clinical_data_json = hectre.filter_binary_outcome_clinical_data(clinical_data_json)
-                    except (json.JSONDecodeError, ValueError):
-                        logger.warn(f"Could not decode clinical data output: {result}")
-                        # We keep going
-                        continue
+                    clinical_data_json = hectre.query_clinical_data(outcome=outcome, outcome_type=outcome_type, treatment_arm=treatment_arm, time_value=time_value, stat_group=stat_group, text=clinical_text)
                     
                     # Finally, set the value in the CDF for this one row
                     cd = CDFData.from_dicts(arm_data_dict, time_data_dict, outcome_dict, stat_group, clinical_data_json)
