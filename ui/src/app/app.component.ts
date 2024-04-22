@@ -8,7 +8,7 @@
  */
 
 import { Component } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import {
   HttpEventType
 } from '@angular/common/http';
@@ -42,23 +42,29 @@ export class AppComponent {
     this.executeFileUpload(requestsList);
   }
 
+  clearFiles(): void {
+    this.filesToUploadList = [];
+    const fileInput = document.getElementById('formFileMultiple') as HTMLInputElement;
+    fileInput.value = '';
+  }
+
   private contructRequestsChain(): any {
     return this.filesToUploadList.map((file, index) => {
       return this.fileUploadService.uploadFiles(file).pipe(
-        tap(event => {
+        tap((event) => {
           if (event.type === HttpEventType.UploadProgress) {
             this.filesToUploadList[index].uploadStatus.progressCount = Math.round((100 * event.loaded) / event.total);
           }
         }),
-        catchError(error => {
+        catchError((error) => {
           return of({ isError: true, index, error });
         })
       );
     });
   }
 
-  private executeFileUpload(requestChain: any[]): void {
-    forkJoin([requestChain]).subscribe((response: any) => {
+  private executeFileUpload(requestChain: Observable<any>[]): void {
+    forkJoin(requestChain).subscribe((response: any) => {
       response.forEach((file: { isError: any, index: number; error: { statusText: string; }; }) => {
         if (file.isError) {
           this.filesToUploadList[file.index].uploadStatus.isError = true;
@@ -74,7 +80,7 @@ export class AppComponent {
     Array.from(filesList).forEach((file: File, index: number) => {
       const newFile: ExtendedFileModel = {
         file: file,
-        uploadUrl: (index % 2 === 0) ? 'http://127.0.0.1:5000/files/upload/upload_files' : '',
+        uploadUrl: 'http://127.0.0.1:5000/files/upload_file',
         uploadStatus: {
           isSuccess: false,
           isError: false,

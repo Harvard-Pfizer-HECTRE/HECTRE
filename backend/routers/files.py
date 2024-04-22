@@ -1,7 +1,7 @@
 import logging
 import time
 
-from fastapi import UploadFile, status, APIRouter
+from fastapi import UploadFile, File, APIRouter
 from loguru import logger
 
 from typing import List
@@ -21,6 +21,13 @@ router = APIRouter(
 )
 
 files_client = FileS3Client(region_name=REGION_NAME)
+
+
+@router.post("/upload_file/")
+async def upload_file(file: UploadFile = File(...)):
+    upload_success = files_client.upload_file(file)
+
+    return ResponseHandler.handle_upload_response(upload_success)
 
 
 @router.post("/upload_files/")
