@@ -7,7 +7,7 @@
  * @author Veronika Post
  */
 
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
@@ -20,10 +20,14 @@ export class FileUploadService {
     constructor(private httpClient: HttpClient) { }
 
     uploadFiles(file: ExtendedFileModel): Observable<any> {
+
+        const formData: FormData = new FormData();
+        formData.append('file', file.file);
         return this.httpClient
-            .post(file.uploadUrl, file.file, {
+            .post(file.uploadUrl, formData, {
                 observe: 'events', // observe the progress of the upload
-                reportProgress: true
+                reportProgress: true,
+                responseType: 'json'
             })
             .pipe(catchError(error => {
                 console.error('Error uploading file', error);

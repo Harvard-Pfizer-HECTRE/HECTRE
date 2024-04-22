@@ -1,6 +1,6 @@
 from backend.utils.app_exceptions import AppExceptionCase
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from backend.routers import foo, files
 from backend.config.database import create_tables
 
@@ -17,6 +17,17 @@ create_tables()
 
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200"
+    ],  # Allos CORS from the Angular app (Replace with AUTH/ JWT)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
 
 
 @app.exception_handler(StarletteHTTPException)

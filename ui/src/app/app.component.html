@@ -7,18 +7,30 @@
   @author Kartik Srikumar
   @author Veronika Post
 -->
+<mat-toolbar color="primary">
+  <span>
+    <img src="/assets/HECTRE.png" alt="Logo" width="74" height="64">
 
+  </span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button>
+    <mat-icon>login</mat-icon>
+  </button>
+  <button mat-icon-button>
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
 <div class="container">
   <div class="row mt-2 mb-2">
     <div class="col-12">
-      <h1>
-        <u>Upload Mupltiple PDF Files for Exctraction</u>
+      <h1 class="text-center">
+        Upload Multiple PDF Files for Extraction
       </h1>
-      <ul class="mt-2">
-        <li>Select Multiple Files.</li>
-        <li>Click on the Upload Button.</li>
-        <li>Wait for the files to be processed, and see the upload progess</li>
-        <li>You will be noditified when Exctraction is complete</li>
+      <ul class="list-group mt-2">
+        <li class="list-group-item">Select Multiple Files.</li>
+        <li class="list-group-item">Click on the Upload Button.</li>
+        <li class="list-group-item">Wait for the files to be processed, and see the upload progress</li>
+        <li class="list-group-item">You will be notified when Extraction is complete</li>
       </ul>
     </div>
   </div>
@@ -37,12 +49,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of filesToUploadList">
+          <tr *ngFor="let item of filesToUploadList; index as i">
             <td>{{item.file.name}}</td>
             <td>
           <tr>
             <td>Upload Progress&nbsp;
               <h3>{{item.uploadStatus.progressCount}}</h3>
+              <mat-progress-bar mode="determinate" [value]="item.uploadStatus.progressCount"></mat-progress-bar>
             </td>
             <td>
               <h4 class="text-danger">{{item.uploadStatus.errorMessage}}</h4>
@@ -55,6 +68,7 @@
           <tr>
             <td colspan="2">
               <button type="button" class="btn btn-primary" (click)="uploadFiles()">Upload Files</button>
+              <button type="button" class="btn btn-danger" (click)="clearFiles()">Clear Files</button>
             </td>
           </tr>
         </tfoot>
