@@ -148,7 +148,8 @@ class CDF(BaseModel):
             "comp_rows_clin": clin_results['comp_rows'],
             "comp_values_clin": clin_results['comp_values'],
             "comp_rows_lit": lit_results['comp_rows'],
-            "comp_values_lit": lit_results['comp_values']
+            "comp_values_lit": lit_results['comp_values'],
+            "num_matched_rows": clin_results['num_matched_rows']
         }
         return results
     
@@ -168,6 +169,7 @@ class CDF(BaseModel):
         comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=control_df.index, dtype='boolean')
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
         comp_values = pd.DataFrame(False, columns=test_df.columns, index=test_df.index, dtype='boolean')
+        num_matched_rows = 0
         for i_control_df, row in control_df.iterrows():
             test_rows = test_df[test_df.index.isin([i_control_df])]
             control_rows = control_df[control_df.index.isin([i_control_df])]
@@ -178,20 +180,25 @@ class CDF(BaseModel):
                 'Unique in Control': False
             }
             if not test_rows.empty:
+                num_matched_rows += 1
+                matched_row = test_rows.iloc[0]
+                matched_row_index = test_rows.index[0]
                 row_results['Exists in Test'] = True
                 if test_rows.shape[0] == 1:
                     row_results['Unique in Test'] = True
-                for index_s, val_s in test_rows.iloc[0].items():
+                for index_s, val_s in matched_row.items():
                     comp_values.loc[i_control_df, index_s] = (val_s == row[index_s])
                 row_results['Equals Test'] = comp_values.loc[i_control_df].all()
                 # Drop already matched rows. Note: if there are multiple rows in the test cdf that match a given row in the control cdf
                 # this comparison will always use the first match for the comparison. The rest will be dropped from the test cdf. A
                 # possible optimization is to compare against the match with the highest accuracy if there's multiple matches in the test cdf.
+                test_df.drop(index=matched_row_index, inplace=True)
             row_results['Unique in Control'] = (control_rows.shape[0] == 1)
             comp_rows.loc[i_control_df] = row_results
         results = {
             'comp_rows': comp_rows,
-            'comp_values': comp_values
+            'comp_values': comp_values,
+            'num_matched_rows': num_matched_rows
         }
         return results
     
