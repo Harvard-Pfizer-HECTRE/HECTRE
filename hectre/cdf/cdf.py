@@ -92,8 +92,8 @@ class CDF(BaseModel):
             os.makedirs(path)
         self.to_df().to_csv(index=False, path_or_buf=os.path.join(path, f"{name}.csv"))
 
-
-    def compare(self, test_cdf: pd.DataFrame, control_cdf: pd.DataFrame):
+    @staticmethod
+    def compare(test_cdf: pd.DataFrame, control_cdf: pd.DataFrame):
         """
         description:
         Compares a test cdf to a control cdf to determine how accurate the test cdf is.
@@ -138,8 +138,8 @@ class CDF(BaseModel):
         control_clin_data_index_vals = control_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
         # We need a list of compound key columns as lists.
         control_clin_data.set_index([np.array(l) for l in control_clin_data_index_vals.T.values],inplace=True)
-        clin_results = self.compare_clinical_data(test_clin_data, control_clin_data)
-        lit_results = self.compare_literature_data(test_lit_data, control_lit_data)
+        clin_results = CDF.compare_clinical_data(test_clin_data, control_clin_data)
+        lit_results = CDF.compare_literature_data(test_lit_data, control_lit_data)
         results = {
             "test_clin_data": test_clin_data,
             "test_lit_data": test_lit_data,
@@ -152,7 +152,8 @@ class CDF(BaseModel):
         }
         return results
     
-    def compare_clinical_data(self, test_df: pd.DataFrame, control_df: pd.DataFrame):
+    @staticmethod
+    def compare_clinical_data(test_df: pd.DataFrame, control_df: pd.DataFrame):
         """
         description:
         Compares a test dataframe of clinical data to a control dataframe to determine how accurate the test dataframe is.
@@ -199,7 +200,8 @@ class CDF(BaseModel):
         }
         return results
     
-    def compare_literature_data(self, test_s: pd.Series, control_s: pd.Series):
+    @staticmethod
+    def compare_literature_data(test_s: pd.Series, control_s: pd.Series):
         # Create a DataFrame to hold cell-by-cell equality matrix.
         comp_values = pd.Series(index=test_s.index, dtype='Int64')
         for index_s, val_s in test_s.items():
