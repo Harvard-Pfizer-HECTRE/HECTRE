@@ -5,10 +5,8 @@ from fastapi import UploadFile, File, APIRouter
 from loguru import logger
 
 from typing import List
-from multiprocessing.pool import ThreadPool
 from backend.services.files_service import FileS3Client
 from backend.utils.response_handler import ResponseHandler
-from backend.utils.service_result import handle_result
 from backend.consts import REGION_NAME
 
 logger = logging.getLogger(__name__)
@@ -35,3 +33,11 @@ async def upload_files(files: List[UploadFile]):
     upload_success = files_client.upload_files(files)
 
     return ResponseHandler.handle_upload_response(upload_success)
+
+
+@router.post("/excract/")
+async def extract(folder_id: str, outcomes_string: str):
+
+    await files_client.download_and_extract_files(folder_id, outcomes_string)
+
+    return ResponseHandler.handle_extraction_response(True)
