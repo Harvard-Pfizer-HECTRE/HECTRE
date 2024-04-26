@@ -40,7 +40,7 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     logger.info(f"\nACCURACY OF CLINICAL DATA ROWS (indexed by control compound primary key):\n{clin_data_rows_str}")
     clin_data_cols = []
     for col in accuracy['comp_values_clin'].columns:
-        pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0]) * 100
+        pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0])
         clin_data_cols.append(f'{col}: {pct:.2f}')
     clin_data_cols_str = '\n'.join(clin_data_cols)
     logger.info(f"\nACCURACY OF CLINICAL DATA COLUMNS (indexed by column name):\n{clin_data_cols_str}")

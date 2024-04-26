@@ -147,7 +147,6 @@ class CDF(BaseModel):
             "control_lit_data": control_lit_data,
             "comp_rows_clin": clin_results['comp_rows'],
             "comp_values_clin": clin_results['comp_values'],
-            "comp_rows_lit": lit_results['comp_rows'],
             "comp_values_lit": lit_results['comp_values'],
             "num_matched_rows": clin_results['num_matched_rows']
         }
@@ -168,14 +167,13 @@ class CDF(BaseModel):
         # Create a DataFrame to hold comparison summary.
         comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=control_df.index, dtype='boolean')
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
-        comp_values = pd.DataFrame(False, columns=test_df.columns, index=test_df.index, dtype='boolean')
+        comp_values = pd.DataFrame(0, columns=test_df.columns, index=test_df.index, dtype='Int64')
         num_matched_rows = 0
         for i_control_df, row in control_df.iterrows():
             test_rows = test_df[test_df.index.isin([i_control_df])]
             control_rows = control_df[control_df.index.isin([i_control_df])]
             row_results = {
                 'Exists in Test': False,
-                'Equals Test': False,
                 'Unique in Test': False,
                 'Unique in Control': False
             }
@@ -187,8 +185,7 @@ class CDF(BaseModel):
                 if test_rows.shape[0] == 1:
                     row_results['Unique in Test'] = True
                 for index_s, val_s in matched_row.items():
-                    comp_values.loc[i_control_df, index_s] = (val_s == row[index_s])
-                row_results['Equals Test'] = comp_values.loc[i_control_df].all()
+                    comp_values.loc[i_control_df, index_s] = fuzz.token_sort_ratio(val_s, row[index_s])
                 # Drop already matched rows. Note: if there are multiple rows in the test cdf that match a given row in the control cdf
                 # this comparison will always use the first match for the comparison. The rest will be dropped from the test cdf. A
                 # possible optimization is to compare against the match with the highest accuracy if there's multiple matches in the test cdf.
@@ -207,9 +204,7 @@ class CDF(BaseModel):
         comp_values = pd.Series(index=test_s.index, dtype='Int64')
         for index_s, val_s in test_s.items():
             comp_values.loc[index_s] = fuzz.token_sort_ratio(val_s, control_s[index_s])
-        comp_rows = comp_values.all()
         results = {
-            'comp_rows': comp_rows,
             'comp_values': comp_values
         }
         return results
