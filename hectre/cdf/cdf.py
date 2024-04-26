@@ -166,10 +166,12 @@ class CDF(BaseModel):
         control_cdf: The cdf we're comparing to the test cdf to determine accuracy. Considered to be 100% accurate.
         """
         # Create a DataFrame to hold comparison summary.
-        comp_rows = pd.DataFrame(columns=['Exists in Test', 'Equals Test', 'Unique in Test', 'Unique in Control'], index=control_df.index, dtype='boolean')
+        comp_rows = pd.DataFrame(columns=['Exists in Test', 'Unique in Test', 'Unique in Control'], index=control_df.index, dtype='boolean')
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
         comp_values = pd.DataFrame(0, columns=test_df.columns, index=test_df.index, dtype='Int64')
         num_matched_rows = 0
+        similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
+        match_matrix = CDF.create_match_matrix(similarity_matrix)
         for i_control_df, row in control_df.iterrows():
             test_rows = test_df[test_df.index.isin([i_control_df])]
             control_rows = control_df[control_df.index.isin([i_control_df])]
@@ -211,6 +213,36 @@ class CDF(BaseModel):
         }
         return results
 
+    @staticmethod
+    def create_similarity_matrix(test_df: pd.DataFrame, control_df: pd.DataFrame):
+        sm = pd.DataFrame(0, index=control_df.index, columns=test_df.index)
+        for control_key in sm.index:
+            for test_key in sm.columns:
+                similarity = fuzz.ratio(''.join(control_key), ''.join(test_key))
+                sm.loc[control_key, test_key] = similarity
+        return sm
+    
+    @staticmethod
+    def create_match_matrix(similarity_matrix: pd.DataFrame):
+        mm = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row'])
+        print(similarity_matrix)
+        # Select the test_key that has the highest similarity percentage where no other control_key has a higher similarity percentage.
+        for control_key in mm.index:
+            control_key_sim_desc = similarity_matrix.loc[control_key].sort_values(ascending=False)
+            for test_key in control_key_sim_desc.index:
+                # The control key similarity being evaluated.
+                control_key_sim = control_key_sim_desc[test_key]
+                # Max similarity for this test key.
+                test_key_max = similarity_matrix[test_key].max()
+                # If the two are equal, we know we have the max similarity along both axes and the optimal match.
+                if control_key_sim == test_key_max:
+                    # Set the match in the match matrix.
+                    mm.loc[control_key, 'Matched Test Row'] = test_key
+                    # Drop the matched test key and continue matching process.
+                    similarity_matrix.drop(columns=[test_key], inplace=True)
+                    break
+        print(mm)
+        return mm
 
 
 
