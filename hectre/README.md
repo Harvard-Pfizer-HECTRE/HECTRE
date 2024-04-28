@@ -4,17 +4,10 @@ The below examples assume your current directory is the repository root, and tha
 
 Create a virtual environment in the project root and install the requirements
 ```
-# Create the venv
-python3 -m venv .venv
-
-# Activate the environment
-source .venv/bin/activate
-
-# Install the requirements defined in /requirements.txt
-pip install -r src/requirements.txt
+make vsetup
 ```
 
-Install a new package and update requirements.txt
+Example: install a new package and update requirements.txt
 ```
 # Install the package
 pip install pydantic

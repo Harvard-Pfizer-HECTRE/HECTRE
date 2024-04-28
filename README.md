@@ -1,50 +1,56 @@
 # HECTRE
 ### Harvard Extension Clinical Trial Results Extractor
 Clinical trial paper data extraction, Harvard Extension collaboration with Pfizer.
+This tool will assist in meta-analysis by extracting clinical data from clinical trial paper PDFs in a specific format that is usable for Pfizer.
+
+**This is the technical setup and configuration guide for deployment. For [user guide after setup, click here.](/USER_GUIDE.md)**
 
 ## Setup
 The tools you'll need are:
-- GNU Make (https://www.gnu.org/software/make/) (Additional effort may be needed to install on Windows)
+- (For Windows) GNU Make (https://www.gnu.org/software/make/)
 - Python (version >= 3.9)
 - AWS credentials to use Amazon Bedrock LLM API (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials", the credentials need to be under your root directory in `.aws` folder)
 
-Then, run the following to install all other requirements:
+Then, run the following to setup and install requirements if deploying on current system:
 ```bash
 make setup
 ```
 
-## Perform Extraction on the Command Line
+Or, running in a virtual environment:
 ```bash
-make extract path=[FILE OR FOLDER OR URL] picos=[ENDPOINTS SEPARATED BY SEMICOLON]
+make vsetup
 ```
 
-Simple example:
-```bash
-make extract file="79_Rosenstock_2013.pdf" picos="HbA1c"
-```
-
-Passing in many different outcomes:
-```bash
-make extract file="305_deBruin_2018.pdf" picos="EASI 50;EASI 75;EASI 90;EASI;SCORAD"
-```
-
-Extracting from every PDF in a folder, with the same outcome(s):
-```bash
-make extract file="folder/pdfs/" picos="HbA1c"
-```
-
-Extracting from an URL:
-```bash
-make extract file="https://academic.oup.com/bjd/article-pdf/178/5/1083/47956799/bjd1083.pdf" picos="EASI 75"
-```
-
-Outputs will be saved in `/output/*.csv`.
-
-## Make Changes to Field Definitions
-TODO
+## Configurations
+Please see [config.yaml file.](/config.yaml)
+You can change many fields, such as the PDF parser used, the LLM used, LLM parameters, and logging verbosity.
 
 ## Make Changes to Prompting Methodology
-TODO
+Also in the [config.yaml file.](/config.yaml)
+The text for each prompt used is in this file, and you may edit it as you see fit. You can also add multi-shot prompting. Example:
+Current prompt:
+```
+  PromptTableOnPage1: |-
+    Below is a page from a clinical trial paper parsed from PDF:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    If there are any number of tables with clinical data on this page, answer exactly with "YES"; otherwise answer exactly with "NO".
+```
+Possible change:
+```
+  PromptTableOnPage1: |-
+    Below is a page from a clinical trial paper parsed from PDF:
+    {Text_Start_Indicator}{Text}{Text_End_Indicator}
+    Does this page have any tables?
+  PromptTableOnPage2: |-
+    Are you sure the answer is correct? Tell me about the columns and rows of any tables on this page, and what clinical data can be derived from them.
+  PromptTableOnPage3: |-
+    Ok, now respond with "YES" or "NO" regarding if there is any tables with actual clinical data on this page.
+```
+
+## Make Changes to Field Definitions
+Each column has a specific name and description used as explanation to the LLM performing the extraction. Editing them may improve extraction results. As an example, you may change the field description of `STATANAL.IMP.METHOD` to say select from a small given pool of choices, or say to derive it straight from the paper.
+Currently, only the fields `Field Label` and `Field Description` are used, so you only have to edit those.
+[Click here to see the current field definitions.](/hectre/definitions.json)
 
 ## Deploy the Web Backend
 ```bash
