@@ -7,7 +7,7 @@ from loguru import logger
 from typing import List
 from backend.services.files_service import FileS3Client
 from backend.utils.response_handler import ResponseHandler
-from backend.consts import REGION_NAME
+from backend.consts import REGION_NAME, S3_FOLDER_INPUT
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -23,7 +23,7 @@ files_client = FileS3Client(region_name=REGION_NAME)
 
 @router.post("/upload_file/")
 async def upload_file(file: UploadFile = File(...)):
-    upload_success = files_client.upload_file(file)
+    upload_success = files_client.upload_file(file, folder=S3_FOLDER_INPUT)
 
     return ResponseHandler.handle_upload_response(upload_success)
 
@@ -35,7 +35,7 @@ async def upload_files(files: List[UploadFile]):
     return ResponseHandler.handle_upload_response(upload_success)
 
 
-@router.post("/excract/")
+@router.post("/extract/")
 async def extract(folder_id: str, outcomes_string: str):
 
     await files_client.download_and_extract_files(folder_id, outcomes_string)
