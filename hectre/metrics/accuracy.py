@@ -22,13 +22,15 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     """
     path_to_test_pdf = Path(path_to_pdf)
     path_to_control_cdf = Path(path_to_cdf)
-    test_cdf_native: Optional[CDF] = extract_data(file_path=path_to_test_pdf.resolve(), picos_string=picos_string)
-    test_cdf = test_cdf_native.to_df()
-    if not test_cdf_native:
+    # TODO Change back afer testing.
+    test_cdf = pd.read_csv(Path('output/2024-04-16 13-56-24.csv').resolve())
+    # TODO change back to "if not test_cdf" when done testing.
+    if test_cdf.empty:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')
     # Create a DataFrame from the control CDF CSV.
     control_cdf = pd.read_csv(path_to_control_cdf.resolve())
     # Run the comparison.
+    # TODO change back to "test_cdf.compare" and "test_cdf.to_df()" when done testing.
     accuracy = CDF.compare(test_cdf, control_cdf)
     logger.info(f'\nACCURACY OF HECTRE EXTRACTION: {path_to_pdf}:')
     lit_acc_pct = accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size

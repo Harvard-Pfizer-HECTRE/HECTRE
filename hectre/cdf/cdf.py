@@ -128,7 +128,9 @@ class CDF(BaseModel):
         # Transform compound keys to lowercase, remove whitespace, replace hyphens.
         test_clin_data_index_vals = test_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
         # We need a list of compound key columns as lists.
-        test_clin_data.set_index([np.array(l) for l in test_clin_data_index_vals.T.values],inplace=True)
+        test_clin_data = test_clin_data.set_index([np.array(l) for l in test_clin_data_index_vals.T.values])
+        # Add an integer primary key.
+        test_clin_data = test_clin_data.assign(primary_key=range(test_clin_data.shape[0])).set_index('primary_key', append=True)
         # Confrol CDF (considered 100% accurate)
         control_lit_data = control_cdf.loc[0,LITERATURE_DATA_HEADERS]
         control_clin_data = control_cdf.drop(columns=LITERATURE_DATA_HEADERS)
@@ -137,7 +139,9 @@ class CDF(BaseModel):
         # Transform compound keys to lowercase, remove whitespace, replace hyphens.
         control_clin_data_index_vals = control_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
         # We need a list of compound key columns as lists.
-        control_clin_data.set_index([np.array(l) for l in control_clin_data_index_vals.T.values],inplace=True)
+        control_clin_data = control_clin_data.set_index([np.array(l) for l in control_clin_data_index_vals.T.values])
+        # Add an integer primary key.
+        test_clin_data = test_clin_data.assign(primary_key=range(test_clin_data.shape[0])).set_index('primary_key', append=True)
         clin_results = CDF.compare_clinical_data(test_clin_data, control_clin_data)
         lit_results = CDF.compare_literature_data(test_lit_data, control_lit_data)
         results = {
