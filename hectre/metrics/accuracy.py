@@ -23,7 +23,7 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     path_to_test_pdf = Path(path_to_pdf)
     path_to_control_cdf = Path(path_to_cdf)
     # TODO Change back afer testing.
-    test_cdf = pd.read_csv(Path('output/2024-04-16 13-56-24.csv').resolve())
+    test_cdf = pd.read_csv(Path('/Users/jan535/code/HECTRE/output/2024-04-16 13-56-24.csv').resolve())
     # TODO change back to "if not test_cdf" when done testing.
     if test_cdf.empty:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')

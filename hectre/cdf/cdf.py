@@ -153,8 +153,9 @@ class CDF(BaseModel):
             "control_lit_data": control_lit_data,
             "row_matches_clin": clin_results['row_matches'],
             "comp_values_clin": clin_results['comp_values'],
+            "row_similarities": clin_results['row_similarities'],
             "comp_values_lit": lit_results['comp_values'],
-            "row_similarities": clin_results['row_similarities']
+            "stacked_df": clin_results['stacked_df']
         }
         return results
     
@@ -175,6 +176,7 @@ class CDF(BaseModel):
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64')
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
         match_matrix = CDF.create_match_matrix(similarity_matrix)
+        stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df)
         for control_key in match_matrix.index:
             matched_test_key = match_matrix.loc[control_key, 'Matched Test Row']
             for col, val in control_df.loc[control_key].items():
@@ -182,7 +184,8 @@ class CDF(BaseModel):
         results = {
             'row_matches': match_matrix,
             'comp_values': comp_values,
-            'row_similarities': similarity_matrix
+            'row_similarities': similarity_matrix,
+            'stacked_df': stacked_df
         }
         return results
     
@@ -232,6 +235,21 @@ class CDF(BaseModel):
                     test_keys.remove(test_key)
                     break
         return mm
+    
+    def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame):
+        test_df_wm = test_df.copy().assign(match_key='', sample='test')
+        control_df_wm = control_df.copy().assign(match_key='', sample='control')
+        test_match_index = {'match_key': 'c'+str(x[-1])+'t'+str(y[0][-1]) for x,y in match_matrix.iterrows()}
+        for control_key, row in match_matrix.iterrows():
+            test_key = row['Matched Test Row']
+            match_key = 'c'+str(control_key[-1])+'t'+str(test_key[-1])
+            test_df_wm.loc[test_key, 'match_key'] = match_key
+            control_df_wm.loc[control_key, 'match_key'] = match_key
+        test_df_wm = test_df_wm.set_index(['match_key', 'sample'], append=True)
+        control_df_wm = control_df_wm.set_index(['match_key', 'sample'], append=True)
+        stacked_df = pd.concat(objs=[test_df_wm, control_df_wm]).sort_index(level=['match_key', 'sample'])
+        return stacked_df
+
 
 
 
