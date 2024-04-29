@@ -10,6 +10,7 @@ The tools you'll need are:
 - (For Windows) GNU Make (https://www.gnu.org/software/make/)
 - Python (version >= 3.9)
 - AWS credentials to use Amazon Bedrock LLM API (For more information, visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html and check under "Long-term credentials", the credentials need to be under your root directory in `.aws` folder)
+- AWS access to models you will use in Amazon Bedrock (https://aws.amazon.com/bedrock/). You will need to request access to the model you will use for your AWS credential.
 
 Then, run the following to setup and install requirements if deploying on current system:
 ```bash
