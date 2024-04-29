@@ -127,8 +127,9 @@ class CDF(BaseModel):
         test_clin_data_index_vals = test_clin_data[CDF_COMPOUND_KEY_COLS]
         # Transform compound keys to lowercase, remove whitespace, replace hyphens.
         test_clin_data_index_vals = test_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
-        # We need a list of compound key columns as lists.
+        # Create the multi-index from CDF_COMPOUND_KEY_COLS.
         test_clin_data = test_clin_data.set_index([np.array(l) for l in test_clin_data_index_vals.T.values])
+        test_clin_data = test_clin_data.rename_axis(index=CDF_COMPOUND_KEY_COLS)
         # Add an integer primary key.
         test_clin_data = test_clin_data.assign(primary_key=range(test_clin_data.shape[0])).set_index('primary_key', append=True)
         # Confrol CDF (considered 100% accurate)
@@ -138,10 +139,11 @@ class CDF(BaseModel):
         control_clin_data_index_vals = control_clin_data[CDF_COMPOUND_KEY_COLS]
         # Transform compound keys to lowercase, remove whitespace, replace hyphens.
         control_clin_data_index_vals = control_clin_data_index_vals.map(lambda x: x.lower()).map(lambda x: x.replace('-', '')).map(lambda x: x.replace(' ', ''))
-        # We need a list of compound key columns as lists.
+        # Create the multi-index from CDF_COMPOUND_KEY_COLS.
         control_clin_data = control_clin_data.set_index([np.array(l) for l in control_clin_data_index_vals.T.values])
+        control_clin_data = control_clin_data.rename_axis(index=CDF_COMPOUND_KEY_COLS)
         # Add an integer primary key.
-        test_clin_data = test_clin_data.assign(primary_key=range(test_clin_data.shape[0])).set_index('primary_key', append=True)
+        control_clin_data = control_clin_data.assign(primary_key=range(control_clin_data.shape[0])).set_index('primary_key', append=True)
         clin_results = CDF.compare_clinical_data(test_clin_data, control_clin_data)
         lit_results = CDF.compare_literature_data(test_lit_data, control_lit_data)
         results = {
@@ -171,7 +173,6 @@ class CDF(BaseModel):
         """
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64')
-        num_matched_rows = 0
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
         match_matrix = CDF.create_match_matrix(similarity_matrix)
         for control_key in match_matrix.index:
@@ -200,8 +201,10 @@ class CDF(BaseModel):
     def create_similarity_matrix(test_df: pd.DataFrame, control_df: pd.DataFrame):
         sm = pd.DataFrame(0, index=control_df.index, columns=test_df.index)
         for control_key in sm.index:
+            control_keys_compare = control_key[:-1]
             for test_key in sm.columns:
-                similarity = fuzz.ratio(''.join(control_key), ''.join(test_key))
+                test_keys_compare = test_key[:-1]
+                similarity = fuzz.ratio(''.join(control_keys_compare), ''.join(test_keys_compare))
                 sm.loc[control_key, test_key] = similarity
         return sm
     
