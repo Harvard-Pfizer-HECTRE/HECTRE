@@ -23,7 +23,7 @@ make extract file="folder/pdfs/" picos="HbA1c"
 
 Extracting from an URL:
 ```bash
-make extract file="https://academic.oup.com/bjd/article-pdf/178/5/1083/47956799/bjd1083.pdf" picos="EASI 75"
+make extract file="https://eprints.whiterose.ac.uk/125021/8/Bruin-Weller_et_al-2018-British_Journal_of_Dermatology.pdf" picos="EASI 75"
 ```
 
 Outputs will be saved in `/output/*.csv`, with the file name set to the time when extraction has finished.
