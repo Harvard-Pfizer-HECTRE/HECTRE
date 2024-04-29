@@ -115,12 +115,20 @@ class CDF(BaseModel):
             if col in test_cdf.columns:
                 test_cdf = test_cdf.drop(columns=[col])
             if col in control_cdf.columns:
-                control_cdf = control_cdf.astype(str).replace('nan', '').drop(columns=[col])
+                control_cdf = control_cdf.drop(columns=[col])
         # Make sure they have the same columns.
         cols_eq = set(test_cdf.columns) == set(control_cdf.columns)
         if not cols_eq:
             cols = f'Test CDF Columns:\n{test_cdf.columns}\n\nControl CDF Columns:\n{control_cdf.columns}\n\n'
-            raise RuntimeError(f'The columns in the test and control CDFs are not the same\n\n{cols}')
+            test_missing = set(HEADER_ORDER) - set(test_cdf.columns)
+            control_missing = set(HEADER_ORDER) - set(control_cdf.columns)
+            symmetric_diff = set(test_cdf.columns).symmetric_difference(set(control_cdf.columns))
+            raise RuntimeError(
+                f'The columns in the test and control CDFs are not the same\n\n \
+                TEST MISSING COLS:\n{test_missing}\n\n \
+                CONTROL MISSING COLS:\n{control_missing}\n\n \
+                SYMMETRIC DIFFERENCE:\n{symmetric_diff}'
+            )
         test_lit_data = test_cdf.loc[0,LITERATURE_DATA_HEADERS]
         test_clin_data = test_cdf.drop(columns=LITERATURE_DATA_HEADERS)
         # DF of just compound keys.
@@ -176,11 +184,14 @@ class CDF(BaseModel):
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64')
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
         match_matrix = CDF.create_match_matrix(similarity_matrix)
-        stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df)
         for control_key in match_matrix.index:
             matched_test_key = match_matrix.loc[control_key, 'Matched Test Row']
+            if pd.isna(matched_test_key):
+                # No match for this control_key.
+                continue
             for col, val in control_df.loc[control_key].items():
-                comp_values.loc[control_key, col] = fuzz.token_sort_ratio(val, test_df.loc[matched_test_key, col])            
+                comp_values.loc[control_key, col] = fuzz.token_sort_ratio(val, test_df.loc[matched_test_key, col])
+        stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df, comp_values)            
         results = {
             'row_matches': match_matrix,
             'comp_values': comp_values,
@@ -215,39 +226,52 @@ class CDF(BaseModel):
     def create_match_matrix(similarity_matrix: pd.DataFrame):
         mm = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row', 'Similarity'])
         mm = mm.astype({'Similarity': 'Int64'})
-        # Select the test_key that has the highest similarity percentage where no other control_key has a higher similarity percentage.
-        control_keys = similarity_matrix.index.to_list()
-        test_keys = similarity_matrix.columns.to_list()
-        while control_keys and test_keys:
-            control_key = control_keys[0]
-            control_key_sim_desc = similarity_matrix.loc[control_key].sort_values(ascending=False)
-            for test_key in control_key_sim_desc.index:
+        # Select the control key/test_key pair that minimizes: 1) the difference in similarity between the pair and the control key's most similar pairing
+        # and 2) the difference in similarity between the pair and the test key's most similar pairing.
+        min_distance_matrix = pd.DataFrame(0, index=similarity_matrix.index, columns=similarity_matrix.columns, dtype='Int64')
+        # Calculate the similarity differences for each control key/test key pair.
+        for control_key in similarity_matrix.index:
+            control_key_sims = similarity_matrix.loc[control_key]
+            control_key_max = control_key_sims.max()
+            for test_key in control_key_sims.index:
                 # The control key similarity being evaluated.
-                control_key_sim = control_key_sim_desc[test_key]
+                pair_similarity = control_key_sims[test_key]
+                control_key_diff_max = control_key_max - pair_similarity
                 # Max similarity for this test key.
                 test_key_max = similarity_matrix[test_key].max()
-                # If the two are equal, we know we have the max similarity along both axes and the optimal match.
-                if control_key_sim == test_key_max:
-                    # Set the match in the match matrix.
-                    mm.loc[control_key] = {'Matched Test Row': test_key, 'Similarity': control_key_sim}
-                    # Remove the matched test key and control key and continue the matching process.
-                    control_keys.remove(control_key)
-                    test_keys.remove(test_key)
-                    break
+                test_key_diff_max = test_key_max - pair_similarity
+                min_distance_matrix.loc[control_key, test_key] = control_key_diff_max + test_key_diff_max
+        for control_key in similarity_matrix.index:
+            if len(min_distance_matrix.columns) == 0:
+                # All the available test keys have been matched.
+                break
+            # Select the test key that minimizes this value.
+            test_key_match = min_distance_matrix.loc[control_key].idxmin()
+            match_similarity = similarity_matrix.loc[control_key, test_key]
+            # Set the match in the match matrix.
+            mm.loc[control_key] = {'Matched Test Row': test_key_match, 'Similarity': match_similarity}
+            # Remove the matched test key and control key and continue the matching process.
+            min_distance_matrix.drop(columns=[test_key_match], inplace=True)
         return mm
     
-    def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame):
-        test_df_wm = test_df.copy().assign(match_key='', sample='test')
-        control_df_wm = control_df.copy().assign(match_key='', sample='control')
-        test_match_index = {'match_key': 'c'+str(x[-1])+'t'+str(y[0][-1]) for x,y in match_matrix.iterrows()}
+    def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame, val_similarity_matrix: pd.DataFrame):
+        test_df_wm = test_df.copy().assign(match_key='', sample='test').astype('object')
+        control_df_wm = control_df.copy().assign(match_key='', sample='control').astype('object')
+        similarity_df_wm = val_similarity_matrix.copy().assign(match_key='', sample='similarity').astype('object')
         for control_key, row in match_matrix.iterrows():
             test_key = row['Matched Test Row']
+            if pd.isna(test_key):
+                # Has no match.
+                continue
             match_key = 'c'+str(control_key[-1])+'t'+str(test_key[-1])
             test_df_wm.loc[test_key, 'match_key'] = match_key
             control_df_wm.loc[control_key, 'match_key'] = match_key
+            similarity_df_wm.loc[control_key, 'match_key'] = match_key
         test_df_wm = test_df_wm.set_index(['match_key', 'sample'], append=True)
         control_df_wm = control_df_wm.set_index(['match_key', 'sample'], append=True)
-        stacked_df = pd.concat(objs=[test_df_wm, control_df_wm]).sort_index(level=['match_key', 'sample'])
+        similarity_df_wm = similarity_df_wm.set_index(['match_key', 'sample'], append=True)
+        print(set(test_df_wm.columns) ^ set(similarity_df_wm.columns))
+        stacked_df = pd.concat(objs=[test_df_wm, control_df_wm, similarity_df_wm]).sort_index(level=['match_key'], ascending=False)
         return stacked_df
 
 
