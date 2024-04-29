@@ -8,7 +8,7 @@ from typing import List
 from backend.services.files_service import FileS3Client
 from backend.utils.response_handler import ResponseHandler
 from backend.consts import REGION_NAME, S3_FOLDER_INPUT
-from backend.models.extractrion_request import ExtractionRequest
+from backend.models.extraction_request import ExtractionRequest
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
