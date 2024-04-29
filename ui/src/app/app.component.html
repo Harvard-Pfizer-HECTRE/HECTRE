@@ -74,6 +74,37 @@
         </tfoot>
       </table>
     </ng-container>
+    <ng-container *ngIf="isUploadComplete">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Extract</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <form [formGroup]="form">
+                <label for="picos-string">PICOS String&nbsp;&nbsp;</label>
+                <input type="text" id="picos-string" formControlName="picosString">
+              </form>
+            </td>
+            <td>
+              <button type="button" class="btn btn-success" (click)="extractFiles()">Extract</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Extraction Progress&nbsp;
+              <h3>{{extractionProgress}}</h3>
+              <mat-progress-bar mode="determinate" [value]="extractionProgress"></mat-progress-bar>
+            </td>
+            <td>
+              <h4 class="text-danger">{{extractionErrorMessage}}</h4>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
   </div>
 </div>
 <router-outlet></router-outlet>

@@ -8,6 +8,7 @@ from typing import List
 from backend.services.files_service import FileS3Client
 from backend.utils.response_handler import ResponseHandler
 from backend.consts import REGION_NAME, S3_FOLDER_INPUT
+from backend.models.extractrion_request import ExtractionRequest
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -36,8 +37,13 @@ async def upload_files(files: List[UploadFile]):
 
 
 @router.post("/extract/")
-async def extract(folder_id: str, outcomes_string: str):
+async def extract(request: ExtractionRequest):
 
-    await files_client.download_and_extract_files(folder_id, outcomes_string)
+    print(
+        f"Extracting files from folder_id: {request.folder_id} with outcomes: {request.outcomes_string}"
+    )
+    await files_client.download_and_extract_files(
+        request.folder_id, request.outcomes_string
+    )
 
     return ResponseHandler.handle_extraction_response(True)
