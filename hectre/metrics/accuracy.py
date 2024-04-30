@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @click.argument('picos_string', type=str)
 @click.argument('path_to_cdf', type=str)
 def cdf_accuracy_cmd(path_to_pdf: str, picos_string: str, path_to_cdf: str):
-    test_cdf = accuracy_extract_test(path_to_pdf=path_to_pdf, picos_string=picos_string, path_to_cdf=path_to_cdf)
+    test_cdf = accuracy_extract_test(path_to_pdf=path_to_pdf, picos_string=picos_string)
     # Create a DataFrame from the control CDF CSV.
     control_cdf = pd.read_csv(path_to_cdf)
     slug = Path(path_to_cdf).stem.lower()
