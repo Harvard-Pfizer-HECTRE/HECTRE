@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: hectre-backend-image
+    environment:
+      AWS_ACCESS_KEY_ID: ${aws_access_key_id}
+      AWS_SECRET_ACCESS_KEY: ${aws_secret_access_key}
+    ports:
+      - 5000:5000
+    networks:
+      - hectre_net
+    volumes:
+      - $HOME/.aws/:/home/.aws/
+
+  ui:
+    build:
+      context: ../ui
+      dockerfile: ./docker/Dockerfile
+    image: hectre-ui-image
+    ports:
+      - 4200:4200
+    networks:
+      - hectre_net
+
+networks:
+  hectre_net:
