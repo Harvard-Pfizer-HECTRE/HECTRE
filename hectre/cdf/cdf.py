@@ -184,8 +184,6 @@ class CDF(BaseModel):
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64').assign(has_match=0)
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
         match_matrix = CDF.create_match_matrix(similarity_matrix.copy())
-        print(similarity_matrix)
-        print(match_matrix)
         for control_key in match_matrix.index:
             matched_test_key = match_matrix.loc[control_key, 'Matched Test Row']
             if pd.isna(matched_test_key):
@@ -230,13 +228,15 @@ class CDF(BaseModel):
     def create_match_matrix(similarity_matrix: pd.DataFrame):
         mm = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row', 'Similarity'])
         mm = mm.astype({'Similarity': 'Int64'})
+        print(similarity_matrix)
         while len(similarity_matrix.index) > 0 and len(similarity_matrix.columns) > 0:
             highest_value = similarity_matrix.values.max()
-            column = similarity_matrix.stack(future_stack=True).max().idxmax()
-            index = similarity_matrix[column].idxmax().max()
+            column = similarity_matrix.max().idxmax()
+            index = similarity_matrix[column].idxmax()
             similarity_matrix = similarity_matrix.drop(index, axis=0)
             similarity_matrix = similarity_matrix.drop(column, axis=1)
             mm.loc[index] = {'Matched Test Row': column, 'Similarity': highest_value}
+            print(similarity_matrix)
         return mm
     
     def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame, val_similarity_matrix: pd.DataFrame):
