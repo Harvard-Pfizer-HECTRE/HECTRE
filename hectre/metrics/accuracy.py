@@ -13,17 +13,26 @@ logger = logging.getLogger(__name__)
 @click.argument('path_to_pdf', type=str)
 @click.argument('picos_string', type=str)
 @click.argument('path_to_cdf', type=str)
-def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
-    path_to_test_pdf = Path(path_to_pdf)
-    path_to_control_cdf = Path(path_to_cdf)
-    test_cdf: Optional[CDF] = extract_data(file_path=path_to_test_pdf.resolve(), picos_string=picos_string)
+def cdf_accuracy_cmd(path_to_pdf: str, picos_string: str, path_to_cdf: str):
+    test_cdf = accuracy_extract_test(path_to_pdf=path_to_pdf, picos_string=picos_string)
+    # Create a DataFrame from the control CDF CSV.
+    control_cdf = pd.read_csv(path_to_cdf)
+    slug = Path(path_to_cdf).stem.lower()
+    cdf_accuracy(test_cdf, control_cdf, slug)
+
+def accuracy_extract_test(path_to_pdf: str, picos_string: str):
+    test_cdf = extract_data(file_path=path_to_pdf, picos_string=picos_string)
     if not test_cdf:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')
-    # Create a DataFrame from the control CDF CSV.
-    control_cdf = pd.read_csv(path_to_control_cdf.resolve())
+    return test_cdf.to_df()
+
+def cdf_accuracy(test_cdf: pd.DataFrame, control_cdf: pd.DataFrame, article_slug: str):
+    """
+    Measure the accuracy of a test CDF compared to a control CDF (considered 100% accurate).
+    """
     # Run the comparison.
-    accuracy = CDF.compare(test_cdf.to_df(), control_cdf)
-    logger.info(f'\nACCURACY OF HECTRE EXTRACTION: {path_to_pdf}:')
+    accuracy = CDF.compare(test_cdf, control_cdf)
+    logger.info(f'\nACCURACY OF HECTRE EXTRACTION: {article_slug}:')
     lit_acc_pct = accuracy['comp_values_lit'].sum() / accuracy['comp_values_lit'].size
     lit_vals = []
     for col in accuracy['comp_values_lit'].index:
@@ -32,13 +41,13 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
     lit_vals_str = '\n'.join(lit_vals)
     logger.info(f"\nACCURACY OF LITERATURE DATA VALUES (indexed by column name):\n{avg_lit_acc}\n{lit_vals_str}")
     num_control_rows = accuracy['control_clin_data'].shape[0]
-    matched_control_rows = num_control_rows - accuracy['row_matches_clin']['Matched Test Row'].isna().sum() 
+    matched_control_rows = accuracy['row_matches_clin'].shape[0]
     logger.info(f"\nMatched control rows: {matched_control_rows} of {num_control_rows}")
     logger.info(f"\nCONTROL ROW MATCHES\n{accuracy['row_matches_clin']}")
+    clin_data_col_accs = accuracy['comp_values_clin'].mean()
     clin_data_cols = []
-    for col in accuracy['comp_values_clin'].columns:
-        pct = (accuracy['comp_values_clin'][col].sum() / accuracy['comp_values_clin'].shape[0])
-        clin_data_cols.append(f'{col}: {pct:.2f}')
+    for col, val in clin_data_col_accs.items():
+        clin_data_cols.append(f'{col}: {val:.2f}')
     clin_data_cols_str = '\n'.join(clin_data_cols)
     logger.info(f"\nACCURACY OF CLINICAL DATA COLUMNS (indexed by column name):\n{clin_data_cols_str}")
     # If test and control have at least one matching row, display an example.
@@ -55,6 +64,13 @@ def cdf_accuracy(path_to_pdf: str, picos_string: str, path_to_cdf: str):
         logger.info(df_r1)
     else:
         logger.info('\nNone of the test and control compound primary keys matched\n')
+    return {
+        'comparison': accuracy,
+        'lit_acc_pct': lit_acc_pct,
+        'num_control_rows': num_control_rows,
+        'matched_control_rows': matched_control_rows,
+        'clin_data_col_accs': clin_data_col_accs
+    }
 
 if __name__ == '__main__':
-    cdf_accuracy()
+    cdf_accuracy_cmd()
