@@ -4,7 +4,7 @@
 from __future__ import annotations
 import json, warnings, os
 from collections import OrderedDict
-from typing import Any, List, Dict, Optional
+from typing import Any, List, Dict, Optional, Callable
 
 from thefuzz import fuzz
 from pydantic import BaseModel, Json
@@ -183,7 +183,7 @@ class CDF(BaseModel):
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64').assign(has_match=0)
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
-        match_matrix = CDF.create_match_matrix(similarity_matrix)
+        match_matrix = CDF.create_match_matrix(similarity_matrix, CDF.max_match_matrix)
         for control_key in match_matrix.index:
             matched_test_key = match_matrix.loc[control_key, 'Matched Test Row']
             if pd.isna(matched_test_key):
@@ -225,9 +225,35 @@ class CDF(BaseModel):
         return sm
     
     @staticmethod
-    def create_match_matrix(similarity_matrix: pd.DataFrame):
-        mm = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row', 'Similarity'])
-        mm = mm.astype({'Similarity': 'Int64'})
+    def create_match_matrix(similarity_matrix: pd.DataFrame, match_func: Callable):
+        match_matrix = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row', 'Similarity'])
+        match_matrix = match_matrix.astype({'Similarity': 'Int64'})
+        return match_func(match_matrix, similarity_matrix)
+    
+    @staticmethod
+    def max_match_matrix(match_matrix: pd.DataFrame, similarity_matrix: pd.DataFrame):
+        while similarity_matrix.columns.size > 0 and similarity_matrix.index.size > 0:
+            max_sim = 0
+            max_test_key = None
+            max_control_key = None
+            for control_key in similarity_matrix.index:
+                for test_key in similarity_matrix.columns:
+                    sim = similarity_matrix.loc[control_key, test_key]
+                    if sim > max_sim:
+                        max_sim = sim
+                        max_control_key = control_key
+                        max_test_key = test_key
+            if max_sim == 0:
+                break
+            match_matrix.at[max_control_key, 'Matched Test Row'] = max_test_key
+            match_matrix.at[max_control_key, 'Similarity'] = max_sim
+            similarity_matrix.drop(columns=[max_test_key], inplace=True)
+            similarity_matrix.drop(index=[max_control_key], inplace=True)
+        match_matrix.dropna(inplace=True)
+        return match_matrix
+    
+    @staticmethod
+    def min_sim_loss(match_matrix: pd.DataFrame, similarity_matrix: pd.DataFrame):
         # Select the control key/test_key pair that minimizes: 1) the difference in similarity between the pair and the control key's most similar pairing
         # and 2) the difference in similarity between the pair and the test key's most similar pairing.
         min_distance_matrix = pd.DataFrame(0, index=similarity_matrix.index, columns=similarity_matrix.columns, dtype='Int64')
@@ -251,10 +277,10 @@ class CDF(BaseModel):
             test_key_match = min_distance_matrix.loc[control_key].idxmin()
             match_similarity = similarity_matrix.loc[control_key, test_key]
             # Set the match in the match matrix.
-            mm.loc[control_key] = {'Matched Test Row': test_key_match, 'Similarity': match_similarity}
+            match_matrix.loc[control_key] = {'Matched Test Row': test_key_match, 'Similarity': match_similarity}
             # Remove the matched test key and control key and continue the matching process.
             min_distance_matrix.drop(columns=[test_key_match], inplace=True)
-        return mm
+        return match_matrix
     
     def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame, val_similarity_matrix: pd.DataFrame):
         test_df_wm = test_df.copy().assign(match_key='', sample='test').astype('object')
