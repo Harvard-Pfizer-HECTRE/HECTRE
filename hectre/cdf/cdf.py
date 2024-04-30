@@ -236,7 +236,6 @@ class CDF(BaseModel):
             similarity_matrix = similarity_matrix.drop(index, axis=0)
             similarity_matrix = similarity_matrix.drop(column, axis=1)
             mm.loc[index] = {'Matched Test Row': column, 'Similarity': highest_value}
-            print(similarity_matrix)
         return mm
     
     def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame, val_similarity_matrix: pd.DataFrame):
