@@ -183,7 +183,9 @@ class CDF(BaseModel):
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
         comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64').assign(has_match=0)
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
-        match_matrix = CDF.create_match_matrix(similarity_matrix)
+        match_matrix = CDF.create_match_matrix(similarity_matrix.copy())
+        print(similarity_matrix)
+        print(match_matrix)
         for control_key in match_matrix.index:
             matched_test_key = match_matrix.loc[control_key, 'Matched Test Row']
             if pd.isna(matched_test_key):
@@ -228,32 +230,13 @@ class CDF(BaseModel):
     def create_match_matrix(similarity_matrix: pd.DataFrame):
         mm = pd.DataFrame(None, index=similarity_matrix.index, columns=['Matched Test Row', 'Similarity'])
         mm = mm.astype({'Similarity': 'Int64'})
-        # Select the control key/test_key pair that minimizes: 1) the difference in similarity between the pair and the control key's most similar pairing
-        # and 2) the difference in similarity between the pair and the test key's most similar pairing.
-        min_distance_matrix = pd.DataFrame(0, index=similarity_matrix.index, columns=similarity_matrix.columns, dtype='Int64')
-        # Calculate the similarity differences for each control key/test key pair.
-        for control_key in similarity_matrix.index:
-            control_key_sims = similarity_matrix.loc[control_key]
-            control_key_max = control_key_sims.max()
-            for test_key in control_key_sims.index:
-                # The control key similarity being evaluated.
-                pair_similarity = control_key_sims[test_key]
-                control_key_diff_max = control_key_max - pair_similarity
-                # Max similarity for this test key.
-                test_key_max = similarity_matrix[test_key].max()
-                test_key_diff_max = test_key_max - pair_similarity
-                min_distance_matrix.loc[control_key, test_key] = control_key_diff_max + test_key_diff_max
-        for control_key in similarity_matrix.index:
-            if len(min_distance_matrix.columns) == 0:
-                # All the available test keys have been matched.
-                break
-            # Select the test key that minimizes this value.
-            test_key_match = min_distance_matrix.loc[control_key].idxmin()
-            match_similarity = similarity_matrix.loc[control_key, test_key]
-            # Set the match in the match matrix.
-            mm.loc[control_key] = {'Matched Test Row': test_key_match, 'Similarity': match_similarity}
-            # Remove the matched test key and control key and continue the matching process.
-            min_distance_matrix.drop(columns=[test_key_match], inplace=True)
+        while len(similarity_matrix.index) > 0 and len(similarity_matrix.columns) > 0:
+            highest_value = similarity_matrix.values.max()
+            column = similarity_matrix.stack(future_stack=True).max().idxmax()
+            index = similarity_matrix[column].idxmax().max()
+            similarity_matrix = similarity_matrix.drop(index, axis=0)
+            similarity_matrix = similarity_matrix.drop(column, axis=1)
+            mm.loc[index] = {'Matched Test Row': column, 'Similarity': highest_value}
         return mm
     
     def create_stacked_df(match_matrix: pd.DataFrame, test_df: pd.DataFrame, control_df: pd.DataFrame, val_similarity_matrix: pd.DataFrame):
