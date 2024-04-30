@@ -30,6 +30,15 @@ extract:
 be-dev:
 	poetry run uvicorn backend.main:app --port=5000 --reload
 
+# cd to ui folder 
+ui-dev: 
+	cd ui && npm install && ng serve
+
+# Run web application via (May need to include "sudo" if running in wsl)
+compose:
+	docker compose -f ./docker/docker-compose.yaml up
+
+# End points for testing basic CRUD. Serves as a template for future endpoints
 be-create-items:
 	curl -X POST localhost:8000/foo/item/   --data '{"description":"some item description", "public":false}' && echo
 	curl -X POST localhost:8000/foo/item/   --data '{"description":"some item description", "public":true}'
