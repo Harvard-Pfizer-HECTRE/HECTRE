@@ -181,7 +181,7 @@ class CDF(BaseModel):
         control_cdf: The cdf we're comparing to the test cdf to determine accuracy. Considered to be 100% accurate.
         """
         # Create a DataFrame to hold cell-by-cell equality matrix. Initialize every value to False.
-        comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64')
+        comp_values = pd.DataFrame(0, columns=control_df.columns, index=control_df.index, dtype='Int64').assign(has_match=0)
         similarity_matrix = CDF.create_similarity_matrix(test_df, control_df)
         match_matrix = CDF.create_match_matrix(similarity_matrix)
         for control_key in match_matrix.index:
@@ -191,7 +191,9 @@ class CDF(BaseModel):
                 continue
             for col, val in control_df.loc[control_key].items():
                 comp_values.loc[control_key, col] = fuzz.token_sort_ratio(val, test_df.loc[matched_test_key, col])
-        stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df, comp_values)            
+            comp_values.loc[control_key, 'has_match'] = 1
+        comp_values = comp_values.set_index(['has_match'], append=True)
+        stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df, comp_values.droplevel('has_match'))            
         results = {
             'row_matches': match_matrix,
             'comp_values': comp_values,
@@ -272,11 +274,11 @@ class CDF(BaseModel):
         similarity_df_wm = similarity_df_wm.set_index(['match_key', 'sample'], append=True)
         sample_sort_priorities = {'test': 2, 'control':1, 'similarity':0}
         stacked_df = pd.concat(objs=[test_df_wm, control_df_wm, similarity_df_wm])
-        print(stacked_df.index.to_frame().columns)
         stacked_df['sample_sortby'] = stacked_df.index.to_frame()['sample'].map(sample_sort_priorities)
         stacked_df = stacked_df.set_index(['sample_sortby'], append=True)
         stacked_df = stacked_df.sort_index(level=['match_key', 'sample_sortby'], ascending=False)
         stacked_df = stacked_df.droplevel('sample_sortby')
+        stacked_df = stacked_df[~((stacked_df.index.get_level_values('sample') == 'similarity') & (stacked_df.index.get_level_values('match_key') == ''))]
         return stacked_df
 
 
