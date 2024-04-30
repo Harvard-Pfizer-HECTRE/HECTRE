@@ -15,7 +15,6 @@ from backend.utils.app_exceptions import app_exception_handler
 
 create_tables()
 
-
 app = FastAPI()
 
 # Add CORS middleware
