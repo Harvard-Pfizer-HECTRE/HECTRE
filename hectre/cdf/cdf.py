@@ -270,8 +270,13 @@ class CDF(BaseModel):
         test_df_wm = test_df_wm.set_index(['match_key', 'sample'], append=True)
         control_df_wm = control_df_wm.set_index(['match_key', 'sample'], append=True)
         similarity_df_wm = similarity_df_wm.set_index(['match_key', 'sample'], append=True)
-        print(set(test_df_wm.columns) ^ set(similarity_df_wm.columns))
-        stacked_df = pd.concat(objs=[test_df_wm, control_df_wm, similarity_df_wm]).sort_index(level=['match_key'], ascending=False)
+        sample_sort_priorities = {'test': 2, 'control':1, 'similarity':0}
+        stacked_df = pd.concat(objs=[test_df_wm, control_df_wm, similarity_df_wm])
+        print(stacked_df.index.to_frame().columns)
+        stacked_df['sample_sortby'] = stacked_df.index.to_frame()['sample'].map(sample_sort_priorities)
+        stacked_df = stacked_df.set_index(['sample_sortby'], append=True)
+        stacked_df = stacked_df.sort_index(level=['match_key', 'sample_sortby'], ascending=False)
+        stacked_df = stacked_df.droplevel('sample_sortby')
         return stacked_df
 
 
