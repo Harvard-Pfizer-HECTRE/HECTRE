@@ -41,7 +41,7 @@ def cdf_accuracy(test_cdf: pd.DataFrame, control_cdf: pd.DataFrame, article_slug
     lit_vals_str = '\n'.join(lit_vals)
     logger.info(f"\nACCURACY OF LITERATURE DATA VALUES (indexed by column name):\n{avg_lit_acc}\n{lit_vals_str}")
     num_control_rows = accuracy['control_clin_data'].shape[0]
-    matched_control_rows = num_control_rows - accuracy['row_matches_clin']['Matched Test Row'].isna().sum() 
+    matched_control_rows = accuracy['row_matches_clin'].shape[0]
     logger.info(f"\nMatched control rows: {matched_control_rows} of {num_control_rows}")
     logger.info(f"\nCONTROL ROW MATCHES\n{accuracy['row_matches_clin']}")
     clin_data_col_accs = accuracy['comp_values_clin'].mean()
