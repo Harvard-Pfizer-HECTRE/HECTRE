@@ -1,4 +1,8 @@
 # HECTRE
+
+<!-- ![HECTRE Logo](./ui/src/assets/HECTRE.png) -->
+<img src="./ui/src/assets/HECTRE.png" alt="HECTRE Logo" width="550" height="550">
+
 ### Harvard Extension Clinical Trial Results Extractor
 Clinical trial paper data extraction, Harvard Extension collaboration with Pfizer.
 This tool will assist in meta-analysis by extracting clinical data from clinical trial paper PDFs in a specific format that is usable for Pfizer.
@@ -53,12 +57,38 @@ Each column has a specific name and description used as explanation to the LLM p
 Currently, only the fields `Field Label` and `Field Description` are used, so you only have to edit those.
 [Click here to see the current field definitions.](/hectre/definitions.json)
 
-## Deploy the Web Backend
+## Deploy Web Application
+
+Prerequisites:
+- [Install Angular](https://angular.io/guide/setup-local)
+- Python (version >= 3.9)
+- [Install Docker](https://docs.docker.com/engine/install/) 
+
+How to run ui and backend **individually**
+
 ```bash
+#--------------------------------- hectre web app ---------------------------------
+
+make ui-dev # must be in the ui folder
 make be-dev # run uvicorn with restart
+
+#--------------------------------- test endpoints ---------------------------------
+
 make be-create-items # create items for illustration purposes
 make be-get-items # retrieve items for illustration purposes
 ```
 
-FastApi will be running on http://127.0.0.1:8000/docs#/
+How to run with docker-compose: 
+
+- Make sure to have a .env file in the docker directory with aws credentials. **Do not commit credentials to git**
+
+  ```bash
+  # Build and run ui and backend images
+  make compose
+
+  # To build and run the images especially after code changes
+  make build
+  ```
+- Frontend will be running on http://localhost:4200/
+- FastApi will be running on http://localhost:8000/docs#/
 
