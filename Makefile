@@ -36,7 +36,11 @@ ui-dev:
 
 # Run web application via (May need to include "sudo" if running in wsl)
 compose:
-	docker compose -f ./docker/docker-compose.yaml up
+	docker compose -f ./docker/docker-compose.yaml up -d
+
+# Build docker images, useful after new code is added
+build:
+	docker compose -f ./docker/docker-compose.yaml up --build -d
 
 # End points for testing basic CRUD. Serves as a template for future endpoints
 be-create-items:
