@@ -351,6 +351,34 @@ CDF_COMPARE_COLS_IGNORE = ["DSID", "ARM.NUM", "PUB.LOCATION", "RSP.PVALUE",	"RSP
 
 CDF_COMPOUND_KEY_COLS = ["ARM.TRT", "ARM.DOSE", "ARM.REGIMEN", "ENDPOINT", "ARM.TIME1"]
 
+CDF_NUMERICAL_COLS = [
+    "ARM.DOSE",
+    "N.ARM",
+    "N.ARM.STATANAL",
+    "N.ARM.EVENT.SUBJ",
+    "ARM.TIME1",
+    "BSL.VAL",
+    "BSL.VAR",
+    "BSL.LCI",
+    "BSL.UCI",
+    "CHBSL.VAL",
+    "CHBSL.VAR",
+    "CHBSL.LCI",
+    "CHBSL.UCI",
+    "RSP.VAL",
+    "RSP.VAR",
+    "RSP.LCI",
+    "RSP.UCI",
+    "PCHBSL.VAL",
+    "PCHBSL.VAR",
+    "PCHBSL.LCI",
+    "PCHBSL.UCI",
+    "ARM.PCT.MALE"
+]
+
+CDF_EMPTY_TEXT_COL_SIMILARITY = None
+CDF_EMPTY_NUM_COL_SIMILARITY = None
+
 # ------------------------------
 # Testing related constants
 # ------------------------------
