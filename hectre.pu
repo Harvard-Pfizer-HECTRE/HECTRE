@@ -1,6 +1,4 @@
-@startuml picos Parser
-class PdfParserException {
-}
+@startuml hectre_class_diagram
 
 abstract class Parser {
   +parse(): Any
@@ -8,7 +6,11 @@ abstract class Parser {
 
 class PdfParser extends Parser {
   -file_path: str
+  -url: str
+  -hectre: Any
+  -file: Any
   +__init__(file_path: str = None, url: str = None): None
+  +__cleanUp__(): None
   +parse(): Paper
 }
 
@@ -17,31 +19,41 @@ class PicosParser extends Parser {
   +parse(): Picos
 }
 
-class LiteratureData {
-}
 
-class ClinicalData {
+class CDFData {
+  -from_dict: CDFData
+  +from_dict(values: Dict): CDFData
+  +from_dicts(*dicts: Dict[str, Any]): CDFData
+  +from_json(cls, *json_strs: Json[Dict]): CDFData
 }
 
 class CDF {
-  -literature_data: LiteratureData
-  -clinical_data: List<ClinicalData>
-  +set_literature_data(values: Dict): None
-  +add_clinical_data(values: Json[Dict]): None
+  -literature_data: Optional[CDFData]
+  -clinical_data: List[CDFData]
   +to_df(): pd.DataFrame
+  +save_to_string(): str
+  +save_to_file(name, path): None
+  +{static} compare(test_cdf: pd.DataFrame, control_cdf: pd.DataFrame): dict
 }
 
-LiteratureData -- CDF: has >
-ClinicalData "*" -- CDF: has >
+class FileS3Client {
+  -s3: boto3.resource
+  -bucket: boto3.Bucket
+
+  +__init__(region_name: str = REGION_NAME): None
+  +upload_file(file: UploadFile, folder: str = S3_FOLDER_INPUT): Tuple[bool, str]
+  +upload_files(files: List[UploadFile]): Tuple[bool, str]
+  +list_buckets(): List[str]
+  +download_and_extract_files(in_folder: str, outcomes_string: str, out_folder: str = S3_FOLDER_OUTPUT): None
+  +write_dataframe_to_s3(df: DataFrame, filename: str, folder: str = S3_FOLDER_OUTPUT): None
+  +remove_temp_dir(local_dir: str): None
+}
 
 class Config {
   -config: dict
   +__init__(): None
   +__getitem__(item: Any): Any
   +get_config(): None
-}
-
-class HectreException {
 }
 
 class Hectre {
@@ -52,31 +64,24 @@ class Hectre {
   +set_up_logging(): None
   +set_llm(llm_name: str): None
 }
-HectreException -- Hectre: throws >
 
-class ClientError {
-}
+class Llm {
+  -PARAMETERS: List[str]
+  -USER_ASSISTANT_MODEL: bool
 
-class Bedrock {
-  -MODEL_ID: Optional[str]
-  -CREDENTIAL_PROFILE: str
-  -SERVICE: str
-  -REGION: str
-  -client: Any
   +__init__(): None
-  +get_invoke_body(prompt: str): Any
-  +process_response(response: Any): str
-}
-ClientError -- Bedrock: throws >
-
-class DefinitionsException {
+  +set_default_parameters(): None
+  +set_parameters(**kwargs): None
+  +set_parameters_from_config(config: Any): None
+  +invoke(prompt: str): None
 }
 
-class Definitions {
-  -definitions_dict_by_short_name: Dict[str, str]
-  -definitions_dict_by_readable_name: Dict[str, str]
-  +get_field_by_name(name: str): Dict[str, str]
-  +get_field_by_label(name: str): Dict[str, str]
-}
-DefinitionsException -- Definitions: throws >
+Hectre -> Config: uses >
+EXTRACT_CLI -> Hectre: uses >
+Hectre -> Parser : uses >
+CDFData -> CDF: uses >
+Hectre -down-> Llm: uses >
+FileS3Client -down-> CDF: uses >
+HECTRE_API -up-> CDF: uses >
+EXTRACT_CLI -up-> CDF: uses >
 @enduml

@@ -81,6 +81,13 @@ make be-get-items # retrieve items for illustration purposes
 How to run with docker-compose: 
 
 - Make sure to have a .env file in the docker directory with aws credentials. **Do not commit credentials to git**
+  Example ./docker/.env file:
+
+  ```bash
+  aws_access_key_id=some_access_key_id
+  aws_secret_access_key=some_secret_access_key
+  ```
+
 
   ```bash
   # Build and run ui and backend images
