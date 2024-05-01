@@ -1,4 +1,8 @@
 # HECTRE
+
+<!-- ![HECTRE Logo](./ui/src/assets/HECTRE.png) -->
+<img src="./ui/src/assets/HECTRE.png" alt="HECTRE Logo" width="550" height="550">
+
 ### Harvard Extension Clinical Trial Results Extractor
 Clinical trial paper data extraction, Harvard Extension collaboration with Pfizer.
 This tool will assist in meta-analysis by extracting clinical data from clinical trial paper PDFs in a specific format that is usable for Pfizer.
