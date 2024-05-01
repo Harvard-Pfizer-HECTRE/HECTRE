@@ -45,6 +45,8 @@ def extract_literature_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) ->
     if result:
         try:
             literature_data_json = json5.loads(result)
+            for key, val in literature_data_json.items():
+                literature_data_json[key] = hectre.post_process_value(key, val)
         except (json.JSONDecodeError, ValueError) as e:
             logger.error(f"Could not decode literature data output: {result}")
             raise e
@@ -95,6 +97,8 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
         # If we got any results, load it as JSON object, and update our JSON for this clinical data row
         try:
             per_treatment_arm_data_json = json5.loads(result)
+            for key, val in per_treatment_arm_data_json.items():
+                per_treatment_arm_data_json[key] = hectre.post_process_value(key, val)
         except (json.JSONDecodeError, ValueError):
             logger.warn(f"Could not decode per-treatment arm data output: {result}")
             # This treatment arm is broken, but let's continue to the next one
@@ -119,6 +123,9 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
 
             try:
                 stat_groups = json5.loads(stat_groups_res)
+                for stat_group in stat_groups:
+                    for key, val in stat_group.items():
+                        stat_group[key] = hectre.post_process_value(key, val)
             except (json.JSONDecodeError, ValueError):
                 logger.warn(f"Could not decode statistical analysis groups data output: {stat_groups_res}")
                 # This stat groups is broken
@@ -136,6 +143,8 @@ def extract_clinical_data_whole_paper(paper: Paper, picos: Picos, cdf: CDF) -> N
                 time_data_dict_str = hectre.query_time_dict_from_value(time_value=time_value)
                 try:
                     time_data_dict = json5.loads(time_data_dict_str)
+                    for key, val in time_data_dict.items():
+                        time_data_dict[key] = hectre.post_process_value(key, val)
                 except (json.JSONDecodeError, ValueError):
                     logger.warn(f"Could not decode time data format output: {time_data_dict_str}")
                     # Something went wrong here

@@ -447,7 +447,7 @@ class Hectre(BaseModel):
             # First some logic to see if we execute the query or not
             # If query is empty, always execute the prompt
             if query:
-                # If binary outcome, only care about baseline
+                # If binary outcome, only care about response
                 if outcome_type == OUTCOME_TYPE[1] and query != "PromptHasResponse":
                     logger.debug(f"Skipping {prompt_name} due to binary outcome {outcome}")
                     continue
@@ -485,8 +485,41 @@ class Hectre(BaseModel):
         ret = self.invoke_prompt_on_text(name=name, prompt_name=prompt_name, text=text, extra_vars=extra_vars, keep_no_data_response=True)
         try:
             clinical_data_json = json5.loads(ret)
+            for key, val in clinical_data_json.items():
+                clinical_data_json[key] = self.post_process_value(key, val)
             return clinical_data_json
         except (json.JSONDecodeError, ValueError):
             logger.warn(f"Could not decode clinical data output: {ret}")
             # We keep going
             return {}
+
+
+    def post_process_value(self, header: str, val: str) -> str:
+        """
+        Does post-processing for cells based on the header.
+        This is a last-minute addition, so doing some ad-hoc stuff.
+        """
+        if header.endswith("VALU"):
+            if val.lower() == "%":
+                return "percent"
+        if header == "ARM.TIME1U":
+            if val.lower() in ["week", "weeks"]:
+                return "WK"
+        if header == "ARM.AGEU":
+            if val.lower() in ["year", "years"]:
+                return "YR"
+        if header == "STD.PHASE":
+            try:
+                int(val)
+                return f"Phase {val}"
+            except:
+                pass
+        if header == "PG":
+            return val.replace("-", "~")
+        if header == "ARM.REGIMEN":
+            if val.lower() == "every 2 weeks":
+                return "Q2W"
+        if header == "ARM.ROUTE":
+            if val.lower() == "subcutaneous":
+                return "SC"
+        return val
