@@ -4,6 +4,7 @@
 from __future__ import annotations
 import json, warnings, os
 from collections import OrderedDict
+from math import isclose
 from typing import Any, List, Dict, Optional, Callable
 
 from thefuzz import fuzz
@@ -16,7 +17,10 @@ from hectre.consts import (
     CDF_COMPOUND_KEY_COLS,
     HEADER_ORDER,
     LITERATURE_DATA_HEADERS,
-    NO_DATA
+    NO_DATA,
+    CDF_NUMERICAL_COLS,
+    CDF_EMPTY_NUM_COL_SIMILARITY,
+    CDF_EMPTY_TEXT_COL_SIMILARITY
 )
 
 # Create fields dynamically for LiteratureData and Result models based on definitions.json
@@ -191,7 +195,10 @@ class CDF(BaseModel):
                 # No match for this control_key.
                 continue
             for col, val in control_df.loc[control_key].items():
-                comp_values.loc[control_key, col] = fuzz.token_sort_ratio(val, test_df.loc[matched_test_key, col])
+                if col in CDF_NUMERICAL_COLS:
+                    comp_values.loc[control_key, col] = CDF.numerical_similarity(val, test_df.loc[matched_test_key, col])
+                else:
+                    comp_values.loc[control_key, col] = CDF.string_similarity(val, test_df.loc[matched_test_key, col])
             comp_values.loc[control_key, 'has_match'] = 1
         comp_values = comp_values.set_index(['has_match'], append=True)
         stacked_df = CDF.create_stacked_df(match_matrix, test_df, control_df, comp_values.droplevel('has_match'))            
@@ -204,6 +211,40 @@ class CDF(BaseModel):
         return results
     
     @staticmethod
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+    
+    @staticmethod
+    def numerical_similarity(control_value, test_value):
+        vals = [control_value, test_value]
+        # Similarity of empty values.
+        if CDF.is_empty_strings(vals):
+            return CDF_EMPTY_NUM_COL_SIMILARITY
+        # If vals are not numerical strings, similarity is 0%.
+        elif not all(CDF.is_number(val) for val in vals):
+            return 0
+        # Return 100% if floats match within default isclose tolerance. See https://docs.python.org/3/library/math.html#math.isclose
+        else:
+            return 100 if isclose(float(control_value), float(test_value)) else 0 
+
+    @staticmethod
+    def string_similarity(control_value, test_value):
+        vals = [control_value, test_value]
+        # Similarity of empty values.
+        if CDF.is_empty_strings(vals):
+            return CDF_EMPTY_TEXT_COL_SIMILARITY
+        return fuzz.token_sort_ratio(control_value, test_value)
+    
+    @staticmethod
+    def is_empty_strings(vals):
+        # If both values are empty strings.
+        return all(isinstance(val, str) for val in vals) and all(val == '' for val in vals)
+    
+    @staticmethod
     def format_control_cdf(control_cdf: pd.DataFrame):
         control_cdf = control_cdf.replace(to_replace='NA', value='')
         return control_cdf
@@ -212,8 +253,11 @@ class CDF(BaseModel):
     def compare_literature_data(test_s: pd.Series, control_s: pd.Series):
         # Create a DataFrame to hold cell-by-cell equality matrix.
         comp_values = pd.Series(index=test_s.index, dtype='Int64')
-        for index_s, val_s in test_s.items():
-            comp_values.loc[index_s] = fuzz.token_sort_ratio(val_s, control_s[index_s])
+        for col, val in test_s.items():
+            if col in CDF_NUMERICAL_COLS:
+                comp_values.loc[col] = CDF.numerical_similarity(val, control_s[col])
+            else:
+                comp_values.loc[col] = CDF.string_similarity(val, control_s[col])
         results = {
             'comp_values': comp_values
         }

@@ -22,7 +22,7 @@ def cdf_accuracy_cmd(path_to_pdf: str, picos_string: str, path_to_cdf: str):
 
 def accuracy_extract_test(path_to_pdf: str, picos_string: str):
     test_cdf = extract_data(file_path=path_to_pdf, picos_string=picos_string)
-    if not test_cdf:
+    if len(test_cdf.clinical_data) == 0:
         raise RuntimeError(f'HECTRE failed to produce a cdf for the PDF located at {path_to_pdf}')
     return test_cdf.to_df()
 
